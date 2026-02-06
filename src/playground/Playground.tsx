@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Button, Tooltip, Badge, Bubble, BackToTopIcon, ChatIcon, BellIcon, CloseIcon, Text, Divider, ThemeProvider, useTheme, tokens } from '../index'
+import { Button, Tooltip, Badge, Bubble, BackToTopIcon, ChatIcon, BellIcon, CloseIcon, Text, Divider, Flex, Row, Col, Layout, Waterfall, ThemeProvider, useTheme, tokens } from '../index'
 
 export function Playground() {
   return (
@@ -89,6 +89,26 @@ function PlaygroundContent() {
               active={activeSection === 'divider'}
               onClick={() => setActiveSection('divider')}
             />
+            <NavItem
+              label="Flex"
+              active={activeSection === 'flex'}
+              onClick={() => setActiveSection('flex')}
+            />
+            <NavItem
+              label="Grid"
+              active={activeSection === 'grid'}
+              onClick={() => setActiveSection('grid')}
+            />
+            <NavItem
+              label="Layout"
+              active={activeSection === 'layout'}
+              onClick={() => setActiveSection('layout')}
+            />
+            <NavItem
+              label="Waterfall"
+              active={activeSection === 'waterfall'}
+              onClick={() => setActiveSection('waterfall')}
+            />
           </ul>
         </nav>
       </aside>
@@ -101,6 +121,10 @@ function PlaygroundContent() {
         {activeSection === 'bubble' && <BubbleSection />}
         {activeSection === 'text' && <TextSection />}
         {activeSection === 'divider' && <DividerSection />}
+        {activeSection === 'flex' && <FlexSection />}
+        {activeSection === 'grid' && <GridSection />}
+        {activeSection === 'layout' && <LayoutSection />}
+        {activeSection === 'waterfall' && <WaterfallSection />}
         {activeSection === 'theme' && <ThemeSection />}
       </main>
     </div>
@@ -1016,6 +1040,858 @@ function DividerSection() {
           <Text type="secondary" size="sm">Privacidad</Text>
           <Divider style={{ margin: '12px 0' }} />
           <Text type="error" size="sm">Cerrar sesión</Text>
+        </div>
+      </Section>
+    </div>
+  )
+}
+
+function FlexSection() {
+  return (
+    <div>
+      <Text size="xl" weight="bold" style={{ display: 'block' }}>Flex</Text>
+      <Text type="secondary" style={{ display: 'block', marginBottom: 32 }}>
+        Contenedor flex para layouts flexibles.
+      </Text>
+
+      <Section title="Básico (horizontal)">
+        <Flex gap="middle" style={{ width: '100%', padding: 16, backgroundColor: tokens.colorBgMuted, borderRadius: 8 }}>
+          <div style={{ padding: '16px 24px', backgroundColor: tokens.colorPrimary, color: tokens.colorPrimaryContrast, borderRadius: 4 }}>Item 1</div>
+          <div style={{ padding: '16px 24px', backgroundColor: tokens.colorPrimary, color: tokens.colorPrimaryContrast, borderRadius: 4 }}>Item 2</div>
+          <div style={{ padding: '16px 24px', backgroundColor: tokens.colorPrimary, color: tokens.colorPrimaryContrast, borderRadius: 4 }}>Item 3</div>
+        </Flex>
+      </Section>
+
+      <Section title="Vertical">
+        <Flex vertical gap="middle" style={{ padding: 16, backgroundColor: tokens.colorBgMuted, borderRadius: 8 }}>
+          <div style={{ padding: '16px 24px', backgroundColor: tokens.colorSecondary, color: tokens.colorSecondaryContrast, borderRadius: 4 }}>Item 1</div>
+          <div style={{ padding: '16px 24px', backgroundColor: tokens.colorSecondary, color: tokens.colorSecondaryContrast, borderRadius: 4 }}>Item 2</div>
+          <div style={{ padding: '16px 24px', backgroundColor: tokens.colorSecondary, color: tokens.colorSecondaryContrast, borderRadius: 4 }}>Item 3</div>
+        </Flex>
+      </Section>
+
+      <Section title="Gap presets">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, width: '100%' }}>
+          <div>
+            <Text size="sm" type="secondary" style={{ display: 'block', marginBottom: 8 }}>small (8px)</Text>
+            <Flex gap="small" style={{ padding: 16, backgroundColor: tokens.colorBgMuted, borderRadius: 8 }}>
+              <div style={{ padding: 12, backgroundColor: tokens.colorSuccess, color: tokens.colorSuccessContrast, borderRadius: 4 }}>A</div>
+              <div style={{ padding: 12, backgroundColor: tokens.colorSuccess, color: tokens.colorSuccessContrast, borderRadius: 4 }}>B</div>
+              <div style={{ padding: 12, backgroundColor: tokens.colorSuccess, color: tokens.colorSuccessContrast, borderRadius: 4 }}>C</div>
+            </Flex>
+          </div>
+          <div>
+            <Text size="sm" type="secondary" style={{ display: 'block', marginBottom: 8 }}>middle (16px)</Text>
+            <Flex gap="middle" style={{ padding: 16, backgroundColor: tokens.colorBgMuted, borderRadius: 8 }}>
+              <div style={{ padding: 12, backgroundColor: tokens.colorSuccess, color: tokens.colorSuccessContrast, borderRadius: 4 }}>A</div>
+              <div style={{ padding: 12, backgroundColor: tokens.colorSuccess, color: tokens.colorSuccessContrast, borderRadius: 4 }}>B</div>
+              <div style={{ padding: 12, backgroundColor: tokens.colorSuccess, color: tokens.colorSuccessContrast, borderRadius: 4 }}>C</div>
+            </Flex>
+          </div>
+          <div>
+            <Text size="sm" type="secondary" style={{ display: 'block', marginBottom: 8 }}>large (24px)</Text>
+            <Flex gap="large" style={{ padding: 16, backgroundColor: tokens.colorBgMuted, borderRadius: 8 }}>
+              <div style={{ padding: 12, backgroundColor: tokens.colorSuccess, color: tokens.colorSuccessContrast, borderRadius: 4 }}>A</div>
+              <div style={{ padding: 12, backgroundColor: tokens.colorSuccess, color: tokens.colorSuccessContrast, borderRadius: 4 }}>B</div>
+              <div style={{ padding: 12, backgroundColor: tokens.colorSuccess, color: tokens.colorSuccessContrast, borderRadius: 4 }}>C</div>
+            </Flex>
+          </div>
+        </div>
+      </Section>
+
+      <Section title="Gap numérico personalizado">
+        <Flex gap={32} style={{ padding: 16, backgroundColor: tokens.colorBgMuted, borderRadius: 8 }}>
+          <div style={{ padding: 12, backgroundColor: tokens.colorWarning, color: tokens.colorWarningContrast, borderRadius: 4 }}>32px</div>
+          <div style={{ padding: 12, backgroundColor: tokens.colorWarning, color: tokens.colorWarningContrast, borderRadius: 4 }}>gap</div>
+          <div style={{ padding: 12, backgroundColor: tokens.colorWarning, color: tokens.colorWarningContrast, borderRadius: 4 }}>items</div>
+        </Flex>
+      </Section>
+
+      <Section title="Justify content">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: '100%' }}>
+          {(['flex-start', 'center', 'flex-end', 'space-between', 'space-around', 'space-evenly'] as const).map((justify) => (
+            <div key={justify}>
+              <Text size="sm" type="secondary" style={{ display: 'block', marginBottom: 4 }}>{justify}</Text>
+              <Flex justify={justify} style={{ padding: 12, backgroundColor: tokens.colorBgMuted, borderRadius: 8 }}>
+                <div style={{ padding: 8, backgroundColor: tokens.colorInfo, color: tokens.colorInfoContrast, borderRadius: 4 }}>A</div>
+                <div style={{ padding: 8, backgroundColor: tokens.colorInfo, color: tokens.colorInfoContrast, borderRadius: 4 }}>B</div>
+                <div style={{ padding: 8, backgroundColor: tokens.colorInfo, color: tokens.colorInfoContrast, borderRadius: 4 }}>C</div>
+              </Flex>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      <Section title="Align items">
+        <div style={{ display: 'flex', gap: 16, width: '100%' }}>
+          {(['flex-start', 'center', 'flex-end', 'stretch'] as const).map((align) => (
+            <div key={align} style={{ flex: 1 }}>
+              <Text size="sm" type="secondary" style={{ display: 'block', marginBottom: 4 }}>{align}</Text>
+              <Flex align={align} gap="small" style={{ height: 100, padding: 12, backgroundColor: tokens.colorBgMuted, borderRadius: 8 }}>
+                <div style={{ padding: 8, backgroundColor: tokens.colorError, color: tokens.colorErrorContrast, borderRadius: 4 }}>A</div>
+                <div style={{ padding: '16px 8px', backgroundColor: tokens.colorError, color: tokens.colorErrorContrast, borderRadius: 4 }}>B</div>
+              </Flex>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      <Section title="Wrap">
+        <div style={{ width: '100%' }}>
+          <Text size="sm" type="secondary" style={{ display: 'block', marginBottom: 8 }}>wrap={`{true}`} o wrap="wrap"</Text>
+          <Flex wrap gap="small" style={{ maxWidth: 300, padding: 16, backgroundColor: tokens.colorBgMuted, borderRadius: 8 }}>
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} style={{ padding: '8px 16px', backgroundColor: tokens.colorPrimary, color: tokens.colorPrimaryContrast, borderRadius: 4 }}>
+                Item {i + 1}
+              </div>
+            ))}
+          </Flex>
+        </div>
+      </Section>
+
+      <Section title="Gap diferente horizontal/vertical">
+        <div style={{ width: '100%' }}>
+          <Text size="sm" type="secondary" style={{ display: 'block', marginBottom: 8 }}>gap={`{[8, 24]}`} - 8px horizontal, 24px vertical</Text>
+          <Flex wrap gap={[8, 24]} style={{ maxWidth: 280, padding: 16, backgroundColor: tokens.colorBgMuted, borderRadius: 8 }}>
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} style={{ padding: '8px 16px', backgroundColor: tokens.colorSecondary, color: tokens.colorSecondaryContrast, borderRadius: 4 }}>
+                Item {i + 1}
+              </div>
+            ))}
+          </Flex>
+        </div>
+      </Section>
+
+      <Section title="Componente personalizado">
+        <Flex component="section" gap="middle" style={{ padding: 16, backgroundColor: tokens.colorBgMuted, borderRadius: 8 }}>
+          <Text>Renderizado como</Text>
+          <Text code>{'<section>'}</Text>
+          <Text>en lugar de div</Text>
+        </Flex>
+      </Section>
+
+      <Section title="Combinación: layout de tarjetas">
+        <Flex wrap gap="middle" justify="center" style={{ width: '100%' }}>
+          {['Card 1', 'Card 2', 'Card 3', 'Card 4'].map((card) => (
+            <Flex
+              key={card}
+              vertical
+              gap="small"
+              style={{
+                width: 150,
+                padding: 16,
+                backgroundColor: tokens.colorBgMuted,
+                borderRadius: 8,
+                border: `1px solid ${tokens.colorBorder}`,
+              }}
+            >
+              <div style={{ height: 60, backgroundColor: tokens.colorPrimaryLight, borderRadius: 4 }} />
+              <Text weight="semibold">{card}</Text>
+              <Text size="sm" type="secondary">Descripción breve</Text>
+            </Flex>
+          ))}
+        </Flex>
+      </Section>
+
+      <Section title="Combinación: header layout">
+        <Flex
+          justify="space-between"
+          align="center"
+          style={{
+            width: '100%',
+            padding: 16,
+            backgroundColor: tokens.colorBgMuted,
+            borderRadius: 8,
+            border: `1px solid ${tokens.colorBorder}`,
+          }}
+        >
+          <Text weight="bold" size="lg">Logo</Text>
+          <Flex gap="middle">
+            <Button variant="ghost">Inicio</Button>
+            <Button variant="ghost">Productos</Button>
+            <Button variant="ghost">Contacto</Button>
+          </Flex>
+          <Button>Login</Button>
+        </Flex>
+      </Section>
+    </div>
+  )
+}
+
+function GridSection() {
+  const colStyle: React.CSSProperties = {
+    backgroundColor: tokens.colorPrimary,
+    color: tokens.colorPrimaryContrast,
+    padding: '12px 0',
+    textAlign: 'center',
+    borderRadius: 4,
+  }
+
+  const colStyleAlt: React.CSSProperties = {
+    ...colStyle,
+    backgroundColor: tokens.colorPrimaryHover,
+  }
+
+  return (
+    <div>
+      <Text size="xl" weight="bold" style={{ display: 'block' }}>Grid</Text>
+      <Text type="secondary" style={{ display: 'block', marginBottom: 32 }}>
+        Sistema de grid de 24 columnas con soporte responsive.
+      </Text>
+
+      <Section title="Básico (24 columnas)">
+        <div style={{ width: '100%' }}>
+          <Row gutter={8}>
+            <Col span={24}><div style={colStyle}>col-24</div></Col>
+          </Row>
+          <div style={{ height: 8 }} />
+          <Row gutter={8}>
+            <Col span={12}><div style={colStyle}>col-12</div></Col>
+            <Col span={12}><div style={colStyleAlt}>col-12</div></Col>
+          </Row>
+          <div style={{ height: 8 }} />
+          <Row gutter={8}>
+            <Col span={8}><div style={colStyle}>col-8</div></Col>
+            <Col span={8}><div style={colStyleAlt}>col-8</div></Col>
+            <Col span={8}><div style={colStyle}>col-8</div></Col>
+          </Row>
+          <div style={{ height: 8 }} />
+          <Row gutter={8}>
+            <Col span={6}><div style={colStyle}>col-6</div></Col>
+            <Col span={6}><div style={colStyleAlt}>col-6</div></Col>
+            <Col span={6}><div style={colStyle}>col-6</div></Col>
+            <Col span={6}><div style={colStyleAlt}>col-6</div></Col>
+          </Row>
+        </div>
+      </Section>
+
+      <Section title="Gutter (espacio entre columnas)">
+        <div style={{ width: '100%' }}>
+          <Text size="sm" type="secondary" style={{ display: 'block', marginBottom: 8 }}>gutter={`{16}`}</Text>
+          <Row gutter={16}>
+            <Col span={6}><div style={colStyle}>col-6</div></Col>
+            <Col span={6}><div style={colStyle}>col-6</div></Col>
+            <Col span={6}><div style={colStyle}>col-6</div></Col>
+            <Col span={6}><div style={colStyle}>col-6</div></Col>
+          </Row>
+          <div style={{ height: 16 }} />
+          <Text size="sm" type="secondary" style={{ display: 'block', marginBottom: 8 }}>gutter={`{32}`}</Text>
+          <Row gutter={32}>
+            <Col span={6}><div style={colStyle}>col-6</div></Col>
+            <Col span={6}><div style={colStyle}>col-6</div></Col>
+            <Col span={6}><div style={colStyle}>col-6</div></Col>
+            <Col span={6}><div style={colStyle}>col-6</div></Col>
+          </Row>
+        </div>
+      </Section>
+
+      <Section title="Gutter vertical y horizontal">
+        <div style={{ width: '100%' }}>
+          <Text size="sm" type="secondary" style={{ display: 'block', marginBottom: 8 }}>gutter={`{[16, 24]}`} - 16px horizontal, 24px vertical</Text>
+          <Row gutter={[16, 24]}>
+            <Col span={6}><div style={colStyle}>col-6</div></Col>
+            <Col span={6}><div style={colStyle}>col-6</div></Col>
+            <Col span={6}><div style={colStyle}>col-6</div></Col>
+            <Col span={6}><div style={colStyle}>col-6</div></Col>
+            <Col span={6}><div style={colStyle}>col-6</div></Col>
+            <Col span={6}><div style={colStyle}>col-6</div></Col>
+            <Col span={6}><div style={colStyle}>col-6</div></Col>
+            <Col span={6}><div style={colStyle}>col-6</div></Col>
+          </Row>
+        </div>
+      </Section>
+
+      <Section title="Offset (desplazamiento)">
+        <div style={{ width: '100%' }}>
+          <Row gutter={16}>
+            <Col span={8}><div style={colStyle}>col-8</div></Col>
+            <Col span={8} offset={8}><div style={colStyle}>col-8 offset-8</div></Col>
+          </Row>
+          <div style={{ height: 8 }} />
+          <Row gutter={16}>
+            <Col span={6} offset={6}><div style={colStyle}>col-6 offset-6</div></Col>
+            <Col span={6} offset={6}><div style={colStyle}>col-6 offset-6</div></Col>
+          </Row>
+        </div>
+      </Section>
+
+      <Section title="Align (alineación vertical)">
+        <div style={{ width: '100%' }}>
+          {(['top', 'middle', 'bottom'] as const).map((align) => (
+            <div key={align} style={{ marginBottom: 16 }}>
+              <Text size="sm" type="secondary" style={{ display: 'block', marginBottom: 8 }}>{align}</Text>
+              <Row gutter={16} align={align} style={{ backgroundColor: tokens.colorBgMuted, padding: 8, borderRadius: 8 }}>
+                <Col span={4}><div style={{ ...colStyle, padding: '32px 0' }}>col-4</div></Col>
+                <Col span={4}><div style={{ ...colStyle, padding: '16px 0' }}>col-4</div></Col>
+                <Col span={4}><div style={{ ...colStyle, padding: '48px 0' }}>col-4</div></Col>
+                <Col span={4}><div style={{ ...colStyle, padding: '24px 0' }}>col-4</div></Col>
+              </Row>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      <Section title="Justify (alineación horizontal)">
+        <div style={{ width: '100%' }}>
+          {(['start', 'center', 'end', 'space-between', 'space-around'] as const).map((justify) => (
+            <div key={justify} style={{ marginBottom: 16 }}>
+              <Text size="sm" type="secondary" style={{ display: 'block', marginBottom: 8 }}>{justify}</Text>
+              <Row gutter={16} justify={justify} style={{ backgroundColor: tokens.colorBgMuted, padding: 8, borderRadius: 8 }}>
+                <Col span={4}><div style={colStyle}>col-4</div></Col>
+                <Col span={4}><div style={colStyle}>col-4</div></Col>
+                <Col span={4}><div style={colStyle}>col-4</div></Col>
+              </Row>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      <Section title="Order (orden flex)">
+        <div style={{ width: '100%' }}>
+          <Row gutter={16}>
+            <Col span={6} order={4}><div style={colStyle}>1 - order: 4</div></Col>
+            <Col span={6} order={3}><div style={colStyleAlt}>2 - order: 3</div></Col>
+            <Col span={6} order={2}><div style={colStyle}>3 - order: 2</div></Col>
+            <Col span={6} order={1}><div style={colStyleAlt}>4 - order: 1</div></Col>
+          </Row>
+        </div>
+      </Section>
+
+      <Section title="Flex">
+        <div style={{ width: '100%' }}>
+          <Text size="sm" type="secondary" style={{ display: 'block', marginBottom: 8 }}>flex="auto" + flex="200px"</Text>
+          <Row gutter={16}>
+            <Col flex="200px"><div style={colStyle}>200px</div></Col>
+            <Col flex="auto"><div style={colStyleAlt}>auto</div></Col>
+          </Row>
+          <div style={{ height: 16 }} />
+          <Text size="sm" type="secondary" style={{ display: 'block', marginBottom: 8 }}>flex="1" + flex="2"</Text>
+          <Row gutter={16}>
+            <Col flex={1}><div style={colStyle}>flex: 1</div></Col>
+            <Col flex={2}><div style={colStyleAlt}>flex: 2</div></Col>
+          </Row>
+        </div>
+      </Section>
+
+      <Section title="Push y Pull">
+        <div style={{ width: '100%' }}>
+          <Row gutter={16}>
+            <Col span={8} push={16}><div style={colStyle}>col-8 push-16</div></Col>
+            <Col span={16} pull={8}><div style={colStyleAlt}>col-16 pull-8</div></Col>
+          </Row>
+        </div>
+      </Section>
+
+      <Section title="Responsive">
+        <div style={{ width: '100%' }}>
+          <Text size="sm" type="secondary" style={{ display: 'block', marginBottom: 8 }}>
+            Redimensiona la ventana para ver el cambio
+          </Text>
+          <Row gutter={[16, 16]}>
+            <Col xs={24} sm={12} md={8} lg={6}><div style={colStyle}>xs:24 sm:12 md:8 lg:6</div></Col>
+            <Col xs={24} sm={12} md={8} lg={6}><div style={colStyleAlt}>xs:24 sm:12 md:8 lg:6</div></Col>
+            <Col xs={24} sm={12} md={8} lg={6}><div style={colStyle}>xs:24 sm:12 md:8 lg:6</div></Col>
+            <Col xs={24} sm={12} md={8} lg={6}><div style={colStyleAlt}>xs:24 sm:12 md:8 lg:6</div></Col>
+          </Row>
+        </div>
+      </Section>
+
+      <Section title="Responsive con objeto">
+        <div style={{ width: '100%' }}>
+          <Row gutter={[16, 16]}>
+            <Col xs={{ span: 24 }} md={{ span: 12, offset: 6 }}>
+              <div style={colStyle}>xs:24 md:12+offset:6</div>
+            </Col>
+          </Row>
+        </div>
+      </Section>
+
+      <Section title="Ejemplo: Layout de tarjetas">
+        <div style={{ width: '100%' }}>
+          <Row gutter={[16, 16]}>
+            {[1, 2, 3, 4, 5, 6].map((n) => (
+              <Col key={n} xs={24} sm={12} md={8}>
+                <div style={{
+                  padding: 16,
+                  backgroundColor: tokens.colorBgMuted,
+                  borderRadius: 8,
+                  border: `1px solid ${tokens.colorBorder}`,
+                }}>
+                  <div style={{ height: 80, backgroundColor: tokens.colorPrimaryLight, borderRadius: 4, marginBottom: 12 }} />
+                  <Text weight="semibold" style={{ display: 'block' }}>Tarjeta {n}</Text>
+                  <Text size="sm" type="secondary">Descripción de la tarjeta</Text>
+                </div>
+              </Col>
+            ))}
+          </Row>
+        </div>
+      </Section>
+    </div>
+  )
+}
+
+function LayoutSection() {
+  const [collapsed, setCollapsed] = useState(false)
+  const [collapsed2, setCollapsed2] = useState(false)
+
+  const demoBoxStyle: React.CSSProperties = {
+    border: `1px solid ${tokens.colorBorder}`,
+    borderRadius: 8,
+    overflow: 'hidden',
+    marginBottom: 16,
+  }
+
+  // Estilos para las secciones del layout (escala de grises con bordes)
+  const headerStyle: React.CSSProperties = {
+    backgroundColor: '#3a3a3a',
+    color: '#fff',
+    borderBottom: '1px solid #555',
+  }
+
+  const siderStyle: React.CSSProperties = {
+    backgroundColor: '#2a2a2a',
+  }
+
+  const contentStyle: React.CSSProperties = {
+    backgroundColor: '#f5f5f5',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  }
+
+  const footerStyle: React.CSSProperties = {
+    backgroundColor: '#e0e0e0',
+    textAlign: 'center',
+    borderTop: '1px solid #ccc',
+  }
+
+  return (
+    <div>
+      <Text size="xl" weight="bold" style={{ display: 'block' }}>Layout</Text>
+      <Text type="secondary" style={{ display: 'block', marginBottom: 32 }}>
+        Componentes de layout para estructurar páginas.
+      </Text>
+
+      <Section title="Básico: Header + Content + Footer">
+        <div style={{ width: '100%', ...demoBoxStyle, height: 300 }}>
+          <Layout style={{ height: '100%' }}>
+            <Layout.Header style={headerStyle}>
+              <Text style={{ color: '#fff' }} weight="semibold">Header</Text>
+            </Layout.Header>
+            <Layout.Content style={contentStyle}>
+              <Text style={{ color: '#333' }}>Content</Text>
+            </Layout.Content>
+            <Layout.Footer style={footerStyle}>
+              <Text style={{ color: '#555' }}>Footer</Text>
+            </Layout.Footer>
+          </Layout>
+        </div>
+      </Section>
+
+      <Section title="Con Sider izquierdo">
+        <div style={{ width: '100%', ...demoBoxStyle, height: 350 }}>
+          <Layout style={{ height: '100%' }} hasSider>
+            <Layout.Sider style={{ ...siderStyle, borderRight: '1px solid #444' }}>
+              <div style={{ padding: 16, color: 'rgba(255,255,255,0.85)' }}>
+                <Text style={{ color: 'rgba(255,255,255,0.85)' }} weight="semibold">Sider</Text>
+                <div style={{ marginTop: 16 }}>
+                  <div style={{ padding: '8px 0', color: 'rgba(255,255,255,0.65)' }}>Menu Item 1</div>
+                  <div style={{ padding: '8px 0', color: 'rgba(255,255,255,0.65)' }}>Menu Item 2</div>
+                  <div style={{ padding: '8px 0', color: 'rgba(255,255,255,0.65)' }}>Menu Item 3</div>
+                </div>
+              </div>
+            </Layout.Sider>
+            <Layout>
+              <Layout.Header style={headerStyle}>
+                <Text style={{ color: '#fff' }} weight="semibold">Header</Text>
+              </Layout.Header>
+              <Layout.Content style={contentStyle}>
+                <Text style={{ color: '#333' }}>Content</Text>
+              </Layout.Content>
+              <Layout.Footer style={footerStyle}>
+                <Text style={{ color: '#555' }}>Footer</Text>
+              </Layout.Footer>
+            </Layout>
+          </Layout>
+        </div>
+      </Section>
+
+      <Section title="Con Sider derecho">
+        <div style={{ width: '100%', ...demoBoxStyle, height: 300 }}>
+          <Layout style={{ height: '100%' }} hasSider>
+            <Layout>
+              <Layout.Header style={headerStyle}>
+                <Text style={{ color: '#fff' }} weight="semibold">Header</Text>
+              </Layout.Header>
+              <Layout.Content style={contentStyle}>
+                <Text style={{ color: '#333' }}>Content</Text>
+              </Layout.Content>
+            </Layout>
+            <Layout.Sider width={120} style={{ ...siderStyle, borderLeft: '1px solid #444' }}>
+              <div style={{ padding: 16, color: 'rgba(255,255,255,0.85)' }}>
+                <Text style={{ color: 'rgba(255,255,255,0.85)' }} size="sm">Sider derecho</Text>
+              </div>
+            </Layout.Sider>
+          </Layout>
+        </div>
+      </Section>
+
+      <Section title="Sider colapsable">
+        <div style={{ width: '100%', ...demoBoxStyle, height: 350 }}>
+          <Layout style={{ height: '100%' }} hasSider>
+            <Layout.Sider
+              collapsible
+              collapsed={collapsed}
+              onCollapse={(c) => setCollapsed(c)}
+              style={{ ...siderStyle, borderRight: '1px solid #444' }}
+            >
+              <div style={{ padding: 16, color: 'rgba(255,255,255,0.85)' }}>
+                {!collapsed && <Text style={{ color: 'rgba(255,255,255,0.85)' }} weight="semibold">Menu</Text>}
+                <div style={{ marginTop: collapsed ? 0 : 16 }}>
+                  <div style={{ padding: '8px 0', color: 'rgba(255,255,255,0.65)', whiteSpace: 'nowrap', overflow: 'hidden' }}>
+                    {collapsed ? '📄' : '📄 Documentos'}
+                  </div>
+                  <div style={{ padding: '8px 0', color: 'rgba(255,255,255,0.65)', whiteSpace: 'nowrap', overflow: 'hidden' }}>
+                    {collapsed ? '⚙️' : '⚙️ Configuración'}
+                  </div>
+                  <div style={{ padding: '8px 0', color: 'rgba(255,255,255,0.65)', whiteSpace: 'nowrap', overflow: 'hidden' }}>
+                    {collapsed ? '👤' : '👤 Perfil'}
+                  </div>
+                </div>
+              </div>
+            </Layout.Sider>
+            <Layout>
+              <Layout.Header style={headerStyle}>
+                <Text style={{ color: '#fff' }}>Header - Sider {collapsed ? 'colapsado' : 'expandido'}</Text>
+              </Layout.Header>
+              <Layout.Content style={contentStyle}>
+                <Text style={{ color: '#333' }}>Click en la flecha del Sider para colapsar/expandir</Text>
+              </Layout.Content>
+            </Layout>
+          </Layout>
+        </div>
+      </Section>
+
+      <Section title="Sider con collapsedWidth=0">
+        <div style={{ width: '100%', ...demoBoxStyle, height: 300 }}>
+          <Layout style={{ height: '100%' }} hasSider>
+            <Layout.Sider
+              collapsible
+              collapsed={collapsed2}
+              collapsedWidth={0}
+              onCollapse={(c) => setCollapsed2(c)}
+              style={siderStyle}
+            >
+              <div style={{ padding: 16, color: 'rgba(255,255,255,0.85)' }}>
+                <Text style={{ color: 'rgba(255,255,255,0.85)' }} weight="semibold">Sider</Text>
+                <div style={{ marginTop: 16 }}>
+                  <div style={{ padding: '8px 0', color: 'rgba(255,255,255,0.65)' }}>Item 1</div>
+                  <div style={{ padding: '8px 0', color: 'rgba(255,255,255,0.65)' }}>Item 2</div>
+                </div>
+              </div>
+            </Layout.Sider>
+            <Layout>
+              <Layout.Content style={contentStyle}>
+                <Text style={{ color: '#333' }}>Cuando collapsedWidth=0, aparece un trigger especial fuera del sider</Text>
+              </Layout.Content>
+            </Layout>
+          </Layout>
+        </div>
+      </Section>
+
+      <Section title="Layouts anidados">
+        <div style={{ width: '100%', ...demoBoxStyle, height: 350 }}>
+          <Layout style={{ height: '100%' }}>
+            <Layout.Header style={headerStyle}>
+              <Text style={{ color: '#fff' }} weight="semibold">Header principal</Text>
+            </Layout.Header>
+            <Layout hasSider>
+              <Layout.Sider width={160} style={{ ...siderStyle, borderRight: '1px solid #444' }}>
+                <div style={{ padding: 16, color: 'rgba(255,255,255,0.85)' }}>
+                  <Text style={{ color: 'rgba(255,255,255,0.85)' }} weight="semibold">Nav</Text>
+                </div>
+              </Layout.Sider>
+              <Layout>
+                <Layout.Header style={{ backgroundColor: '#4a4a4a', borderBottom: '1px solid #666' }}>
+                  <Text style={{ color: '#fff' }} size="sm">Sub-header (layout anidado)</Text>
+                </Layout.Header>
+                <Layout hasSider>
+                  <Layout.Content style={{ ...contentStyle, padding: 16 }}>
+                    <Text style={{ color: '#333' }}>Content del layout interno</Text>
+                  </Layout.Content>
+                  <Layout.Sider width={100} theme="light" style={{ borderLeft: `1px solid ${tokens.colorBorder}` }}>
+                    <div style={{ padding: 12 }}>
+                      <Text size="sm" type="secondary">Panel lateral</Text>
+                    </div>
+                  </Layout.Sider>
+                </Layout>
+                <Layout.Footer style={{ ...footerStyle, padding: '8px 16px' }}>
+                  <Text style={{ color: '#555' }} size="sm">Footer interno</Text>
+                </Layout.Footer>
+              </Layout>
+            </Layout>
+          </Layout>
+        </div>
+      </Section>
+
+      <Section title="Layout completo (dashboard)">
+        <div style={{ width: '100%', ...demoBoxStyle, height: 400 }}>
+          <Layout style={{ height: '100%' }}>
+            <Layout.Header style={{ ...headerStyle, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Text style={{ color: '#fff' }} weight="bold" size="lg">Dashboard</Text>
+              <div style={{ display: 'flex', gap: 16 }}>
+                <Text style={{ color: 'rgba(255,255,255,0.65)' }} size="sm">Usuario</Text>
+                <Text style={{ color: 'rgba(255,255,255,0.65)' }} size="sm">Salir</Text>
+              </div>
+            </Layout.Header>
+            <Layout hasSider>
+              <Layout.Sider width={180} theme="light" style={{ borderRight: `1px solid ${tokens.colorBorder}` }}>
+                <div style={{ padding: '16px 0' }}>
+                  {['Dashboard', 'Usuarios', 'Productos', 'Pedidos', 'Reportes'].map((item, i) => (
+                    <div
+                      key={item}
+                      style={{
+                        padding: '12px 24px',
+                        backgroundColor: i === 0 ? '#e8e8e8' : 'transparent',
+                        fontWeight: i === 0 ? 600 : 400,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      <Text style={{ color: i === 0 ? '#333' : tokens.colorTextMuted }}>{item}</Text>
+                    </div>
+                  ))}
+                </div>
+              </Layout.Sider>
+              <Layout>
+                <Layout.Content style={{ backgroundColor: '#f5f5f5' }}>
+                  <div style={{ backgroundColor: '#fff', padding: 24, borderRadius: 8, height: '100%', border: `1px solid ${tokens.colorBorder}` }}>
+                    <Text weight="semibold" size="lg" style={{ display: 'block', marginBottom: 16, color: '#333' }}>
+                      Bienvenido al Dashboard
+                    </Text>
+                    <Row gutter={[16, 16]}>
+                      {['Ventas', 'Usuarios', 'Pedidos', 'Ingresos'].map((stat) => (
+                        <Col key={stat} span={6}>
+                          <div style={{ padding: 16, backgroundColor: '#fafafa', borderRadius: 8, textAlign: 'center', border: `1px solid ${tokens.colorBorder}` }}>
+                            <Text type="secondary" size="sm" style={{ display: 'block' }}>{stat}</Text>
+                            <Text weight="bold" size="xl" style={{ color: '#333' }}>123</Text>
+                          </div>
+                        </Col>
+                      ))}
+                    </Row>
+                  </div>
+                </Layout.Content>
+                <Layout.Footer style={{ ...footerStyle, padding: '12px 24px' }}>
+                  <Text type="secondary" size="sm">© 2024 Mi Empresa</Text>
+                </Layout.Footer>
+              </Layout>
+            </Layout>
+          </Layout>
+        </div>
+      </Section>
+    </div>
+  )
+}
+
+function WaterfallSection() {
+  // Datos de ejemplo con alturas variadas
+  const sampleItems = [
+    { key: 1, height: 150, title: 'Paisaje montañoso', color: tokens.colorPrimary },
+    { key: 2, height: 200, title: 'Atardecer en la playa', color: tokens.colorSecondary },
+    { key: 3, height: 120, title: 'Ciudad nocturna', color: tokens.colorSuccess },
+    { key: 4, height: 180, title: 'Bosque otoñal', color: tokens.colorWarning },
+    { key: 5, height: 140, title: 'Lago cristalino', color: tokens.colorError },
+    { key: 6, height: 220, title: 'Aurora boreal', color: tokens.colorInfo },
+    { key: 7, height: 160, title: 'Desierto al amanecer', color: tokens.colorPrimary },
+    { key: 8, height: 130, title: 'Cascada tropical', color: tokens.colorSecondary },
+    { key: 9, height: 190, title: 'Montaña nevada', color: tokens.colorSuccess },
+    { key: 10, height: 145, title: 'Pradera verde', color: tokens.colorWarning },
+    { key: 11, height: 175, title: 'Costa rocosa', color: tokens.colorError },
+    { key: 12, height: 135, title: 'Jardín japonés', color: tokens.colorInfo },
+  ]
+
+  // Estado para la sección dinámica
+  const [dynamicItems, setDynamicItems] = useState(() =>
+    Array.from({ length: 8 }, (_, i) => ({
+      key: i + 1,
+      height: 80 + Math.floor(Math.random() * 100),
+    }))
+  )
+  const [nextKey, setNextKey] = useState(9)
+
+  const handleRemoveItem = (key: number) => {
+    setDynamicItems(items => items.filter(item => item.key !== key))
+  }
+
+  const handleAddItem = () => {
+    const newItem = {
+      key: nextKey,
+      height: 80 + Math.floor(Math.random() * 100),
+    }
+    setDynamicItems(items => [...items, newItem])
+    setNextKey(prev => prev + 1)
+  }
+
+  return (
+    <div>
+      <Text size="xl" weight="bold" style={{ display: 'block' }}>Waterfall</Text>
+      <Text type="secondary" style={{ display: 'block', marginBottom: 32 }}>
+        Layout estilo Pinterest para contenido de alturas variables.
+      </Text>
+
+      <Section title="Dinámico">
+        <div style={{ width: '100%' }}>
+          <Waterfall
+            columns={4}
+            gutter={8}
+            items={dynamicItems.map(item => ({
+              key: item.key,
+              height: item.height,
+              children: (
+                <div style={{
+                  height: item.height,
+                  backgroundColor: tokens.colorBgMuted,
+                  borderRadius: 8,
+                  border: `1px solid ${tokens.colorBorder}`,
+                  padding: 12,
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'flex-start',
+                }}>
+                  <Text weight="semibold">{item.key}</Text>
+                  <button
+                    onClick={() => handleRemoveItem(item.key)}
+                    style={{
+                      width: 24,
+                      height: 24,
+                      border: `1px solid ${tokens.colorBorder}`,
+                      borderRadius: 4,
+                      backgroundColor: 'transparent',
+                      color: tokens.colorTextMuted,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: 14,
+                      lineHeight: 1,
+                    }}
+                  >
+                    ×
+                  </button>
+                </div>
+              ),
+            }))}
+          />
+          <Button
+            variant="outline"
+            style={{ width: '100%', marginTop: 8 }}
+            onClick={handleAddItem}
+          >
+            Add Item
+          </Button>
+        </div>
+      </Section>
+
+      <Section title="Básico (3 columnas)">
+        <div style={{ width: '100%' }}>
+          <Waterfall
+            columns={3}
+            gutter={16}
+            items={sampleItems.map(item => ({
+              key: item.key,
+              children: (
+                <div style={{
+                  height: item.height,
+                  backgroundColor: item.color,
+                  borderRadius: 8,
+                  padding: 16,
+                  color: '#fff',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'flex-end',
+                }}>
+                  <Text style={{ color: '#fff' }} weight="semibold">{item.title}</Text>
+                  <Text style={{ color: 'rgba(255,255,255,0.7)' }} size="sm">{item.height}px</Text>
+                </div>
+              ),
+            }))}
+          />
+        </div>
+      </Section>
+
+      <Section title="2 columnas">
+        <div style={{ width: '100%', maxWidth: 500 }}>
+          <Waterfall
+            columns={2}
+            gutter={12}
+            items={sampleItems.slice(0, 6).map(item => ({
+              key: item.key,
+              children: (
+                <div style={{
+                  height: item.height,
+                  backgroundColor: item.color,
+                  borderRadius: 12,
+                  padding: 16,
+                  color: '#fff',
+                }}>
+                  <Text style={{ color: '#fff' }} weight="bold">{item.title}</Text>
+                </div>
+              ),
+            }))}
+          />
+        </div>
+      </Section>
+
+      <Section title="Con itemRender">
+        <div style={{ width: '100%' }}>
+          <Waterfall
+            columns={3}
+            gutter={16}
+            items={sampleItems.map(item => ({
+              key: item.key,
+              data: item,
+            }))}
+            itemRender={({ data, assignedColumn }) => (
+              <div style={{
+                height: (data as typeof sampleItems[0]).height,
+                backgroundColor: (data as typeof sampleItems[0]).color,
+                borderRadius: 8,
+                padding: 16,
+                color: '#fff',
+              }}>
+                <Text style={{ color: '#fff' }} weight="semibold">{(data as typeof sampleItems[0]).title}</Text>
+                <Text style={{ color: 'rgba(255,255,255,0.7)' }} size="sm">Columna {assignedColumn + 1}</Text>
+              </div>
+            )}
+          />
+        </div>
+      </Section>
+
+      <Section title="Responsive (xs:1, sm:2, md:3, lg:4)">
+        <div style={{ width: '100%' }}>
+          <Text size="sm" type="secondary" style={{ display: 'block', marginBottom: 12 }}>
+            Redimensiona la ventana para ver el cambio de columnas
+          </Text>
+          <Waterfall
+            columns={{ xs: 1, sm: 2, md: 3, lg: 4 }}
+            gutter={{ xs: 8, sm: 12, md: 16 }}
+            items={sampleItems.slice(0, 8).map(item => ({
+              key: item.key,
+              children: (
+                <div style={{
+                  height: item.height,
+                  backgroundColor: item.color,
+                  borderRadius: 8,
+                  padding: 16,
+                  color: '#fff',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                  <Text style={{ color: '#fff' }} weight="bold">{item.title}</Text>
+                </div>
+              ),
+            }))}
+          />
         </div>
       </Section>
     </div>

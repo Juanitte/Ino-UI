@@ -21,7 +21,11 @@ Una libreria de componentes React moderna y ligera con soporte integrado de tema
   - [Bubble](#bubble)
   - [Button](#button)
   - [Divider](#divider)
+  - [Flex](#flex)
+  - [Grid](#grid)
+  - [Layout](#layout)
   - [Text](#text)
+  - [Waterfall](#waterfall)
   - [Tooltip](#tooltip)
 
 ## Caracteristicas
@@ -867,6 +871,483 @@ import { Divider } from 'j-ui'
 ---
 
 <details>
+<summary><strong>Flex</strong> - Contenedor flexbox para layout</summary>
+
+### Flex
+
+Un componente de layout con CSS Flexbox para organizar elementos.
+
+#### Importar
+
+```tsx
+import { Flex } from 'j-ui'
+```
+
+#### Props
+
+| Prop | Tipo | Por Defecto | Descripcion |
+|------|------|-------------|-------------|
+| `children` | `ReactNode` | — | Contenido del flex container |
+| `vertical` | `boolean` | `false` | Direccion vertical (column) en lugar de horizontal (row) |
+| `wrap` | `'nowrap' \| 'wrap' \| 'wrap-reverse' \| boolean` | `'nowrap'` | Comportamiento de wrap |
+| `justify` | `FlexJustify` | `'normal'` | Alineacion horizontal (justify-content) |
+| `align` | `FlexAlign` | `'normal'` | Alineacion vertical (align-items) |
+| `gap` | `'small' \| 'middle' \| 'large' \| number \| [number, number]` | — | Espacio entre elementos |
+| `flex` | `CSSProperties['flex']` | — | Propiedad flex del contenedor |
+| `component` | `ElementType` | `'div'` | Elemento HTML a renderizar |
+
+#### Valores de FlexJustify
+
+`'flex-start'` | `'center'` | `'flex-end'` | `'space-between'` | `'space-around'` | `'space-evenly'` | `'start'` | `'end'` | `'normal'`
+
+#### Valores de FlexAlign
+
+`'flex-start'` | `'center'` | `'flex-end'` | `'stretch'` | `'baseline'` | `'start'` | `'end'` | `'normal'`
+
+#### Valores de Gap
+
+| Gap | Valor |
+|-----|-------|
+| `'small'` | 8px |
+| `'middle'` | 16px |
+| `'large'` | 24px |
+| `number` | Valor personalizado en px |
+| `[h, v]` | Gap [horizontal, vertical] |
+
+#### Ejemplos
+
+```tsx
+// Flex horizontal basico
+<Flex>
+  <div>Item 1</div>
+  <div>Item 2</div>
+  <div>Item 3</div>
+</Flex>
+
+// Flex vertical
+<Flex vertical>
+  <div>Arriba</div>
+  <div>Medio</div>
+  <div>Abajo</div>
+</Flex>
+
+// Con gap
+<Flex gap="middle">
+  <div>Item 1</div>
+  <div>Item 2</div>
+</Flex>
+
+// Gap numerico personalizado
+<Flex gap={20}>
+  <div>Item 1</div>
+  <div>Item 2</div>
+</Flex>
+
+// Gap horizontal y vertical diferente
+<Flex wrap gap={[16, 8]}>
+  <div>Item 1</div>
+  <div>Item 2</div>
+  <div>Item 3</div>
+</Flex>
+
+// Justify y align
+<Flex justify="center" align="center" style={{ height: 200 }}>
+  <div>Centrado</div>
+</Flex>
+
+// Space between
+<Flex justify="space-between">
+  <div>Izquierda</div>
+  <div>Derecha</div>
+</Flex>
+
+// Con wrap
+<Flex wrap gap="small">
+  <div>Item 1</div>
+  <div>Item 2</div>
+  <div>Item 3</div>
+  <div>Item 4</div>
+</Flex>
+
+// Elemento personalizado
+<Flex component="nav" gap="middle">
+  <a href="/">Inicio</a>
+  <a href="/acerca">Acerca de</a>
+</Flex>
+
+// Combinado
+<Flex vertical gap="large" align="stretch">
+  <Flex justify="space-between">
+    <span>Titulo</span>
+    <button>Accion</button>
+  </Flex>
+  <div>Contenido</div>
+</Flex>
+```
+
+</details>
+
+---
+
+<details>
+<summary><strong>Grid</strong> - Sistema de grid responsivo de 24 columnas</summary>
+
+### Grid
+
+Un sistema de grid responsivo basado en 24 columnas con componentes Row y Col.
+
+#### Importar
+
+```tsx
+import { Grid, Row, Col } from 'j-ui'
+// o
+import { Grid } from 'j-ui'
+// Usar como Grid.Row y Grid.Col
+```
+
+#### Props de Row
+
+| Prop | Tipo | Por Defecto | Descripcion |
+|------|------|-------------|-------------|
+| `children` | `ReactNode` | — | Componentes Col |
+| `gutter` | `number \| ResponsiveGutter \| [horizontal, vertical]` | `0` | Espacio entre columnas (px) |
+| `align` | `'top' \| 'middle' \| 'bottom' \| 'stretch'` | `'top'` | Alineacion vertical |
+| `justify` | `'start' \| 'end' \| 'center' \| 'space-around' \| 'space-between' \| 'space-evenly'` | `'start'` | Alineacion horizontal |
+| `wrap` | `boolean` | `true` | Permitir wrap |
+
+#### Props de Col
+
+| Prop | Tipo | Por Defecto | Descripcion |
+|------|------|-------------|-------------|
+| `children` | `ReactNode` | — | Contenido de la columna |
+| `span` | `number` | — | Numero de columnas (1-24) |
+| `offset` | `number` | — | Columnas a desplazar desde la izquierda |
+| `push` | `number` | — | Mover a la derecha con position |
+| `pull` | `number` | — | Mover a la izquierda con position |
+| `order` | `number` | — | Orden flex |
+| `flex` | `CSSProperties['flex']` | — | Propiedad flex |
+| `xs` | `number \| ColSpanProps` | — | <576px |
+| `sm` | `number \| ColSpanProps` | — | ≥576px |
+| `md` | `number \| ColSpanProps` | — | ≥768px |
+| `lg` | `number \| ColSpanProps` | — | ≥992px |
+| `xl` | `number \| ColSpanProps` | — | ≥1200px |
+| `xxl` | `number \| ColSpanProps` | — | ≥1600px |
+
+#### Breakpoints
+
+| Breakpoint | Ancho Minimo |
+|------------|--------------|
+| `xs` | 0px |
+| `sm` | 576px |
+| `md` | 768px |
+| `lg` | 992px |
+| `xl` | 1200px |
+| `xxl` | 1600px |
+
+#### Ejemplos
+
+```tsx
+// Grid basico
+<Row>
+  <Col span={12}>50%</Col>
+  <Col span={12}>50%</Col>
+</Row>
+
+// Tres columnas
+<Row>
+  <Col span={8}>33.33%</Col>
+  <Col span={8}>33.33%</Col>
+  <Col span={8}>33.33%</Col>
+</Row>
+
+// Con gutter
+<Row gutter={16}>
+  <Col span={6}>25%</Col>
+  <Col span={6}>25%</Col>
+  <Col span={6}>25%</Col>
+  <Col span={6}>25%</Col>
+</Row>
+
+// Gutter horizontal y vertical
+<Row gutter={[16, 24]}>
+  <Col span={6}>Item</Col>
+  <Col span={6}>Item</Col>
+  <Col span={6}>Item</Col>
+  <Col span={6}>Item</Col>
+  <Col span={6}>Item</Col>
+  <Col span={6}>Item</Col>
+</Row>
+
+// Con offset
+<Row>
+  <Col span={8}>col-8</Col>
+  <Col span={8} offset={8}>col-8 offset-8</Col>
+</Row>
+
+// Responsivo
+<Row gutter={16}>
+  <Col xs={24} sm={12} md={8} lg={6}>
+    Columna responsiva
+  </Col>
+  <Col xs={24} sm={12} md={8} lg={6}>
+    Columna responsiva
+  </Col>
+  <Col xs={24} sm={12} md={8} lg={6}>
+    Columna responsiva
+  </Col>
+  <Col xs={24} sm={12} md={8} lg={6}>
+    Columna responsiva
+  </Col>
+</Row>
+
+// Responsivo con props completas
+<Row>
+  <Col xs={{ span: 24 }} md={{ span: 12, offset: 6 }}>
+    Responsivo complejo
+  </Col>
+</Row>
+
+// Alineacion
+<Row justify="center" align="middle" style={{ height: 100 }}>
+  <Col span={4}>Centrado</Col>
+</Row>
+
+// Columnas flex
+<Row>
+  <Col flex="100px">Fijo 100px</Col>
+  <Col flex="auto">Flexible</Col>
+  <Col flex="100px">Fijo 100px</Col>
+</Row>
+
+// Usando namespace Grid
+<Grid.Row gutter={16}>
+  <Grid.Col span={12}>Izquierda</Grid.Col>
+  <Grid.Col span={12}>Derecha</Grid.Col>
+</Grid.Row>
+```
+
+</details>
+
+---
+
+<details>
+<summary><strong>Layout</strong> - Layout de pagina con Header, Sider, Content, Footer</summary>
+
+### Layout
+
+Un sistema de layout completo con componentes Header, Footer, Sider y Content.
+
+#### Importar
+
+```tsx
+import { Layout } from 'j-ui'
+// Usar como Layout, Layout.Header, Layout.Sider, Layout.Content, Layout.Footer
+
+// O importar individualmente
+import { Layout, Header, Footer, Content, Sider } from 'j-ui'
+```
+
+#### Props de Layout
+
+| Prop | Tipo | Por Defecto | Descripcion |
+|------|------|-------------|-------------|
+| `children` | `ReactNode` | — | Contenido del layout |
+| `hasSider` | `boolean` | `false` | Tiene Sider como hijo directo |
+
+#### Props de Header
+
+| Prop | Tipo | Por Defecto | Descripcion |
+|------|------|-------------|-------------|
+| `children` | `ReactNode` | — | Contenido del header |
+
+Altura por defecto: 64px, padding: 0 24px
+
+#### Props de Footer
+
+| Prop | Tipo | Por Defecto | Descripcion |
+|------|------|-------------|-------------|
+| `children` | `ReactNode` | — | Contenido del footer |
+
+Padding por defecto: 24px 50px
+
+#### Props de Content
+
+| Prop | Tipo | Por Defecto | Descripcion |
+|------|------|-------------|-------------|
+| `children` | `ReactNode` | — | Contenido principal |
+
+Padding por defecto: 24px
+
+#### Props de Sider
+
+| Prop | Tipo | Por Defecto | Descripcion |
+|------|------|-------------|-------------|
+| `children` | `ReactNode` | — | Contenido del sider |
+| `width` | `number \| string` | `200` | Ancho del sider (px) |
+| `collapsedWidth` | `number` | `80` | Ancho cuando esta colapsado |
+| `collapsible` | `boolean` | `false` | Puede colapsarse |
+| `collapsed` | `boolean` | — | Estado colapsado (controlado) |
+| `defaultCollapsed` | `boolean` | `false` | Estado colapsado inicial |
+| `reverseArrow` | `boolean` | `false` | Invertir direccion de la flecha del trigger |
+| `breakpoint` | `'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl' \| 'xxl'` | — | Breakpoint para auto-colapsar |
+| `theme` | `'light' \| 'dark'` | `'dark'` | Tema del sider |
+| `trigger` | `ReactNode \| null` | — | Trigger personalizado, null para ocultar |
+| `onCollapse` | `(collapsed: boolean, type: 'clickTrigger' \| 'responsive') => void` | — | Callback al colapsar |
+| `onBreakpoint` | `(broken: boolean) => void` | — | Callback del breakpoint |
+
+#### Breakpoints
+
+| Breakpoint | Ancho |
+|------------|-------|
+| `xs` | 480px |
+| `sm` | 576px |
+| `md` | 768px |
+| `lg` | 992px |
+| `xl` | 1200px |
+| `xxl` | 1600px |
+
+#### Ejemplos
+
+```tsx
+// Layout basico
+<Layout>
+  <Layout.Header>Header</Layout.Header>
+  <Layout.Content>Contenido</Layout.Content>
+  <Layout.Footer>Footer</Layout.Footer>
+</Layout>
+
+// Con Sider
+<Layout>
+  <Layout.Header>Header</Layout.Header>
+  <Layout hasSider>
+    <Layout.Sider>Barra lateral</Layout.Sider>
+    <Layout.Content>Contenido</Layout.Content>
+  </Layout>
+  <Layout.Footer>Footer</Layout.Footer>
+</Layout>
+
+// Sider a la derecha
+<Layout hasSider>
+  <Layout.Content>Contenido</Layout.Content>
+  <Layout.Sider>Barra derecha</Layout.Sider>
+</Layout>
+
+// Sider colapsable
+<Layout hasSider>
+  <Layout.Sider collapsible>
+    Navegacion
+  </Layout.Sider>
+  <Layout.Content>Contenido</Layout.Content>
+</Layout>
+
+// Colapso controlado
+function MiLayout() {
+  const [collapsed, setCollapsed] = useState(false)
+
+  return (
+    <Layout hasSider>
+      <Layout.Sider
+        collapsible
+        collapsed={collapsed}
+        onCollapse={(c) => setCollapsed(c)}
+      >
+        Navegacion
+      </Layout.Sider>
+      <Layout.Content>Contenido</Layout.Content>
+    </Layout>
+  )
+}
+
+// Colapso responsivo
+<Layout hasSider>
+  <Layout.Sider
+    collapsible
+    breakpoint="lg"
+    onBreakpoint={(broken) => console.log('Broken:', broken)}
+  >
+    Barra lateral responsiva
+  </Layout.Sider>
+  <Layout.Content>Contenido</Layout.Content>
+</Layout>
+
+// Ancho colapsado personalizado
+<Layout hasSider>
+  <Layout.Sider collapsible collapsedWidth={0}>
+    Oculto cuando colapsado
+  </Layout.Sider>
+  <Layout.Content>Contenido</Layout.Content>
+</Layout>
+
+// Tema claro
+<Layout hasSider>
+  <Layout.Sider theme="light">
+    Barra lateral clara
+  </Layout.Sider>
+  <Layout.Content>Contenido</Layout.Content>
+</Layout>
+
+// Trigger personalizado
+<Layout hasSider>
+  <Layout.Sider
+    collapsible
+    trigger={<span>Alternar</span>}
+  >
+    Trigger personalizado
+  </Layout.Sider>
+  <Layout.Content>Contenido</Layout.Content>
+</Layout>
+
+// Sin trigger (controlar externamente)
+<Layout hasSider>
+  <Layout.Sider collapsible trigger={null} collapsed={collapsed}>
+    <button onClick={() => setCollapsed(!collapsed)}>Alternar</button>
+  </Layout.Sider>
+  <Layout.Content>Contenido</Layout.Content>
+</Layout>
+
+// Layout de pagina completa
+<Layout style={{ minHeight: '100vh' }}>
+  <Layout.Header>
+    <div>Logo</div>
+    <nav>Navegacion</nav>
+  </Layout.Header>
+  <Layout hasSider>
+    <Layout.Sider collapsible breakpoint="md">
+      <nav>Navegacion lateral</nav>
+    </Layout.Sider>
+    <Layout>
+      <Layout.Content>
+        <main>Contenido principal</main>
+      </Layout.Content>
+      <Layout.Footer>© 2024 Empresa</Layout.Footer>
+    </Layout>
+  </Layout>
+</Layout>
+```
+
+#### Hook useSider
+
+Acceder al contexto del sider desde componentes hijos:
+
+```tsx
+import { useSider } from 'j-ui'
+
+function ComponenteMenu() {
+  const { siderCollapsed } = useSider()
+
+  return (
+    <nav>
+      {siderCollapsed ? <SoloIconos /> : <MenuCompleto />}
+    </nav>
+  )
+}
+```
+
+</details>
+
+---
+
+<details>
 <summary><strong>Text</strong> - Tipografia con formato y copiar al portapapeles</summary>
 
 ### Text
@@ -1012,6 +1493,195 @@ interface EllipsisConfig {
   Tarea completada exitosamente
 </Text>
 ```
+
+</details>
+
+---
+
+<details>
+<summary><strong>Waterfall</strong> - Layout estilo masonry/Pinterest</summary>
+
+### Waterfall
+
+Un componente de layout estilo masonry que distribuye los items en columnas basándose en la altura disponible, creando un efecto de cascada tipo Pinterest.
+
+#### Importar
+
+```tsx
+import { Waterfall } from 'j-ui'
+```
+
+#### Props
+
+| Prop | Tipo | Por Defecto | Descripción |
+|------|------|-------------|-------------|
+| `items` | `WaterfallItem<T>[]` | `[]` | Array de items a renderizar |
+| `columns` | `number \| Partial<Record<Breakpoint, number>>` | `3` | Número de columnas (fijo o responsive) |
+| `gutter` | `number \| ResponsiveGutter \| [horizontal, vertical]` | `0` | Espacio entre items (px) |
+| `itemRender` | `(info: WaterfallItemRenderInfo<T>) => ReactNode` | — | Función para renderizar cada item |
+| `fresh` | `boolean` | `false` | Monitorear continuamente cambios de tamaño en items |
+| `onLayoutChange` | `(layoutInfo: WaterfallLayoutInfo[]) => void` | — | Callback cuando cambia la asignación de columnas |
+
+#### WaterfallItem
+
+```typescript
+interface WaterfallItem<T = unknown> {
+  key: Key              // Identificador único
+  children?: ReactNode  // Contenido (tiene prioridad sobre itemRender)
+  height?: number       // Altura conocida en px (mejora el layout inicial)
+  column?: number       // Forzar columna específica (0-indexed)
+  data?: T              // Datos personalizados asociados al item
+}
+```
+
+#### WaterfallItemRenderInfo
+
+Se pasa a la función `itemRender`:
+
+```typescript
+interface WaterfallItemRenderInfo<T> extends WaterfallItem<T> {
+  index: number         // Índice en el array original
+  assignedColumn: number // Columna asignada por el algoritmo
+}
+```
+
+#### Breakpoints
+
+| Breakpoint | Ancho Mínimo |
+|------------|--------------|
+| `xs` | 0px |
+| `sm` | 576px |
+| `md` | 768px |
+| `lg` | 992px |
+| `xl` | 1200px |
+| `xxl` | 1600px |
+
+#### Ejemplos
+
+```tsx
+// Uso básico con children
+<Waterfall
+  items={[
+    { key: 1, children: <Card>Item 1</Card> },
+    { key: 2, children: <Card>Item 2 con más contenido</Card> },
+    { key: 3, children: <Card>Item 3</Card> },
+  ]}
+/>
+
+// Usando itemRender
+<Waterfall
+  items={images.map((img) => ({
+    key: img.id,
+    data: img,
+  }))}
+  itemRender={({ data, index }) => (
+    <img src={data.url} alt={`Imagen ${index}`} />
+  )}
+/>
+
+// Columnas personalizadas
+<Waterfall items={items} columns={4} />
+
+// Columnas responsive
+<Waterfall
+  items={items}
+  columns={{
+    xs: 1,
+    sm: 2,
+    md: 3,
+    lg: 4,
+    xl: 5,
+  }}
+/>
+
+// Con gutter
+<Waterfall items={items} gutter={16} />
+
+// Gutter horizontal y vertical diferentes
+<Waterfall items={items} gutter={[16, 24]} />
+
+// Gutter responsive
+<Waterfall
+  items={items}
+  gutter={{ xs: 8, md: 16, lg: 24 }}
+/>
+
+// Con alturas conocidas (mejor layout inicial)
+<Waterfall
+  items={[
+    { key: 1, height: 200, children: <Card /> },
+    { key: 2, height: 150, children: <Card /> },
+    { key: 3, height: 300, children: <Card /> },
+  ]}
+/>
+
+// Forzar columnas específicas
+<Waterfall
+  items={[
+    { key: 'destacado', column: 0, children: <FeaturedCard /> },
+    { key: 'item1', children: <Card /> },
+    { key: 'item2', children: <Card /> },
+  ]}
+  columns={3}
+/>
+
+// Monitorear cambios de tamaño (para contenido dinámico)
+<Waterfall
+  items={items}
+  fresh
+  onLayoutChange={(layout) => {
+    console.log('Layout cambió:', layout)
+  }}
+/>
+
+// Con ref
+const waterfallRef = useRef<WaterfallRef>(null)
+
+<Waterfall
+  ref={waterfallRef}
+  items={items}
+/>
+
+// Acceder al elemento nativo
+waterfallRef.current?.nativeElement
+
+// Ejemplo completo con imágenes
+function GaleriaImagenes() {
+  const imagenes = [
+    { id: 1, url: '/img1.jpg', height: 200 },
+    { id: 2, url: '/img2.jpg', height: 300 },
+    { id: 3, url: '/img3.jpg', height: 150 },
+    { id: 4, url: '/img4.jpg', height: 250 },
+  ]
+
+  return (
+    <Waterfall
+      columns={{ xs: 2, md: 3, lg: 4 }}
+      gutter={[16, 16]}
+      items={imagenes.map((img) => ({
+        key: img.id,
+        height: img.height,
+        data: img,
+      }))}
+      itemRender={({ data }) => (
+        <img
+          src={data.url}
+          style={{ width: '100%', borderRadius: 8 }}
+        />
+      )}
+    />
+  )
+}
+```
+
+#### Algoritmo
+
+El layout waterfall usa un algoritmo de "columna más corta primero":
+1. Los items se colocan en la columna con menor altura actual
+2. Si un item especifica la prop `column`, se colocará allí en su lugar
+3. Las alturas conocidas (prop `height`) se usan para el layout inicial
+4. Las alturas dinámicas se miden después del render y el layout se ajusta
+5. Con `fresh=true`, los items se monitorean continuamente por cambios de tamaño
 
 </details>
 

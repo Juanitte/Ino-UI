@@ -21,7 +21,11 @@ A modern, lightweight React component library with built-in theming support.
   - [Bubble](#bubble)
   - [Button](#button)
   - [Divider](#divider)
+  - [Flex](#flex)
+  - [Grid](#grid)
+  - [Layout](#layout)
   - [Text](#text)
+  - [Waterfall](#waterfall)
   - [Tooltip](#tooltip)
 
 ## Features
@@ -867,6 +871,483 @@ import { Divider } from 'j-ui'
 ---
 
 <details>
+<summary><strong>Flex</strong> - Flexbox container for layout</summary>
+
+### Flex
+
+A flexible box layout component for arranging elements with CSS Flexbox.
+
+#### Import
+
+```tsx
+import { Flex } from 'j-ui'
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `children` | `ReactNode` | — | Flex container content |
+| `vertical` | `boolean` | `false` | Vertical direction (column) instead of horizontal (row) |
+| `wrap` | `'nowrap' \| 'wrap' \| 'wrap-reverse' \| boolean` | `'nowrap'` | Wrap behavior |
+| `justify` | `FlexJustify` | `'normal'` | Horizontal alignment (justify-content) |
+| `align` | `FlexAlign` | `'normal'` | Vertical alignment (align-items) |
+| `gap` | `'small' \| 'middle' \| 'large' \| number \| [number, number]` | — | Space between elements |
+| `flex` | `CSSProperties['flex']` | — | Flex property of the container |
+| `component` | `ElementType` | `'div'` | HTML element to render |
+
+#### FlexJustify Values
+
+`'flex-start'` | `'center'` | `'flex-end'` | `'space-between'` | `'space-around'` | `'space-evenly'` | `'start'` | `'end'` | `'normal'`
+
+#### FlexAlign Values
+
+`'flex-start'` | `'center'` | `'flex-end'` | `'stretch'` | `'baseline'` | `'start'` | `'end'` | `'normal'`
+
+#### Gap Values
+
+| Gap | Value |
+|-----|-------|
+| `'small'` | 8px |
+| `'middle'` | 16px |
+| `'large'` | 24px |
+| `number` | Custom px value |
+| `[h, v]` | [horizontal, vertical] gap |
+
+#### Examples
+
+```tsx
+// Basic horizontal flex
+<Flex>
+  <div>Item 1</div>
+  <div>Item 2</div>
+  <div>Item 3</div>
+</Flex>
+
+// Vertical flex
+<Flex vertical>
+  <div>Top</div>
+  <div>Middle</div>
+  <div>Bottom</div>
+</Flex>
+
+// With gap
+<Flex gap="middle">
+  <div>Item 1</div>
+  <div>Item 2</div>
+</Flex>
+
+// Custom numeric gap
+<Flex gap={20}>
+  <div>Item 1</div>
+  <div>Item 2</div>
+</Flex>
+
+// Different horizontal and vertical gap
+<Flex wrap gap={[16, 8]}>
+  <div>Item 1</div>
+  <div>Item 2</div>
+  <div>Item 3</div>
+</Flex>
+
+// Justify and align
+<Flex justify="center" align="center" style={{ height: 200 }}>
+  <div>Centered</div>
+</Flex>
+
+// Space between
+<Flex justify="space-between">
+  <div>Left</div>
+  <div>Right</div>
+</Flex>
+
+// With wrap
+<Flex wrap gap="small">
+  <div>Item 1</div>
+  <div>Item 2</div>
+  <div>Item 3</div>
+  <div>Item 4</div>
+</Flex>
+
+// Custom element
+<Flex component="nav" gap="middle">
+  <a href="/">Home</a>
+  <a href="/about">About</a>
+</Flex>
+
+// Combined
+<Flex vertical gap="large" align="stretch">
+  <Flex justify="space-between">
+    <span>Title</span>
+    <button>Action</button>
+  </Flex>
+  <div>Content</div>
+</Flex>
+```
+
+</details>
+
+---
+
+<details>
+<summary><strong>Grid</strong> - 24-column responsive grid system</summary>
+
+### Grid
+
+A responsive grid system based on 24 columns with Row and Col components.
+
+#### Import
+
+```tsx
+import { Grid, Row, Col } from 'j-ui'
+// or
+import { Grid } from 'j-ui'
+// Use as Grid.Row and Grid.Col
+```
+
+#### Row Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `children` | `ReactNode` | — | Col components |
+| `gutter` | `number \| ResponsiveGutter \| [horizontal, vertical]` | `0` | Space between columns (px) |
+| `align` | `'top' \| 'middle' \| 'bottom' \| 'stretch'` | `'top'` | Vertical alignment |
+| `justify` | `'start' \| 'end' \| 'center' \| 'space-around' \| 'space-between' \| 'space-evenly'` | `'start'` | Horizontal alignment |
+| `wrap` | `boolean` | `true` | Allow wrapping |
+
+#### Col Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `children` | `ReactNode` | — | Column content |
+| `span` | `number` | — | Number of columns (1-24) |
+| `offset` | `number` | — | Columns to offset from left |
+| `push` | `number` | — | Move right with position |
+| `pull` | `number` | — | Move left with position |
+| `order` | `number` | — | Flex order |
+| `flex` | `CSSProperties['flex']` | — | Flex property |
+| `xs` | `number \| ColSpanProps` | — | <576px |
+| `sm` | `number \| ColSpanProps` | — | ≥576px |
+| `md` | `number \| ColSpanProps` | — | ≥768px |
+| `lg` | `number \| ColSpanProps` | — | ≥992px |
+| `xl` | `number \| ColSpanProps` | — | ≥1200px |
+| `xxl` | `number \| ColSpanProps` | — | ≥1600px |
+
+#### Breakpoints
+
+| Breakpoint | Min Width |
+|------------|-----------|
+| `xs` | 0px |
+| `sm` | 576px |
+| `md` | 768px |
+| `lg` | 992px |
+| `xl` | 1200px |
+| `xxl` | 1600px |
+
+#### Examples
+
+```tsx
+// Basic grid
+<Row>
+  <Col span={12}>50%</Col>
+  <Col span={12}>50%</Col>
+</Row>
+
+// Three columns
+<Row>
+  <Col span={8}>33.33%</Col>
+  <Col span={8}>33.33%</Col>
+  <Col span={8}>33.33%</Col>
+</Row>
+
+// With gutter
+<Row gutter={16}>
+  <Col span={6}>25%</Col>
+  <Col span={6}>25%</Col>
+  <Col span={6}>25%</Col>
+  <Col span={6}>25%</Col>
+</Row>
+
+// Horizontal and vertical gutter
+<Row gutter={[16, 24]}>
+  <Col span={6}>Item</Col>
+  <Col span={6}>Item</Col>
+  <Col span={6}>Item</Col>
+  <Col span={6}>Item</Col>
+  <Col span={6}>Item</Col>
+  <Col span={6}>Item</Col>
+</Row>
+
+// With offset
+<Row>
+  <Col span={8}>col-8</Col>
+  <Col span={8} offset={8}>col-8 offset-8</Col>
+</Row>
+
+// Responsive
+<Row gutter={16}>
+  <Col xs={24} sm={12} md={8} lg={6}>
+    Responsive column
+  </Col>
+  <Col xs={24} sm={12} md={8} lg={6}>
+    Responsive column
+  </Col>
+  <Col xs={24} sm={12} md={8} lg={6}>
+    Responsive column
+  </Col>
+  <Col xs={24} sm={12} md={8} lg={6}>
+    Responsive column
+  </Col>
+</Row>
+
+// Responsive with full props
+<Row>
+  <Col xs={{ span: 24 }} md={{ span: 12, offset: 6 }}>
+    Complex responsive
+  </Col>
+</Row>
+
+// Alignment
+<Row justify="center" align="middle" style={{ height: 100 }}>
+  <Col span={4}>Centered</Col>
+</Row>
+
+// Flex columns
+<Row>
+  <Col flex="100px">Fixed 100px</Col>
+  <Col flex="auto">Flexible</Col>
+  <Col flex="100px">Fixed 100px</Col>
+</Row>
+
+// Using Grid namespace
+<Grid.Row gutter={16}>
+  <Grid.Col span={12}>Left</Grid.Col>
+  <Grid.Col span={12}>Right</Grid.Col>
+</Grid.Row>
+```
+
+</details>
+
+---
+
+<details>
+<summary><strong>Layout</strong> - Page layout with Header, Sider, Content, Footer</summary>
+
+### Layout
+
+A complete page layout system with Header, Footer, Sider, and Content components.
+
+#### Import
+
+```tsx
+import { Layout } from 'j-ui'
+// Use as Layout, Layout.Header, Layout.Sider, Layout.Content, Layout.Footer
+
+// Or import individually
+import { Layout, Header, Footer, Content, Sider } from 'j-ui'
+```
+
+#### Layout Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `children` | `ReactNode` | — | Layout content |
+| `hasSider` | `boolean` | `false` | Has Sider as direct child |
+
+#### Header Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `children` | `ReactNode` | — | Header content |
+
+Default height: 64px, padding: 0 24px
+
+#### Footer Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `children` | `ReactNode` | — | Footer content |
+
+Default padding: 24px 50px
+
+#### Content Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `children` | `ReactNode` | — | Main content |
+
+Default padding: 24px
+
+#### Sider Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `children` | `ReactNode` | — | Sider content |
+| `width` | `number \| string` | `200` | Sider width (px) |
+| `collapsedWidth` | `number` | `80` | Width when collapsed |
+| `collapsible` | `boolean` | `false` | Can be collapsed |
+| `collapsed` | `boolean` | — | Controlled collapsed state |
+| `defaultCollapsed` | `boolean` | `false` | Initial collapsed state |
+| `reverseArrow` | `boolean` | `false` | Reverse trigger arrow direction |
+| `breakpoint` | `'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl' \| 'xxl'` | — | Auto-collapse breakpoint |
+| `theme` | `'light' \| 'dark'` | `'dark'` | Sider theme |
+| `trigger` | `ReactNode \| null` | — | Custom trigger, null to hide |
+| `onCollapse` | `(collapsed: boolean, type: 'clickTrigger' \| 'responsive') => void` | — | Collapse callback |
+| `onBreakpoint` | `(broken: boolean) => void` | — | Breakpoint callback |
+
+#### Breakpoints
+
+| Breakpoint | Width |
+|------------|-------|
+| `xs` | 480px |
+| `sm` | 576px |
+| `md` | 768px |
+| `lg` | 992px |
+| `xl` | 1200px |
+| `xxl` | 1600px |
+
+#### Examples
+
+```tsx
+// Basic layout
+<Layout>
+  <Layout.Header>Header</Layout.Header>
+  <Layout.Content>Content</Layout.Content>
+  <Layout.Footer>Footer</Layout.Footer>
+</Layout>
+
+// With Sider
+<Layout>
+  <Layout.Header>Header</Layout.Header>
+  <Layout hasSider>
+    <Layout.Sider>Sidebar</Layout.Sider>
+    <Layout.Content>Content</Layout.Content>
+  </Layout>
+  <Layout.Footer>Footer</Layout.Footer>
+</Layout>
+
+// Sider on right
+<Layout hasSider>
+  <Layout.Content>Content</Layout.Content>
+  <Layout.Sider>Right Sidebar</Layout.Sider>
+</Layout>
+
+// Collapsible Sider
+<Layout hasSider>
+  <Layout.Sider collapsible>
+    Navigation
+  </Layout.Sider>
+  <Layout.Content>Content</Layout.Content>
+</Layout>
+
+// Controlled collapse
+function MyLayout() {
+  const [collapsed, setCollapsed] = useState(false)
+
+  return (
+    <Layout hasSider>
+      <Layout.Sider
+        collapsible
+        collapsed={collapsed}
+        onCollapse={(c) => setCollapsed(c)}
+      >
+        Navigation
+      </Layout.Sider>
+      <Layout.Content>Content</Layout.Content>
+    </Layout>
+  )
+}
+
+// Responsive collapse
+<Layout hasSider>
+  <Layout.Sider
+    collapsible
+    breakpoint="lg"
+    onBreakpoint={(broken) => console.log('Broken:', broken)}
+  >
+    Responsive Sidebar
+  </Layout.Sider>
+  <Layout.Content>Content</Layout.Content>
+</Layout>
+
+// Custom collapsed width
+<Layout hasSider>
+  <Layout.Sider collapsible collapsedWidth={0}>
+    Hidden when collapsed
+  </Layout.Sider>
+  <Layout.Content>Content</Layout.Content>
+</Layout>
+
+// Light theme
+<Layout hasSider>
+  <Layout.Sider theme="light">
+    Light Sidebar
+  </Layout.Sider>
+  <Layout.Content>Content</Layout.Content>
+</Layout>
+
+// Custom trigger
+<Layout hasSider>
+  <Layout.Sider
+    collapsible
+    trigger={<span>Toggle</span>}
+  >
+    Custom Trigger
+  </Layout.Sider>
+  <Layout.Content>Content</Layout.Content>
+</Layout>
+
+// No trigger (control externally)
+<Layout hasSider>
+  <Layout.Sider collapsible trigger={null} collapsed={collapsed}>
+    <button onClick={() => setCollapsed(!collapsed)}>Toggle</button>
+  </Layout.Sider>
+  <Layout.Content>Content</Layout.Content>
+</Layout>
+
+// Full page layout
+<Layout style={{ minHeight: '100vh' }}>
+  <Layout.Header>
+    <div>Logo</div>
+    <nav>Navigation</nav>
+  </Layout.Header>
+  <Layout hasSider>
+    <Layout.Sider collapsible breakpoint="md">
+      <nav>Side Navigation</nav>
+    </Layout.Sider>
+    <Layout>
+      <Layout.Content>
+        <main>Main Content</main>
+      </Layout.Content>
+      <Layout.Footer>© 2024 Company</Layout.Footer>
+    </Layout>
+  </Layout>
+</Layout>
+```
+
+#### useSider Hook
+
+Access sider context from child components:
+
+```tsx
+import { useSider } from 'j-ui'
+
+function MenuComponent() {
+  const { siderCollapsed } = useSider()
+
+  return (
+    <nav>
+      {siderCollapsed ? <IconOnly /> : <FullMenu />}
+    </nav>
+  )
+}
+```
+
+</details>
+
+---
+
+<details>
 <summary><strong>Text</strong> - Typography with formatting and copy-to-clipboard</summary>
 
 ### Text
@@ -1012,6 +1493,195 @@ interface EllipsisConfig {
   Task completed successfully
 </Text>
 ```
+
+</details>
+
+---
+
+<details>
+<summary><strong>Waterfall</strong> - Masonry/Pinterest-style grid layout</summary>
+
+### Waterfall
+
+A masonry-style layout component that distributes items into columns based on available height, creating a Pinterest-like waterfall effect.
+
+#### Import
+
+```tsx
+import { Waterfall } from 'j-ui'
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `items` | `WaterfallItem<T>[]` | `[]` | Array of items to render |
+| `columns` | `number \| Partial<Record<Breakpoint, number>>` | `3` | Number of columns (fixed or responsive) |
+| `gutter` | `number \| ResponsiveGutter \| [horizontal, vertical]` | `0` | Space between items (px) |
+| `itemRender` | `(info: WaterfallItemRenderInfo<T>) => ReactNode` | — | Function to render each item |
+| `fresh` | `boolean` | `false` | Continuously monitor item size changes |
+| `onLayoutChange` | `(layoutInfo: WaterfallLayoutInfo[]) => void` | — | Callback when column assignment changes |
+
+#### WaterfallItem
+
+```typescript
+interface WaterfallItem<T = unknown> {
+  key: Key              // Unique identifier
+  children?: ReactNode  // Content (takes priority over itemRender)
+  height?: number       // Known height in px (improves initial layout)
+  column?: number       // Force specific column (0-indexed)
+  data?: T              // Custom data associated with item
+}
+```
+
+#### WaterfallItemRenderInfo
+
+Passed to `itemRender` function:
+
+```typescript
+interface WaterfallItemRenderInfo<T> extends WaterfallItem<T> {
+  index: number         // Index in original array
+  assignedColumn: number // Column assigned by algorithm
+}
+```
+
+#### Breakpoints
+
+| Breakpoint | Min Width |
+|------------|-----------|
+| `xs` | 0px |
+| `sm` | 576px |
+| `md` | 768px |
+| `lg` | 992px |
+| `xl` | 1200px |
+| `xxl` | 1600px |
+
+#### Examples
+
+```tsx
+// Basic usage with children
+<Waterfall
+  items={[
+    { key: 1, children: <Card>Item 1</Card> },
+    { key: 2, children: <Card>Item 2 with more content</Card> },
+    { key: 3, children: <Card>Item 3</Card> },
+  ]}
+/>
+
+// Using itemRender
+<Waterfall
+  items={images.map((img) => ({
+    key: img.id,
+    data: img,
+  }))}
+  itemRender={({ data, index }) => (
+    <img src={data.url} alt={`Image ${index}`} />
+  )}
+/>
+
+// Custom columns
+<Waterfall items={items} columns={4} />
+
+// Responsive columns
+<Waterfall
+  items={items}
+  columns={{
+    xs: 1,
+    sm: 2,
+    md: 3,
+    lg: 4,
+    xl: 5,
+  }}
+/>
+
+// With gutter
+<Waterfall items={items} gutter={16} />
+
+// Different horizontal and vertical gutter
+<Waterfall items={items} gutter={[16, 24]} />
+
+// Responsive gutter
+<Waterfall
+  items={items}
+  gutter={{ xs: 8, md: 16, lg: 24 }}
+/>
+
+// With known heights (better initial layout)
+<Waterfall
+  items={[
+    { key: 1, height: 200, children: <Card /> },
+    { key: 2, height: 150, children: <Card /> },
+    { key: 3, height: 300, children: <Card /> },
+  ]}
+/>
+
+// Force specific columns
+<Waterfall
+  items={[
+    { key: 'featured', column: 0, children: <FeaturedCard /> },
+    { key: 'item1', children: <Card /> },
+    { key: 'item2', children: <Card /> },
+  ]}
+  columns={3}
+/>
+
+// Monitor size changes (for dynamic content)
+<Waterfall
+  items={items}
+  fresh
+  onLayoutChange={(layout) => {
+    console.log('Layout changed:', layout)
+  }}
+/>
+
+// With ref
+const waterfallRef = useRef<WaterfallRef>(null)
+
+<Waterfall
+  ref={waterfallRef}
+  items={items}
+/>
+
+// Access native element
+waterfallRef.current?.nativeElement
+
+// Complete example with images
+function ImageGallery() {
+  const images = [
+    { id: 1, url: '/img1.jpg', height: 200 },
+    { id: 2, url: '/img2.jpg', height: 300 },
+    { id: 3, url: '/img3.jpg', height: 150 },
+    { id: 4, url: '/img4.jpg', height: 250 },
+  ]
+
+  return (
+    <Waterfall
+      columns={{ xs: 2, md: 3, lg: 4 }}
+      gutter={[16, 16]}
+      items={images.map((img) => ({
+        key: img.id,
+        height: img.height,
+        data: img,
+      }))}
+      itemRender={({ data }) => (
+        <img
+          src={data.url}
+          style={{ width: '100%', borderRadius: 8 }}
+        />
+      )}
+    />
+  )
+}
+```
+
+#### Algorithm
+
+The waterfall layout uses a "shortest column first" algorithm:
+1. Items are placed in the column with the smallest current height
+2. If an item specifies a `column` prop, it will be placed there instead
+3. Known heights (`height` prop) are used for initial layout
+4. Dynamic heights are measured after render and layout adjusts accordingly
+5. With `fresh=true`, items are continuously monitored for size changes
 
 </details>
 
