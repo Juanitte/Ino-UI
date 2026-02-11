@@ -1,11 +1,22 @@
 import { type ButtonHTMLAttributes, type ReactNode, useState, useRef, useEffect, Children, cloneElement, isValidElement } from 'react'
 import { tokens } from '../../theme/tokens'
+import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
+import { mergeSemanticClassName, mergeSemanticStyle } from '../../utils/semanticDom'
 
 export type BubblePosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
 export type BubbleShape = 'circle' | 'square'
 export type BubbleSize = 'sm' | 'md' | 'lg'
 export type BubbleColor = 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info'
 export type BubbleDirection = 'top' | 'bottom' | 'left' | 'right'
+
+// Semantic slots
+export type BubbleSemanticSlot = 'root' | 'icon' | 'badge' | 'tooltip' | 'tooltipArrow'
+export type BubbleClassNames = SemanticClassNames<BubbleSemanticSlot>
+export type BubbleStyles = SemanticStyles<BubbleSemanticSlot>
+
+export type BubbleMenuSemanticSlot = 'root' | 'trigger' | 'menu'
+export type BubbleMenuClassNames = SemanticClassNames<BubbleMenuSemanticSlot>
+export type BubbleMenuStyles = SemanticStyles<BubbleMenuSemanticSlot>
 
 // Mapeo de colores a tokens para acceso dinámico
 const colorTokens: Record<BubbleColor, {
@@ -55,6 +66,10 @@ export interface BubbleProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement
   visibleOnScroll?: number
   /** @internal Indica si está dentro de un BubbleGroup */
   _inGroup?: boolean
+  /** Clases CSS para partes internas del componente */
+  classNames?: BubbleClassNames
+  /** Estilos para partes internas del componente */
+  styles?: BubbleStyles
 }
 
 function BubbleComponent({
@@ -79,6 +94,8 @@ function BubbleComponent({
   style,
   onClick,
   _inGroup,
+  classNames: semanticClassNames,
+  styles: semanticStyles,
   ...props
 }: BubbleProps) {
   const [isHovered, setIsHovered] = useState(false)
@@ -248,8 +265,8 @@ function BubbleComponent({
     <button
       ref={buttonRef}
       disabled={disabled}
-      style={{ ...baseStyles, ...style }}
-      className={className}
+      style={mergeSemanticStyle(baseStyles, semanticStyles?.root, style)}
+      className={mergeSemanticClassName(className, semanticClassNames?.root)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={handleClick}
@@ -257,25 +274,25 @@ function BubbleComponent({
     >
       {/* Icono o descripción */}
       {icon ? (
-        <span style={{ display: 'flex', fontSize: sizeMap[size].iconSize }}>{icon}</span>
+        <span style={{ display: 'flex', fontSize: sizeMap[size].iconSize, ...semanticStyles?.icon }} className={semanticClassNames?.icon}>{icon}</span>
       ) : description ? (
-        <span>{description}</span>
+        <span style={semanticStyles?.icon} className={semanticClassNames?.icon}>{description}</span>
       ) : (
         <DefaultIcon size={sizeMap[size].iconSize} />
       )}
 
       {/* Badge */}
       {badge !== undefined && badge !== false && (
-        <span style={badgeStyles}>
+        <span style={{ ...badgeStyles, ...semanticStyles?.badge }} className={semanticClassNames?.badge}>
           {typeof badge === 'number' && badge > 0 ? (badge > 99 ? '99+' : badge) : null}
         </span>
       )}
 
       {/* Tooltip inline */}
       {tooltip && (
-        <div style={tooltipStyle} role="tooltip">
+        <div style={{ ...tooltipStyle, ...semanticStyles?.tooltip }} className={semanticClassNames?.tooltip} role="tooltip">
           {tooltip}
-          <div style={arrowStyle} />
+          <div style={{ ...arrowStyle, ...semanticStyles?.tooltipArrow }} className={semanticClassNames?.tooltipArrow} />
         </div>
       )}
     </button>
@@ -348,6 +365,10 @@ export interface BubbleMenuProps {
   style?: React.CSSProperties
   /** Clase adicional para el contenedor */
   className?: string
+  /** Clases CSS para partes internas del componente */
+  classNames?: BubbleMenuClassNames
+  /** Estilos para partes internas del componente */
+  styles?: BubbleMenuStyles
 }
 
 function BubbleGroup({
@@ -480,6 +501,8 @@ function BubbleMenu({
   gap = 12,
   style,
   className,
+  classNames: semanticClassNames,
+  styles: semanticStyles,
 }: BubbleMenuProps) {
   const [internalOpen, setInternalOpen] = useState(defaultOpen)
   const isControlled = controlledOpen !== undefined
@@ -574,12 +597,11 @@ function BubbleMenu({
   if (isInlineMode) {
     return (
       <div
-        style={{
+        style={mergeSemanticStyle({
           position: 'relative',
           display: 'inline-flex',
-          ...style,
-        }}
-        className={className}
+        }, semanticStyles?.root, style)}
+        className={mergeSemanticClassName(className, semanticClassNames?.root)}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
@@ -597,10 +619,12 @@ function BubbleMenu({
           tooltip={!isOpen ? tooltip : undefined}
           onClick={handleToggle}
           _inGroup
+          className={semanticClassNames?.trigger}
           style={{
             position: 'relative',
             transform: !openIcon && isOpen ? 'rotate(45deg)' : 'rotate(0deg)',
             transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            ...semanticStyles?.trigger,
           }}
         />
 
@@ -615,7 +639,9 @@ function BubbleMenu({
             zIndex: 1000,
             pointerEvents: isOpen ? 'auto' : 'none',
             ...getChildrenContainerPosition(),
+            ...semanticStyles?.menu,
           }}
+          className={semanticClassNames?.menu}
         >
           {validChildren.map((child, index) => {
             if (!isValidElement<BubbleProps>(child)) return null
@@ -645,7 +671,7 @@ function BubbleMenu({
   }
 
   // Modo fixed/absolute: comportamiento original
-  const containerStyles: React.CSSProperties = {
+  const containerStyle = mergeSemanticStyle({
     display: 'flex',
     flexDirection: getFlexDirection(),
     alignItems: 'center',
@@ -653,13 +679,12 @@ function BubbleMenu({
     position: style?.position === 'absolute' ? undefined : ('fixed' as const),
     zIndex: 1000,
     ...positionStyles[position],
-    ...style,
-  }
+  }, semanticStyles?.root, style)
 
   return (
     <div
-      style={containerStyles}
-      className={className}
+      style={containerStyle}
+      className={mergeSemanticClassName(className, semanticClassNames?.root)}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
@@ -677,10 +702,12 @@ function BubbleMenu({
         tooltip={!isOpen ? tooltip : undefined}
         onClick={handleToggle}
         _inGroup
+        className={semanticClassNames?.trigger}
         style={{
           position: 'relative',
           transform: !openIcon && isOpen ? 'rotate(45deg)' : 'rotate(0deg)',
           transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          ...semanticStyles?.trigger,
         }}
       />
 

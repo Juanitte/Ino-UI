@@ -1,5 +1,7 @@
 import { createContext, useContext, useState, useEffect, type ReactNode, type CSSProperties } from 'react'
 import { tokens } from '../../theme/tokens'
+import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
+import { mergeSemanticClassName, mergeSemanticStyle } from '../../utils/semanticDom'
 
 // ============================================================================
 // Types
@@ -46,6 +48,10 @@ export interface ContentProps {
   style?: CSSProperties
 }
 
+export type SiderSemanticSlot = 'root' | 'content' | 'trigger'
+export type SiderClassNames = SemanticClassNames<SiderSemanticSlot>
+export type SiderStyles = SemanticStyles<SiderSemanticSlot>
+
 export interface SiderProps {
   /** Contenido del sider */
   children?: ReactNode
@@ -75,6 +81,10 @@ export interface SiderProps {
   className?: string
   /** Estilos inline adicionales */
   style?: CSSProperties
+  /** Clases CSS para partes internas del componente */
+  classNames?: SiderClassNames
+  /** Estilos para partes internas del componente */
+  styles?: SiderStyles
 }
 
 // ============================================================================
@@ -217,6 +227,8 @@ function Sider({
   onBreakpoint,
   className,
   style,
+  classNames,
+  styles,
 }: SiderProps) {
   const [internalCollapsed, setInternalCollapsed] = useState(defaultCollapsed)
   const [broken, setBroken] = useState(false)
@@ -265,23 +277,27 @@ function Sider({
 
   const currentWidth = collapsed ? collapsedWidth : (typeof width === 'number' ? width : parseInt(width))
 
-  const siderStyles: CSSProperties = {
-    flex: `0 0 ${currentWidth}px`,
-    maxWidth: currentWidth,
-    minWidth: currentWidth,
-    width: currentWidth,
-    backgroundColor: theme === 'dark' ? '#1f1f1f' : tokens.colorBg,
-    color: theme === 'dark' ? 'rgba(255, 255, 255, 0.85)' : tokens.colorText,
-    transition: 'all 0.2s ease',
-    position: 'relative',
-    display: 'flex',
-    flexDirection: 'column',
-    ...style,
-  }
+  const siderStyle = mergeSemanticStyle(
+    {
+      flex: `0 0 ${currentWidth}px`,
+      maxWidth: currentWidth,
+      minWidth: currentWidth,
+      width: currentWidth,
+      backgroundColor: theme === 'dark' ? '#1f1f1f' : tokens.colorBg,
+      color: theme === 'dark' ? 'rgba(255, 255, 255, 0.85)' : tokens.colorText,
+      transition: 'all 0.2s ease',
+      position: 'relative',
+      display: 'flex',
+      flexDirection: 'column',
+    },
+    styles?.root,
+    style,
+  )
 
   const contentWrapperStyles: CSSProperties = {
     flex: 1,
     overflow: 'hidden',
+    ...styles?.content,
   }
 
   // Renderizar trigger
@@ -321,14 +337,14 @@ function Sider({
       }
 
       return (
-        <div style={zeroWidthTriggerStyles} onClick={handleTriggerClick}>
+        <div style={{ ...zeroWidthTriggerStyles, ...styles?.trigger }} className={classNames?.trigger} onClick={handleTriggerClick}>
           {trigger || <DefaultTriggerIcon collapsed={collapsed} reverseArrow={reverseArrow} />}
         </div>
       )
     }
 
     return (
-      <div style={triggerStyles} onClick={handleTriggerClick}>
+      <div style={{ ...triggerStyles, ...styles?.trigger }} className={classNames?.trigger} onClick={handleTriggerClick}>
         {trigger || <DefaultTriggerIcon collapsed={collapsed} reverseArrow={reverseArrow} />}
       </div>
     )
@@ -336,8 +352,8 @@ function Sider({
 
   return (
     <SiderContext.Provider value={{ siderCollapsed: collapsed }}>
-      <aside style={siderStyles} className={className}>
-        <div style={contentWrapperStyles}>
+      <aside style={siderStyle} className={mergeSemanticClassName(className, classNames?.root)}>
+        <div style={contentWrapperStyles} className={classNames?.content}>
           {children}
         </div>
         {renderTrigger()}
