@@ -7,4 +7,7 @@ export type {
   SiderProps,
   SiderTheme,
   SiderBreakpoint,
+  SiderSemanticSlot,
+  SiderClassNames,
+  SiderStyles,
 } from './Layout'

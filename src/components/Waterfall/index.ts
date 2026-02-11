@@ -6,4 +6,7 @@ export type {
   WaterfallLayoutInfo,
   WaterfallGap,
   WaterfallRef,
+  WaterfallSemanticSlot,
+  WaterfallClassNames,
+  WaterfallStyles,
 } from './Waterfall'

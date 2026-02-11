@@ -1,5 +1,7 @@
-import { type ReactNode, useState } from 'react'
+import { type ReactNode, type CSSProperties, useState } from 'react'
 import { tokens } from '../../theme/tokens'
+import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
+import { mergeSemanticClassName, mergeSemanticStyle } from '../../utils/semanticDom'
 
 export type TextType = 'default' | 'secondary' | 'success' | 'warning' | 'error' | 'info'
 export type TextSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
@@ -14,6 +16,10 @@ export interface EllipsisConfig {
   /** Callback cuando cambia el estado expandido */
   onExpand?: (expanded: boolean) => void
 }
+
+export type TextSemanticSlot = 'root' | 'content' | 'copyButton' | 'expandButton'
+export type TextClassNames = SemanticClassNames<TextSemanticSlot>
+export type TextStyles = SemanticStyles<TextSemanticSlot>
 
 export interface TextProps {
   /** Contenido del texto */
@@ -47,7 +53,11 @@ export interface TextProps {
   /** Clase CSS adicional */
   className?: string
   /** Estilos inline adicionales */
-  style?: React.CSSProperties
+  style?: CSSProperties
+  /** Clases CSS para partes internas del componente */
+  classNames?: TextClassNames
+  /** Estilos para partes internas del componente */
+  styles?: TextStyles
 }
 
 export function Text({
@@ -67,6 +77,8 @@ export function Text({
   ellipsis = false,
   className,
   style,
+  classNames,
+  styles,
 }: TextProps) {
   const [copied, setCopied] = useState(false)
   const [expanded, setExpanded] = useState(false)
@@ -169,18 +181,23 @@ export function Text({
     }
   }
 
-  const baseStyles: React.CSSProperties = {
-    fontSize: sizeMap[size],
-    color: disabled ? tokens.colorTextSubtle : typeColorMap[type],
-    cursor: disabled ? 'not-allowed' : undefined,
-    opacity: disabled ? 0.6 : 1,
-    fontWeight: weight ? weightMap[weight] : undefined,
-    lineHeight: lineHeight ? lineHeightMap[lineHeight] : undefined,
-    fontStyle: italic ? 'italic' : undefined,
-    textDecoration: underline ? 'underline' : del ? 'line-through' : undefined,
-    ...getEllipsisStyles(),
-    ...style,
-  }
+  const baseStyles = mergeSemanticStyle(
+    {
+      fontSize: sizeMap[size],
+      color: disabled ? tokens.colorTextSubtle : typeColorMap[type],
+      cursor: disabled ? 'not-allowed' : undefined,
+      opacity: disabled ? 0.6 : 1,
+      fontWeight: weight ? weightMap[weight] : undefined,
+      lineHeight: lineHeight ? lineHeightMap[lineHeight] : undefined,
+      fontStyle: italic ? 'italic' : undefined,
+      textDecoration: underline ? 'underline' : del ? 'line-through' : undefined,
+      ...getEllipsisStyles(),
+    },
+    styles?.root,
+    style,
+  )
+
+  const rootClassName = mergeSemanticClassName(className, classNames?.root)
 
   // Renderizar el contenido con las modificaciones
   let content: ReactNode = children
@@ -244,6 +261,7 @@ export function Text({
     <button
       onClick={handleCopy}
       disabled={disabled}
+      className={classNames?.copyButton}
       style={{
         display: 'inline-flex',
         alignItems: 'center',
@@ -257,6 +275,7 @@ export function Text({
         opacity: disabled ? 0.5 : 1,
         transition: 'color 0.2s',
         verticalAlign: 'middle',
+        ...styles?.copyButton,
       }}
       title={copied ? 'Copiado!' : 'Copiar'}
     >
@@ -268,6 +287,7 @@ export function Text({
   const expandButton = isExpandable && (
     <button
       onClick={handleToggleExpand}
+      className={classNames?.expandButton}
       style={{
         display: 'inline',
         marginLeft: 4,
@@ -278,6 +298,7 @@ export function Text({
         color: tokens.colorPrimary,
         fontSize: 'inherit',
         fontFamily: 'inherit',
+        ...styles?.expandButton,
       }}
     >
       {expanded ? 'menos' : 'más'}
@@ -303,8 +324,8 @@ export function Text({
     if (rows > 1) {
       // Multi-línea: wrapper div con texto truncado + botón afuera
       return (
-        <div style={{ ...textStyles, ...style }} className={className}>
-          <div style={ellipsisOnlyStyles}>
+        <div style={mergeSemanticStyle(textStyles, styles?.root, style)} className={rootClassName}>
+          <div style={{ ...ellipsisOnlyStyles, ...styles?.content }} className={classNames?.content}>
             {content}
           </div>
           {expandButton}
@@ -315,8 +336,8 @@ export function Text({
 
     // Una línea: wrapper span con texto truncado inline + botón afuera
     return (
-      <span style={{ ...textStyles, display: 'inline-flex', alignItems: 'baseline', maxWidth: '100%', ...style }} className={className}>
-        <span style={{ ...ellipsisOnlyStyles, flex: '0 1 auto', minWidth: 0 }}>
+      <span style={mergeSemanticStyle({ ...textStyles, display: 'inline-flex', alignItems: 'baseline', maxWidth: '100%' }, styles?.root, style)} className={rootClassName}>
+        <span style={{ ...ellipsisOnlyStyles, flex: '0 1 auto', minWidth: 0, ...styles?.content }} className={classNames?.content}>
           {content}
         </span>
         {expandButton}
@@ -328,16 +349,24 @@ export function Text({
   // Para ellipsis multi-línea sin expandable, usamos un div
   if (ellipsisConfig && rows > 1) {
     return (
-      <div style={baseStyles} className={className}>
-        {content}
+      <div style={baseStyles} className={rootClassName}>
+        {classNames?.content || styles?.content ? (
+          <span className={classNames?.content} style={styles?.content}>{content}</span>
+        ) : (
+          content
+        )}
         {copyButton}
       </div>
     )
   }
 
   return (
-    <span style={baseStyles} className={className}>
-      {content}
+    <span style={baseStyles} className={rootClassName}>
+      {classNames?.content || styles?.content ? (
+        <span className={classNames?.content} style={styles?.content}>{content}</span>
+      ) : (
+        content
+      )}
       {copyButton}
     </span>
   )

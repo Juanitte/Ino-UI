@@ -1,5 +1,7 @@
-import type { ReactNode } from 'react'
+import type { ReactNode, CSSProperties } from 'react'
 import { tokens } from '../../theme/tokens'
+import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
+import { mergeSemanticClassName, mergeSemanticStyle } from '../../utils/semanticDom'
 
 export type DividerType = 'horizontal' | 'vertical'
 export type DividerOrientation = 'left' | 'center' | 'right'
@@ -15,6 +17,10 @@ const colorMap: Record<DividerColor, { line: string; text: string }> = {
   error: { line: tokens.colorError, text: tokens.colorError },
   info: { line: tokens.colorInfo, text: tokens.colorInfo },
 }
+
+export type DividerSemanticSlot = 'root' | 'line' | 'text'
+export type DividerClassNames = SemanticClassNames<DividerSemanticSlot>
+export type DividerStyles = SemanticStyles<DividerSemanticSlot>
 
 export interface DividerProps {
   /** Tipo de divider */
@@ -36,7 +42,11 @@ export interface DividerProps {
   /** Clase CSS adicional */
   className?: string
   /** Estilos inline adicionales */
-  style?: React.CSSProperties
+  style?: CSSProperties
+  /** Clases CSS para partes internas del componente */
+  classNames?: DividerClassNames
+  /** Estilos para partes internas del componente */
+  styles?: DividerStyles
 }
 
 const thicknessMap: Record<Exclude<DividerThickness, number>, number> = {
@@ -57,6 +67,8 @@ export function Divider({
   children,
   className,
   style,
+  classNames,
+  styles,
 }: DividerProps) {
   const borderStyle = dashed ? 'dashed' : 'solid'
   const colors = colorMap[color]
@@ -65,32 +77,38 @@ export function Divider({
 
   // Divider vertical
   if (type === 'vertical') {
-    const verticalStyles: React.CSSProperties = {
-      display: 'inline-block',
-      height: '0.9em',
-      margin: '0 8px',
-      verticalAlign: 'middle',
-      borderTop: 0,
-      borderInlineStart: `${lineWidth}px ${borderStyle} ${borderColor}`,
-      ...style,
-    }
+    const verticalStyle = mergeSemanticStyle(
+      {
+        display: 'inline-block',
+        height: '0.9em',
+        margin: '0 8px',
+        verticalAlign: 'middle',
+        borderTop: 0,
+        borderInlineStart: `${lineWidth}px ${borderStyle} ${borderColor}`,
+      },
+      styles?.root,
+      style,
+    )
 
-    return <span style={verticalStyles} className={className} role="separator" />
+    return <span style={verticalStyle} className={mergeSemanticClassName(className, classNames?.root)} role="separator" />
   }
 
   // Divider horizontal sin texto
   if (!children) {
-    const horizontalStyles: React.CSSProperties = {
-      display: 'flex',
-      clear: 'both',
-      width: '100%',
-      minWidth: '100%',
-      margin: '24px 0',
-      borderBlockStart: `${lineWidth}px ${borderStyle} ${borderColor}`,
-      ...style,
-    }
+    const horizontalStyle = mergeSemanticStyle(
+      {
+        display: 'flex',
+        clear: 'both',
+        width: '100%',
+        minWidth: '100%',
+        margin: '24px 0',
+        borderBlockStart: `${lineWidth}px ${borderStyle} ${borderColor}`,
+      },
+      styles?.root,
+      style,
+    )
 
-    return <div style={horizontalStyles} className={className} role="separator" />
+    return <div style={horizontalStyle} className={mergeSemanticClassName(className, classNames?.root)} role="separator" />
   }
 
   // Divider horizontal con texto
@@ -124,29 +142,32 @@ export function Divider({
 
   const lineWidths = getLineWidths()
 
-  const containerStyles: React.CSSProperties = {
-    display: 'flex',
-    alignItems: 'center',
-    clear: 'both',
-    width: '100%',
-    minWidth: '100%',
-    margin: '24px 0',
-    ...style,
-  }
+  const containerStyle = mergeSemanticStyle(
+    {
+      display: 'flex',
+      alignItems: 'center',
+      clear: 'both',
+      width: '100%',
+      minWidth: '100%',
+      margin: '24px 0',
+    },
+    styles?.root,
+    style,
+  )
 
-  const lineBaseStyles: React.CSSProperties = {
+  const lineBaseStyle: CSSProperties = {
     borderBlockStart: `${lineWidth}px ${borderStyle} ${borderColor}`,
     flexGrow: 0,
     flexShrink: 0,
   }
 
-  const beforeLineStyles: React.CSSProperties = {
-    ...lineBaseStyles,
+  const beforeLineStyles: CSSProperties = {
+    ...lineBaseStyle,
     width: lineWidths.before,
   }
 
-  const afterLineStyles: React.CSSProperties = {
-    ...lineBaseStyles,
+  const afterLineStyles: CSSProperties = {
+    ...lineBaseStyle,
     width: lineWidths.after,
   }
 
@@ -184,20 +205,21 @@ export function Divider({
     }
   }
 
-  const textStyles: React.CSSProperties = {
+  const textStyle: CSSProperties = {
     display: 'inline-block',
     padding: '0 16px',
     fontSize: plain ? 14 : 16,
     fontWeight: plain ? 400 : 500,
     color: colors.text,
     whiteSpace: 'nowrap',
+    ...styles?.text,
   }
 
   return (
-    <div style={containerStyles} className={className} role="separator">
-      <span style={beforeLineStyles} />
-      <span style={textStyles}>{children}</span>
-      <span style={afterLineStyles} />
+    <div style={containerStyle} className={mergeSemanticClassName(className, classNames?.root)} role="separator">
+      <span style={{ ...beforeLineStyles, ...styles?.line }} className={classNames?.line} />
+      <span style={textStyle} className={classNames?.text}>{children}</span>
+      <span style={{ ...afterLineStyles, ...styles?.line }} className={classNames?.line} />
     </div>
   )
 }

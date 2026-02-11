@@ -1,7 +1,13 @@
-import { useState, useRef, useEffect, type ReactNode } from 'react'
+import { useState, useRef, useEffect, type ReactNode, type CSSProperties } from 'react'
 import { tokens } from '../../theme/tokens'
+import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
+import { mergeSemanticClassName, mergeSemanticStyle } from '../../utils/semanticDom'
 
 export type TooltipPosition = 'top' | 'bottom' | 'left' | 'right'
+
+export type TooltipSemanticSlot = 'root' | 'popup' | 'arrow'
+export type TooltipClassNames = SemanticClassNames<TooltipSemanticSlot>
+export type TooltipStyles = SemanticStyles<TooltipSemanticSlot>
 
 export interface TooltipProps {
   /** Contenido del tooltip */
@@ -14,6 +20,14 @@ export interface TooltipProps {
   delay?: number
   /** Desactivar tooltip */
   disabled?: boolean
+  /** Clase CSS adicional */
+  className?: string
+  /** Estilos inline adicionales */
+  style?: CSSProperties
+  /** Clases CSS para partes internas del componente */
+  classNames?: TooltipClassNames
+  /** Estilos para partes internas del componente */
+  styles?: TooltipStyles
 }
 
 export function Tooltip({
@@ -22,6 +36,10 @@ export function Tooltip({
   position = 'top',
   delay = 200,
   disabled = false,
+  className,
+  style,
+  classNames,
+  styles,
 }: TooltipProps) {
   const [visible, setVisible] = useState(false)
   const [isAnimating, setIsAnimating] = useState(false)
@@ -142,6 +160,7 @@ export function Tooltip({
     transition: 'opacity 0.15s ease-out, transform 0.15s ease-out',
     pointerEvents: 'none',
     ...positionStyles[position],
+    ...styles?.popup,
   }
 
   const arrowStyle: React.CSSProperties = {
@@ -150,11 +169,19 @@ export function Tooltip({
     height: 8,
     backgroundColor: tokens.colorBgMuted,
     ...arrowStyles[position],
+    ...styles?.arrow,
   }
+
+  const rootStyle = mergeSemanticStyle(
+    { position: 'relative', display: 'inline-flex' },
+    styles?.root,
+    style,
+  )
 
   return (
     <div
-      style={{ position: 'relative', display: 'inline-flex' }}
+      style={rootStyle}
+      className={mergeSemanticClassName(className, classNames?.root)}
       onMouseEnter={showTooltip}
       onMouseLeave={hideTooltip}
       onFocus={showTooltip}
@@ -162,9 +189,9 @@ export function Tooltip({
     >
       {children}
       {visible && (
-        <div style={tooltipStyle} role="tooltip">
+        <div style={tooltipStyle} className={classNames?.popup} role="tooltip">
           {content}
-          <div style={arrowStyle} />
+          <div style={arrowStyle} className={classNames?.arrow} />
         </div>
       )}
     </div>

@@ -1,7 +1,13 @@
-import type { ReactNode } from 'react'
+import type { ReactNode, CSSProperties } from 'react'
 import { tokens } from '../../theme/tokens'
+import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
+import { mergeSemanticClassName, mergeSemanticStyle } from '../../utils/semanticDom'
 
 export type BadgeRadius = 'none' | 'sm' | 'md' | 'lg' | 'full'
+
+export type BadgeSemanticSlot = 'root' | 'icon' | 'content'
+export type BadgeClassNames = SemanticClassNames<BadgeSemanticSlot>
+export type BadgeStyles = SemanticStyles<BadgeSemanticSlot>
 
 export interface BadgeProps {
   /** Contenido del badge */
@@ -16,6 +22,14 @@ export interface BadgeProps {
   icon?: ReactNode
   /** Mostrar borde */
   bordered?: boolean
+  /** Clase CSS adicional */
+  className?: string
+  /** Estilos inline adicionales */
+  style?: CSSProperties
+  /** Clases CSS para partes internas del componente */
+  classNames?: BadgeClassNames
+  /** Estilos para partes internas del componente */
+  styles?: BadgeStyles
 }
 
 export function Badge({
@@ -25,6 +39,10 @@ export function Badge({
   radius = 'md',
   icon,
   bordered = true,
+  className,
+  style,
+  classNames,
+  styles,
 }: BadgeProps) {
   const radiusValues: Record<BadgeRadius, number | string> = {
     none: 0,
@@ -34,24 +52,39 @@ export function Badge({
     full: 9999,
   }
 
-  const style: React.CSSProperties = {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: 6,
-    padding: '4px 10px',
-    fontSize: 13,
-    fontWeight: 500,
-    borderRadius: radiusValues[radius],
-    backgroundColor: bgColor,
-    color: color,
-    border: bordered ? `1px solid ${color}` : 'none',
-    whiteSpace: 'nowrap',
-  }
+  const rootStyle = mergeSemanticStyle(
+    {
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: 6,
+      padding: '4px 10px',
+      fontSize: 13,
+      fontWeight: 500,
+      borderRadius: radiusValues[radius],
+      backgroundColor: bgColor,
+      color: color,
+      border: bordered ? `1px solid ${color}` : 'none',
+      whiteSpace: 'nowrap',
+    },
+    styles?.root,
+    style,
+  )
 
   return (
-    <span style={style}>
-      {icon && <span style={{ display: 'inline-flex', fontSize: 14 }}>{icon}</span>}
-      {children}
+    <span style={rootStyle} className={mergeSemanticClassName(className, classNames?.root)}>
+      {icon && (
+        <span
+          style={{ display: 'inline-flex', fontSize: 14, ...styles?.icon }}
+          className={classNames?.icon}
+        >
+          {icon}
+        </span>
+      )}
+      {classNames?.content || styles?.content ? (
+        <span className={classNames?.content} style={styles?.content}>{children}</span>
+      ) : (
+        children
+      )}
     </span>
   )
 }

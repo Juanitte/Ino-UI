@@ -9,6 +9,8 @@ import {
   type CSSProperties,
   type Key,
 } from 'react'
+import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
+import { mergeSemanticClassName, mergeSemanticStyle } from '../../utils/semanticDom'
 
 // ============================================================================
 // Types
@@ -43,6 +45,10 @@ export interface WaterfallLayoutInfo {
   column: number
 }
 
+export type WaterfallSemanticSlot = 'root' | 'column' | 'item'
+export type WaterfallClassNames = SemanticClassNames<WaterfallSemanticSlot>
+export type WaterfallStyles = SemanticStyles<WaterfallSemanticSlot>
+
 export interface WaterfallProps<T = unknown> {
   /** Array de items a renderizar */
   items?: WaterfallItem<T>[]
@@ -60,6 +66,10 @@ export interface WaterfallProps<T = unknown> {
   className?: string
   /** Estilos inline adicionales */
   style?: CSSProperties
+  /** Clases CSS para partes internas del componente */
+  classNames?: WaterfallClassNames
+  /** Estilos para partes internas del componente */
+  styles?: WaterfallStyles
 }
 
 export interface WaterfallRef {
@@ -136,6 +146,8 @@ interface WaterfallItemComponentProps {
   onResize?: (key: Key, height: number) => void
   fresh?: boolean
   style?: CSSProperties
+  itemClassName?: string
+  itemStyle?: CSSProperties
 }
 
 function WaterfallItemComponent({
@@ -148,6 +160,8 @@ function WaterfallItemComponent({
   itemRender,
   onResize,
   fresh,
+  itemClassName,
+  itemStyle,
 }: WaterfallItemComponentProps) {
   const itemRef = useRef<HTMLDivElement>(null)
 
@@ -184,10 +198,11 @@ function WaterfallItemComponent({
     boxSizing: 'border-box',
     paddingLeft: horizontalGutter / 2,
     paddingRight: horizontalGutter / 2,
+    ...itemStyle,
   }
 
   return (
-    <div ref={itemRef} style={itemStyles}>
+    <div ref={itemRef} style={itemStyles} className={itemClassName}>
       {content}
     </div>
   )
@@ -207,6 +222,8 @@ function WaterfallInner<T = unknown>(
     onLayoutChange,
     className,
     style,
+    classNames,
+    styles,
   }: WaterfallProps<T>,
   ref: React.ForwardedRef<WaterfallRef>
 ) {
@@ -304,24 +321,28 @@ function WaterfallInner<T = unknown>(
     }
   }, [layoutInfo, onLayoutChange])
 
-  const containerStyles: CSSProperties = {
-    display: 'flex',
-    flexDirection: 'row',
-    marginLeft: horizontalGutter ? -(horizontalGutter / 2) : undefined,
-    marginRight: horizontalGutter ? -(horizontalGutter / 2) : undefined,
-    ...style,
-  }
+  const containerStyle = mergeSemanticStyle(
+    {
+      display: 'flex',
+      flexDirection: 'row',
+      marginLeft: horizontalGutter ? -(horizontalGutter / 2) : undefined,
+      marginRight: horizontalGutter ? -(horizontalGutter / 2) : undefined,
+    },
+    styles?.root,
+    style,
+  )
 
-  const columnStyles: CSSProperties = {
+  const columnStyle: CSSProperties = {
     display: 'flex',
     flexDirection: 'column',
     width: columnWidth,
+    ...styles?.column,
   }
 
   return (
-    <div ref={containerRef} style={containerStyles} className={className}>
+    <div ref={containerRef} style={containerStyle} className={mergeSemanticClassName(className, classNames?.root)}>
       {columnItems.map((colItems, colIndex) => (
-        <div key={colIndex} style={columnStyles}>
+        <div key={colIndex} style={columnStyle} className={classNames?.column}>
           {colItems.map((item) => (
             <WaterfallItemComponent
               key={item.key}
@@ -334,6 +355,8 @@ function WaterfallInner<T = unknown>(
               itemRender={itemRender as (info: WaterfallItemRenderInfo) => ReactNode}
               onResize={handleItemResize}
               fresh={fresh}
+              itemClassName={classNames?.item}
+              itemStyle={styles?.item}
             />
           ))}
         </div>

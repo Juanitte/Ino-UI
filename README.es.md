@@ -17,13 +17,27 @@ Una libreria de componentes React moderna y ligera con soporte integrado de tema
   - [Sistema de Colores](#sistema-de-colores)
   - [Theme Tokens](#theme-tokens)
 - [Componentes](#componentes)
+  - [AutoComplete](#autocomplete)
+  - [Anchor](#anchor)
   - [Badge](#badge)
+  - [Breadcrumb](#breadcrumb)
   - [Bubble](#bubble)
   - [Button](#button)
+  - [Checkbox](#checkbox)
+  - [ColorPicker](#colorpicker)
+  - [DatePicker](#datepicker)
   - [Divider](#divider)
+  - [Dropdown](#dropdown)
   - [Flex](#flex)
   - [Grid](#grid)
   - [Layout](#layout)
+  - [Menu](#menu)
+  - [NestedSelect](#nestedselect)
+  - [Pagination](#pagination)
+  - [Space](#space)
+  - [Splitter](#splitter)
+  - [Steps](#steps)
+  - [Tabs](#tabs)
   - [Text](#text)
   - [Waterfall](#waterfall)
   - [Tooltip](#tooltip)
@@ -268,7 +282,452 @@ const StyledCard = styled.div`
 
 ---
 
+## Estilos Semánticos del DOM
+
+La mayoría de componentes de J-UI exponen las props `classNames` y `styles` que permiten estilizar sus partes internas (slots semánticos) sin necesidad de sobreescribir CSS o inspeccionar la estructura del DOM.
+
+### Cómo funciona
+
+Cada componente define **slots** con nombre que representan sus partes internas. Puedes aplicar estilos a estos slots usando:
+
+- **`classNames`** — aplicar clases CSS a partes internas específicas
+- **`styles`** — aplicar estilos inline a partes internas específicas
+
+```tsx
+// Aplicar una clase CSS al popup de un Tooltip
+<Tooltip
+  content="Hola"
+  classNames={{ popup: 'mi-popup-personalizado' }}
+>
+  <Button>Pasa el cursor</Button>
+</Tooltip>
+
+// Aplicar estilos inline al icono y contenido de un Button
+<Button
+  icon={<SearchIcon />}
+  styles={{
+    icon: { color: 'red' },
+    content: { fontWeight: 'bold' },
+  }}
+>
+  Buscar
+</Button>
+```
+
+### Orden de prioridad
+
+Los estilos se fusionan con la siguiente prioridad (el mayor gana):
+
+1. **Estilos base del componente** — valores internos por defecto
+2. **`styles.slot`** — estilos semánticos para cada slot
+3. **`style` prop** — prop de estilo directo (solo aplica a `root`)
+
+Para `className`, el `className` del componente y `classNames.root` se fusionan juntos.
+
+### Slots disponibles por componente
+
+| Componente | Slots |
+|------------|-------|
+| AutoComplete | `root`, `input`, `dropdown`, `option` |
+| Anchor | `root`, `track`, `indicator`, `link` |
+| Badge | `root`, `icon`, `content` |
+| Breadcrumb | `root`, `list`, `item`, `separator`, `link`, `overlay` |
+| Bubble | `root`, `icon`, `badge`, `tooltip`, `tooltipArrow` |
+| Bubble.Menu | `root`, `trigger`, `menu` |
+| Button | `root`, `icon`, `spinner`, `content` |
+| Checkbox | `root`, `checkbox`, `indicator`, `label` |
+| Checkbox.Group | `root` |
+| ColorPicker | `root`, `trigger`, `panel`, `presets` |
+| DatePicker | `root`, `input`, `popup`, `header`, `body`, `cell`, `footer` |
+| Divider | `root`, `line`, `text` |
+| Dropdown | `root`, `overlay`, `item`, `arrow` |
+| Layout.Sider | `root`, `content`, `trigger` |
+| Menu | `root`, `item`, `submenu`, `group`, `groupTitle`, `divider` |
+| NestedSelect | `root`, `selector`, `dropdown`, `menu`, `option` |
+| Pagination | `root`, `item`, `options` |
+| Space | `root`, `item`, `separator` |
+| Splitter | `root`, `panel`, `bar`, `collapseButton` |
+| Steps | `root`, `step`, `icon`, `content`, `tail` |
+| Tabs | `root`, `tabBar`, `tab`, `content`, `inkBar` |
+| Text | `root`, `content`, `copyButton`, `expandButton` |
+| Tooltip | `root`, `popup`, `arrow` |
+| Waterfall | `root`, `column`, `item` |
+
+---
+
 ## Componentes
+
+<details>
+<summary><strong>AutoComplete</strong> - Input con sugerencias desplegables automáticas</summary>
+
+### AutoComplete
+
+Un componente de input con sugerencias de autocompletado. Soporta filtrado, opciones agrupadas, navegación por teclado, backfill, estado controlado/no controlado, múltiples variantes visuales, estado de validación, botón de limpieza y posicionamiento automático del desplegable.
+
+#### Importar
+
+```tsx
+import { AutoComplete } from 'j-ui'
+```
+
+#### Props
+
+| Prop | Tipo | Default | Descripción |
+|------|------|---------|-------------|
+| `options` | `AutoCompleteOption[]` | `[]` | Opciones disponibles |
+| `value` | `string` | — | Valor del input (controlado) |
+| `defaultValue` | `string` | `''` | Valor inicial del input (no controlado) |
+| `placeholder` | `string` | — | Texto placeholder del input |
+| `open` | `boolean` | — | Visibilidad del desplegable (controlado) |
+| `defaultOpen` | `boolean` | `false` | Visibilidad inicial del desplegable |
+| `disabled` | `boolean` | `false` | Deshabilitar el componente |
+| `allowClear` | `boolean` | `false` | Mostrar botón de limpieza |
+| `autoFocus` | `boolean` | `false` | Enfocar el input al montar |
+| `backfill` | `boolean` | `false` | Rellenar el input con la opción resaltada al navegar con teclado |
+| `defaultActiveFirstOption` | `boolean` | `true` | Resaltar automáticamente la primera opción |
+| `variant` | `'outlined' \| 'filled' \| 'borderless'` | `'outlined'` | Variante visual del input |
+| `status` | `'error' \| 'warning'` | — | Estado de validación |
+| `filterOption` | `boolean \| (inputValue, option) => boolean` | `true` | Función de filtrado. `true` = incluye insensible a mayúsculas, `false` = sin filtro |
+| `notFoundContent` | `ReactNode` | `null` | Contenido cuando no hay coincidencias. `null` = ocultar desplegable |
+| `popupMatchSelectWidth` | `boolean \| number` | `true` | `true` = igualar ancho del input, número = ancho fijo |
+| `onChange` | `(value: string) => void` | — | Llamado cuando cambia el valor |
+| `onSearch` | `(value: string) => void` | — | Llamado cuando el usuario escribe |
+| `onSelect` | `(value, option) => void` | — | Llamado al seleccionar una opción |
+| `onFocus` | `(e) => void` | — | Llamado al obtener foco |
+| `onBlur` | `(e) => void` | — | Llamado al perder foco |
+| `onDropdownVisibleChange` | `(open: boolean) => void` | — | Llamado cuando cambia la visibilidad del desplegable |
+| `onClear` | `() => void` | — | Llamado al limpiar el input |
+| `prefix` | `ReactNode` | — | Contenido prefix del input (ej. icono a la izquierda) |
+| `suffix` | `ReactNode` | — | Contenido suffix del input (ej. icono a la derecha) |
+| `className` | `string` | — | Clase CSS para el elemento raíz |
+| `style` | `CSSProperties` | — | Estilos inline para el elemento raíz |
+| `classNames` | `AutoCompleteClassNames` | — | Clases CSS para partes internas |
+| `styles` | `AutoCompleteStyles` | — | Estilos inline para partes internas |
+
+#### Tipos
+
+```tsx
+type AutoCompleteVariant = 'outlined' | 'filled' | 'borderless'
+
+type AutoCompleteStatus = 'error' | 'warning'
+
+interface AutoCompleteOption {
+  value: string
+  label?: ReactNode
+  disabled?: boolean
+  options?: AutoCompleteOption[]  // para opciones agrupadas
+}
+```
+
+#### DOM Semántico
+
+| Slot | Descripción |
+|------|-------------|
+| `root` | Contenedor exterior |
+| `input` | Elemento input |
+| `dropdown` | Contenedor de sugerencias desplegable |
+| `option` | Elemento individual de opción |
+
+#### Ejemplos
+
+**Uso básico**
+
+```tsx
+<AutoComplete
+  options={[
+    { value: 'React' },
+    { value: 'Vue' },
+    { value: 'Angular' },
+  ]}
+  placeholder="Buscar framework..."
+/>
+```
+
+**Valor controlado**
+
+```tsx
+const [value, setValue] = useState('')
+
+<AutoComplete
+  value={value}
+  onChange={setValue}
+  options={[
+    { value: 'React' },
+    { value: 'Vue' },
+    { value: 'Angular' },
+  ]}
+/>
+```
+
+**Labels personalizados**
+
+```tsx
+<AutoComplete
+  options={[
+    { value: 'react', label: <span><strong>React</strong> - Una librería JavaScript</span> },
+    { value: 'vue', label: <span><strong>Vue</strong> - El Framework Progresivo</span> },
+  ]}
+/>
+```
+
+**Opciones agrupadas**
+
+```tsx
+<AutoComplete
+  options={[
+    {
+      value: 'frameworks',
+      label: 'Frameworks',
+      options: [
+        { value: 'React' },
+        { value: 'Vue' },
+      ],
+    },
+    {
+      value: 'lenguajes',
+      label: 'Lenguajes',
+      options: [
+        { value: 'TypeScript' },
+        { value: 'JavaScript' },
+      ],
+    },
+  ]}
+/>
+```
+
+**Filtro personalizado**
+
+```tsx
+<AutoComplete
+  filterOption={(inputValue, option) =>
+    option.value.toUpperCase().startsWith(inputValue.toUpperCase())
+  }
+  options={[
+    { value: 'React' },
+    { value: 'Redux' },
+    { value: 'Vue' },
+  ]}
+/>
+```
+
+**Sin filtrado (búsqueda asíncrona)**
+
+```tsx
+const [options, setOptions] = useState([])
+
+<AutoComplete
+  filterOption={false}
+  options={options}
+  onSearch={async (text) => {
+    const results = await fetchSuggestions(text)
+    setOptions(results.map((r) => ({ value: r })))
+  }}
+/>
+```
+
+**Modo backfill**
+
+```tsx
+<AutoComplete
+  backfill
+  options={[
+    { value: 'manzana' },
+    { value: 'banana' },
+    { value: 'cereza' },
+  ]}
+/>
+```
+
+**Prefix y Suffix**
+
+```tsx
+// Solo prefix
+<AutoComplete
+  prefix={<MailIcon />}
+  options={[{ value: 'Opción 1' }, { value: 'Opción 2' }]}
+  placeholder="Con prefix"
+/>
+
+// Solo suffix
+<AutoComplete
+  suffix={<SearchIcon />}
+  options={[{ value: 'Opción 1' }, { value: 'Opción 2' }]}
+  placeholder="Con suffix"
+/>
+
+// Prefix + Suffix + Limpiar
+<AutoComplete
+  prefix={<GlobeIcon />}
+  suffix={<SearchIcon />}
+  allowClear
+  options={[{ value: 'Opción 1' }, { value: 'Opción 2' }]}
+  placeholder="Con ambos"
+/>
+```
+
+**Variantes**
+
+```tsx
+<AutoComplete variant="outlined" options={[...]} placeholder="Outlined" />
+<AutoComplete variant="filled" options={[...]} placeholder="Filled" />
+<AutoComplete variant="borderless" options={[...]} placeholder="Borderless" />
+```
+
+**Estado de validación**
+
+```tsx
+<AutoComplete status="error" options={[...]} placeholder="Error" />
+<AutoComplete status="warning" options={[...]} placeholder="Warning" />
+```
+
+**Contenido sin resultados**
+
+```tsx
+<AutoComplete
+  options={[]}
+  notFoundContent="No se encontraron resultados"
+  placeholder="Buscar..."
+/>
+```
+
+**Deshabilitado**
+
+```tsx
+<AutoComplete disabled options={[{ value: 'React' }]} value="React" />
+```
+
+</details>
+
+---
+
+<details>
+<summary><strong>Anchor</strong> - Enlaces de navegación que rastrean la posición del scroll</summary>
+
+### Anchor
+
+Un componente de navegación que renderiza una lista de enlaces ancla y resalta el activo según la posición del scroll. Soporta layout vertical y horizontal con enlaces anidados.
+
+#### Importar
+
+```tsx
+import { Anchor } from 'j-ui'
+```
+
+#### Props
+
+| Prop | Tipo | Por Defecto | Descripción |
+|------|------|-------------|-------------|
+| `items` | `AnchorLinkItemProps[]` | `[]` | Lista declarativa de enlaces ancla |
+| `direction` | `'vertical' \| 'horizontal'` | `'vertical'` | Dirección de la navegación |
+| `offsetTop` | `number` | `0` | Offset en px desde el top al calcular la posición del scroll |
+| `targetOffset` | `number` | `offsetTop` | Offset del destino al hacer scroll al hacer clic |
+| `bounds` | `number` | `5` | Distancia de tolerancia en px para detectar la sección activa |
+| `getContainer` | `() => HTMLElement \| Window` | `() => window` | Contenedor scrollable |
+| `getCurrentAnchor` | `(activeLink: string) => string` | — | Función personalizada para determinar el enlace activo |
+| `onChange` | `(currentActiveLink: string) => void` | — | Callback cuando cambia el enlace activo |
+| `onClick` | `(e: MouseEvent, link: { title: ReactNode; href: string }) => void` | — | Callback al hacer clic en un enlace |
+| `replace` | `boolean` | `false` | Usar `replaceState` en vez de `pushState` para la URL |
+| `className` | `string` | — | Clase CSS adicional |
+| `style` | `CSSProperties` | — | Estilos inline adicionales |
+
+#### AnchorLinkItemProps
+
+```typescript
+interface AnchorLinkItemProps {
+  key: string            // Clave única del enlace
+  href: string           // Destino del enlace (debe empezar con #)
+  title: ReactNode       // Contenido del enlace
+  children?: AnchorLinkItemProps[]  // Enlaces hijos (solo en vertical)
+}
+```
+
+#### DOM Semántico
+
+| Slot | Descripción |
+|------|-------------|
+| `root` | Elemento contenedor exterior |
+| `track` | Línea de fondo (modo vertical) |
+| `indicator` | Indicador del enlace activo |
+| `link` | Enlace ancla individual |
+
+#### Ejemplos
+
+```tsx
+// Anchor vertical básico
+<Anchor
+  items={[
+    { key: 'seccion1', href: '#seccion1', title: 'Sección 1' },
+    { key: 'seccion2', href: '#seccion2', title: 'Sección 2' },
+    { key: 'seccion3', href: '#seccion3', title: 'Sección 3' },
+  ]}
+/>
+
+// Anchor horizontal
+<Anchor
+  direction="horizontal"
+  items={[
+    { key: 'resumen', href: '#resumen', title: 'Resumen' },
+    { key: 'caracteristicas', href: '#caracteristicas', title: 'Características' },
+    { key: 'api', href: '#api', title: 'API' },
+  ]}
+/>
+
+// Enlaces anidados (solo vertical)
+<Anchor
+  items={[
+    {
+      key: 'componentes',
+      href: '#componentes',
+      title: 'Componentes',
+      children: [
+        { key: 'button', href: '#button', title: 'Button' },
+        { key: 'input', href: '#input', title: 'Input' },
+      ],
+    },
+    { key: 'hooks', href: '#hooks', title: 'Hooks' },
+  ]}
+/>
+
+// Con offset (ej. para header fijo)
+<Anchor
+  offsetTop={64}
+  items={[
+    { key: 'intro', href: '#intro', title: 'Introducción' },
+    { key: 'guia', href: '#guia', title: 'Guía' },
+  ]}
+/>
+
+// Contenedor de scroll personalizado
+<Anchor
+  getContainer={() => document.getElementById('mi-contenedor')!}
+  items={[
+    { key: 'parte1', href: '#parte1', title: 'Parte 1' },
+    { key: 'parte2', href: '#parte2', title: 'Parte 2' },
+  ]}
+/>
+
+// Con callback onChange
+<Anchor
+  onChange={(activeLink) => console.log('Activo:', activeLink)}
+  items={[
+    { key: 'a', href: '#a', title: 'Sección A' },
+    { key: 'b', href: '#b', title: 'Sección B' },
+  ]}
+/>
+
+// Reemplazar URL en vez de push
+<Anchor
+  replace
+  items={[
+    { key: 'tab1', href: '#tab1', title: 'Tab 1' },
+    { key: 'tab2', href: '#tab2', title: 'Tab 2' },
+  ]}
+/>
+```
+
+</details>
+
+---
 
 <details>
 <summary><strong>Badge</strong> - Etiqueta compacta para estados y metadatos</summary>
@@ -305,6 +764,14 @@ import { Badge, tokens } from 'j-ui'
 | `md` | 6px |
 | `lg` | 12px |
 | `full` | 9999px (forma de pastilla) |
+
+#### DOM Semántico
+
+| Slot | Descripción |
+|------|-------------|
+| `root` | Elemento contenedor exterior |
+| `icon` | Elemento del icono |
+| `content` | Elemento del contenido de texto |
 
 #### Ejemplos
 
@@ -344,6 +811,183 @@ import { Badge, tokens } from 'j-ui'
 <Badge bgColor="#ffe4e6" color="#be123c">
   Rosa Personalizado
 </Badge>
+```
+
+</details>
+
+---
+
+<details>
+<summary><strong>Breadcrumb</strong> - Ruta de navegación tipo migas de pan</summary>
+
+### Breadcrumb
+
+Un componente de navegación que muestra la ubicación actual dentro de una estructura jerárquica. Soporta separadores personalizados, iconos, menús desplegables, renderizado personalizado de items y parámetros de ruta.
+
+#### Importar
+
+```tsx
+import { Breadcrumb } from 'j-ui'
+```
+
+#### Props
+
+| Prop | Tipo | Por Defecto | Descripción |
+|------|------|-------------|-------------|
+| `items` | `BreadcrumbItemType[]` | `[]` | Items del breadcrumb |
+| `separator` | `ReactNode` | `'/'` | Separador entre items |
+| `itemRender` | `(item, params, items, paths) => ReactNode` | — | Función de renderizado personalizado para cada item |
+| `params` | `Record<string, string>` | — | Parámetros de ruta |
+| `className` | `string` | — | Clase CSS adicional |
+| `style` | `CSSProperties` | — | Estilos inline adicionales |
+| `classNames` | `BreadcrumbClassNames` | — | Clases CSS para partes internas |
+| `styles` | `BreadcrumbStyles` | — | Estilos para partes internas |
+
+#### BreadcrumbItemType
+
+```typescript
+interface BreadcrumbItemType {
+  title?: ReactNode       // Texto/contenido del item
+  href?: string           // URL (renderiza como <a>)
+  path?: string           // Segmento de path (se acumulan para itemRender)
+  icon?: ReactNode        // Icono antes del título
+  onClick?: (e: MouseEvent) => void  // Handler de clic
+  className?: string      // Clase CSS individual
+  style?: CSSProperties   // Estilos inline individuales
+  menu?: { items: BreadcrumbMenuItemType[] }  // Menú desplegable
+}
+```
+
+#### BreadcrumbMenuItemType
+
+```typescript
+interface BreadcrumbMenuItemType {
+  key: string             // Clave única
+  title: ReactNode        // Texto del item
+  href?: string           // URL del item
+  icon?: ReactNode        // Icono del item
+  onClick?: (e: MouseEvent) => void  // Handler de clic
+}
+```
+
+#### DOM Semántico
+
+| Slot | Descripción |
+|------|-------------|
+| `root` | Elemento `<nav>` exterior |
+| `list` | Contenedor de lista `<ol>` |
+| `item` | Elemento `<li>` individual del breadcrumb |
+| `separator` | Elemento `<li>` separador entre items |
+| `link` | Elemento de enlace o texto dentro de cada item |
+| `overlay` | Contenedor del menú desplegable |
+
+#### Ejemplos
+
+```tsx
+// Breadcrumb básico
+<Breadcrumb
+  items={[
+    { title: 'Inicio', href: '/' },
+    { title: 'Productos', href: '/productos' },
+    { title: 'Detalle' },
+  ]}
+/>
+
+// Con iconos
+<Breadcrumb
+  items={[
+    { title: 'Inicio', href: '/', icon: <HomeIcon /> },
+    { title: 'Ajustes', href: '/ajustes', icon: <SettingsIcon /> },
+    { title: 'Perfil' },
+  ]}
+/>
+
+// Separador personalizado
+<Breadcrumb
+  separator=">"
+  items={[
+    { title: 'Inicio', href: '/' },
+    { title: 'Categoría', href: '/categoria' },
+    { title: 'Artículo' },
+  ]}
+/>
+
+// Separador como ReactNode
+<Breadcrumb
+  separator={<span style={{ color: 'red' }}>→</span>}
+  items={[
+    { title: 'Paso 1', href: '#' },
+    { title: 'Paso 2', href: '#' },
+    { title: 'Paso 3' },
+  ]}
+/>
+
+// Con menú desplegable
+<Breadcrumb
+  items={[
+    { title: 'Inicio', href: '/' },
+    {
+      title: 'Categoría',
+      href: '/categoria',
+      menu: {
+        items: [
+          { key: 'electronica', title: 'Electrónica', href: '/electronica' },
+          { key: 'ropa', title: 'Ropa', href: '/ropa' },
+          { key: 'libros', title: 'Libros', href: '/libros' },
+        ],
+      },
+    },
+    { title: 'Producto' },
+  ]}
+/>
+
+// Con handlers de clic
+<Breadcrumb
+  items={[
+    { title: 'Inicio', onClick: () => navigate('/') },
+    { title: 'Usuarios', onClick: () => navigate('/usuarios') },
+    { title: 'Juan García' },
+  ]}
+/>
+
+// Renderizado personalizado con paths
+<Breadcrumb
+  items={[
+    { title: 'Inicio', path: '' },
+    { title: 'Usuarios', path: 'usuarios' },
+    { title: ':id', path: ':id' },
+  ]}
+  params={{ id: '42' }}
+  itemRender={(item, params, items, paths) => {
+    const last = items.indexOf(item) === items.length - 1
+    let path = paths[items.indexOf(item)]
+    // Reemplazar parámetros
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        path = path.replace(`:${key}`, value)
+      })
+    }
+    return last ? (
+      <span>{item.title}</span>
+    ) : (
+      <a href={`/${path}`}>{item.title}</a>
+    )
+  }}
+/>
+
+// Con estilos semánticos del DOM
+<Breadcrumb
+  items={[
+    { title: 'Inicio', href: '/' },
+    { title: 'Productos', href: '/productos' },
+    { title: 'Detalle' },
+  ]}
+  classNames={{ link: 'enlace-personalizado' }}
+  styles={{
+    separator: { color: '#999', margin: '0 12px' },
+    overlay: { borderRadius: 8 },
+  }}
+/>
 ```
 
 </details>
@@ -405,6 +1049,24 @@ J-UI proporciona iconos utilitarios para casos de uso comunes de FAB:
 | `ChatIcon` | Burbuja de chat/mensaje |
 | `BellIcon` | Campana de notificacion |
 | `CloseIcon` | Icono X de cerrar |
+
+#### DOM Semántico
+
+| Slot | Descripción |
+|------|-------------|
+| `root` | Elemento contenedor exterior |
+| `icon` | Elemento del icono |
+| `badge` | Elemento del contador badge |
+| `tooltip` | Elemento popup del tooltip |
+| `tooltipArrow` | Elemento de la flecha del tooltip |
+
+**Bubble.Menu:**
+
+| Slot | Descripción |
+|------|-------------|
+| `root` | Elemento contenedor del menú |
+| `trigger` | Elemento disparador del menú |
+| `menu` | Elemento contenedor de opciones |
 
 #### Ejemplos
 
@@ -682,6 +1344,15 @@ Tambien acepta todos los atributos HTML estandar de `<button>`.
 | `firecracker` | Particulas explotan desde los bordes del boton |
 | `confetti` | Particulas explotan desde el punto de clic |
 
+#### DOM Semántico
+
+| Slot | Descripción |
+|------|-------------|
+| `root` | Elemento botón exterior |
+| `icon` | Contenedor del icono |
+| `spinner` | Elemento del spinner de carga |
+| `content` | Contenedor del texto |
+
 #### Ejemplos
 
 ```tsx
@@ -772,6 +1443,689 @@ Tambien acepta todos los atributos HTML estandar de `<button>`.
 ---
 
 <details>
+<summary><strong>Checkbox</strong> - Control de seleccion con grupo y estado indeterminado</summary>
+
+### Checkbox
+
+Un componente de checkbox para alternar valores booleanos con soporte para estado indeterminado, grupos, modos controlado/no controlado y estilizado semantico. Incluye `Checkbox.Group` para gestionar selecciones multiples.
+
+#### Importar
+
+```tsx
+import { Checkbox } from 'j-ui'
+```
+
+#### Props de Checkbox
+
+| Prop | Tipo | Default | Descripcion |
+|------|------|---------|-------------|
+| `checked` | `boolean` | — | Si el checkbox esta marcado (controlado) |
+| `defaultChecked` | `boolean` | `false` | Estado inicial marcado (no controlado) |
+| `disabled` | `boolean` | `false` | Deshabilita el checkbox |
+| `indeterminate` | `boolean` | `false` | Muestra estado indeterminado (parcial) — icono de menos |
+| `autoFocus` | `boolean` | `false` | Enfoque automatico al montar |
+| `onChange` | `(e: CheckboxChangeEvent) => void` | — | Callback cuando cambia el estado |
+| `value` | `string \| number` | — | Valor identificador, usado dentro de `Checkbox.Group` |
+| `children` | `ReactNode` | — | Contenido de la etiqueta junto al checkbox |
+| `id` | `string` | — | Atributo HTML id |
+| `name` | `string` | — | Atributo HTML name para el input |
+| `tabIndex` | `number` | — | Indice de tabulacion para navegacion por teclado |
+| `className` | `string` | — | Clase CSS para el elemento raiz |
+| `style` | `CSSProperties` | — | Estilos inline para el elemento raiz |
+| `classNames` | `CheckboxClassNames` | — | Clases CSS de slots semanticos |
+| `styles` | `CheckboxStyles` | — | Estilos inline de slots semanticos |
+
+#### Props de Checkbox.Group
+
+| Prop | Tipo | Default | Descripcion |
+|------|------|---------|-------------|
+| `options` | `(string \| number \| CheckboxOptionType)[]` | — | Array de opciones para generar checkboxes |
+| `value` | `(string \| number)[]` | — | Valores seleccionados actualmente (controlado) |
+| `defaultValue` | `(string \| number)[]` | `[]` | Valores iniciales seleccionados (no controlado) |
+| `disabled` | `boolean` | `false` | Deshabilita todos los checkboxes del grupo |
+| `name` | `string` | — | Atributo name para todos los inputs |
+| `onChange` | `(checkedValues: (string \| number)[]) => void` | — | Callback cuando cambia la seleccion |
+| `children` | `ReactNode` | — | Hijos Checkbox (alternativa a `options`) |
+| `className` | `string` | — | Clase CSS para el elemento raiz |
+| `style` | `CSSProperties` | — | Estilos inline para el elemento raiz |
+| `classNames` | `CheckboxGroupClassNames` | — | Clases CSS de slots semanticos |
+| `styles` | `CheckboxGroupStyles` | — | Estilos inline de slots semanticos |
+
+#### Tipos
+
+```typescript
+// Evento de cambio devuelto por onChange
+interface CheckboxChangeEvent {
+  target: {
+    checked: boolean
+    value?: string | number
+  }
+  nativeEvent: Event
+}
+
+// Objeto de opcion para Checkbox.Group
+interface CheckboxOptionType {
+  label: ReactNode
+  value: string | number
+  disabled?: boolean
+  style?: CSSProperties
+  className?: string
+}
+
+// Tipos de slots semanticos
+type CheckboxSemanticSlot = 'root' | 'checkbox' | 'indicator' | 'label'
+type CheckboxGroupSemanticSlot = 'root'
+```
+
+#### DOM Semantico
+
+| Slot | Elemento | Descripcion |
+|------|----------|-------------|
+| `root` | `<label>` | Contenedor externo con checkbox y etiqueta |
+| `checkbox` | `<span>` | Elemento de la caja del checkbox (borde + fondo) |
+| `indicator` | `<span>` | Contenedor del icono check/menos dentro de la caja |
+| `label` | `<span>` | Texto de la etiqueta junto al checkbox |
+
+**Checkbox.Group:**
+
+| Slot | Elemento | Descripcion |
+|------|----------|-------------|
+| `root` | `<div>` | `div` contenedor con `role="group"` que contiene todos los checkboxes |
+
+#### Ejemplos
+
+```tsx
+// Checkbox basico
+<Checkbox>Recuerdame</Checkbox>
+
+// Checkbox controlado
+const [checked, setChecked] = useState(false)
+<Checkbox
+  checked={checked}
+  onChange={(e) => setChecked(e.target.checked)}
+>
+  Acepto los terminos
+</Checkbox>
+
+// Deshabilitado
+<Checkbox disabled>Deshabilitado</Checkbox>
+<Checkbox disabled checked>Deshabilitado marcado</Checkbox>
+
+// Estado indeterminado (para patrones "seleccionar todo")
+const [checkedList, setCheckedList] = useState(['Manzana'])
+const allOptions = ['Manzana', 'Banana', 'Naranja']
+const allChecked = checkedList.length === allOptions.length
+const indeterminate = checkedList.length > 0 && !allChecked
+<Checkbox
+  indeterminate={indeterminate}
+  checked={allChecked}
+  onChange={(e) => setCheckedList(e.target.checked ? allOptions : [])}
+>
+  Seleccionar todo
+</Checkbox>
+
+// Grupo con array de opciones
+<Checkbox.Group
+  options={['Manzana', 'Banana', 'Naranja']}
+  defaultValue={['Manzana']}
+  onChange={(values) => console.log(values)}
+/>
+
+// Grupo con opciones objeto
+<Checkbox.Group
+  options={[
+    { label: 'Manzana', value: 'manzana' },
+    { label: 'Banana', value: 'banana' },
+    { label: 'Naranja', value: 'naranja', disabled: true },
+  ]}
+  defaultValue={['manzana']}
+/>
+
+// Grupo con hijos (layout manual)
+<Checkbox.Group onChange={(values) => console.log(values)}>
+  <Checkbox value="A">Opcion A</Checkbox>
+  <Checkbox value="B">Opcion B</Checkbox>
+  <Checkbox value="C">Opcion C</Checkbox>
+</Checkbox.Group>
+
+// Grupo controlado
+const [selected, setSelected] = useState<(string | number)[]>(['B'])
+<Checkbox.Group value={selected} onChange={setSelected}>
+  <Checkbox value="A">A</Checkbox>
+  <Checkbox value="B">B</Checkbox>
+  <Checkbox value="C">C</Checkbox>
+</Checkbox.Group>
+
+// Estilizado semantico
+<Checkbox
+  styles={{
+    checkbox: { borderRadius: 999, width: 20, height: 20 },
+    label: { fontWeight: 600 },
+  }}
+>
+  Estilo personalizado
+</Checkbox>
+
+// Estilizado semantico en grupo
+<Checkbox.Group
+  options={['Rojo', 'Verde', 'Azul']}
+  styles={{ root: { gap: 16 } }}
+/>
+```
+
+</details>
+
+---
+
+<details>
+<summary><strong>ColorPicker</strong> - Selector de color con gradientes, presets y cambio de formato</summary>
+
+### ColorPicker
+
+Un selector de color completo con panel de saturacion-brillo, sliders de tono y alfa, cambio de formato (HEX/RGB/HSB), modo gradiente con stops editables, presets de colores, tres tamaños, triggers click/hover, posicionamiento con auto-flip y renderizado personalizado del panel.
+
+#### Importar
+
+```tsx
+import { ColorPicker } from 'j-ui'
+```
+
+#### Props
+
+| Prop | Tipo | Default | Descripcion |
+|------|------|---------|-------------|
+| `value` | `string \| ColorPickerColor \| ColorPickerGradientStop[]` | — | Valor de color actual (controlado) |
+| `defaultValue` | `string \| ColorPickerColor \| ColorPickerGradientStop[]` | `'#1677ff'` | Color inicial (no controlado) |
+| `mode` | `ColorPickerMode \| ColorPickerMode[]` | `'single'` | Modo(s) de color. `'gradient'` muestra pestañas Single/Gradient |
+| `onModeChange` | `(mode: ColorPickerMode) => void` | — | Llamado cuando cambia el modo |
+| `format` | `ColorPickerFormat` | — | Formato de visualizacion (controlado) |
+| `defaultFormat` | `ColorPickerFormat` | `'hex'` | Formato de visualizacion inicial (no controlado) |
+| `disabled` | `boolean` | `false` | Deshabilita el selector |
+| `disabledAlpha` | `boolean` | `false` | Oculta el slider de alfa y el input de alfa |
+| `allowClear` | `boolean` | `false` | Muestra un boton de limpiar en el panel |
+| `showText` | `boolean \| ((color: ColorPickerColor) => ReactNode)` | — | Muestra texto del color junto al swatch. Funcion personalizada para texto custom |
+| `trigger` | `'click' \| 'hover'` | `'click'` | Como se abre el panel |
+| `placement` | `ColorPickerPlacement` | `'bottomLeft'` | Posicion del panel con auto-flip |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Tamaño del boton trigger |
+| `open` | `boolean` | — | Si el panel esta abierto (controlado) |
+| `presets` | `ColorPickerPreset[]` | — | Paletas de colores preestablecidas |
+| `panelRender` | `(panel: ReactNode) => ReactNode` | — | Wrapper personalizado del panel |
+| `onChange` | `(color: ColorPickerColor, hex: string) => void` | — | Llamado en cada cambio de color (modo single) |
+| `onChangeComplete` | `(color: ColorPickerColor, hex: string) => void` | — | Llamado cuando termina el arrastre (modo single) |
+| `onGradientChange` | `(stops: ColorPickerGradientStop[], css: string) => void` | — | Llamado en cambio de gradiente (modo gradient) |
+| `onFormatChange` | `(format: ColorPickerFormat) => void` | — | Llamado cuando cambia el formato |
+| `onOpenChange` | `(open: boolean) => void` | — | Llamado cuando se abre/cierra el panel |
+| `onClear` | `() => void` | — | Llamado cuando se limpia el color |
+| `children` | `ReactNode` | — | Elemento trigger personalizado (reemplaza el boton por defecto) |
+| `className` | `string` | — | Clase CSS para el elemento raiz |
+| `style` | `CSSProperties` | — | Estilos inline para el elemento raiz |
+| `classNames` | `ColorPickerClassNames` | — | Clases CSS de slots semanticos |
+| `styles` | `ColorPickerStyles` | — | Estilos inline de slots semanticos |
+
+#### Tipos
+
+```typescript
+type ColorPickerFormat = 'hex' | 'rgb' | 'hsb'
+type ColorPickerSize = 'sm' | 'md' | 'lg'
+type ColorPickerTrigger = 'click' | 'hover'
+type ColorPickerPlacement = 'topLeft' | 'topRight' | 'bottomLeft' | 'bottomRight'
+type ColorPickerMode = 'single' | 'gradient'
+
+interface ColorPickerGradientStop {
+  color: string
+  percent: number
+}
+
+interface ColorPickerPreset {
+  label: ReactNode
+  colors: string[]
+}
+
+// Objeto de color devuelto por onChange / onChangeComplete
+interface ColorPickerColor {
+  h: number; s: number; b: number; a: number
+  toHexString: () => string
+  toRgbString: () => string
+  toHsbString: () => string
+  toRgb: () => { r: number; g: number; b: number; a: number }
+  toHsb: () => { h: number; s: number; b: number; a: number }
+}
+
+// Tipos de slots semanticos
+type ColorPickerSemanticSlot = 'root' | 'trigger' | 'panel' | 'presets'
+```
+
+#### DOM Semantico
+
+| Slot | Elemento | Descripcion |
+|------|----------|-------------|
+| `root` | `<div>` | Contenedor externo (position relative) |
+| `trigger` | `<button>` | Boton trigger por defecto con swatch de color |
+| `panel` | `<div>` | Panel flotante con todos los controles del selector |
+| `presets` | — | Reservado para la seccion de paleta de presets |
+
+#### Ejemplos
+
+```tsx
+// Selector de color basico
+<ColorPicker defaultValue="#1677ff" />
+
+// Controlado
+const [color, setColor] = useState('#ff6b6b')
+<ColorPicker
+  value={color}
+  onChange={(c, hex) => setColor(hex)}
+/>
+
+// Mostrar texto junto al swatch
+<ColorPicker defaultValue="#52c41a" showText />
+
+// Funcion de texto personalizada
+<ColorPicker
+  defaultValue="#1677ff"
+  showText={(color) => color.toRgbString()}
+/>
+
+// Tamaños
+<ColorPicker size="sm" defaultValue="#1677ff" />
+<ColorPicker size="md" defaultValue="#52c41a" />
+<ColorPicker size="lg" defaultValue="#ff4d4f" />
+
+// Deshabilitado
+<ColorPicker defaultValue="#1677ff" disabled />
+
+// Deshabilitar canal alfa
+<ColorPicker defaultValue="#1677ff" disabledAlpha />
+
+// Permitir limpiar
+<ColorPicker defaultValue="#1677ff" allowClear />
+
+// Trigger hover
+<ColorPicker defaultValue="#1677ff" trigger="hover" />
+
+// Posicionamiento
+<ColorPicker defaultValue="#1677ff" placement="topRight" />
+
+// Control de formato
+<ColorPicker defaultValue="#1677ff" format="rgb" />
+
+// Presets
+<ColorPicker
+  defaultValue="#1677ff"
+  presets={[
+    {
+      label: 'Recomendados',
+      colors: ['#ff4d4f', '#ff7a45', '#ffa940', '#ffc53d', '#ffec3d', '#bae637', '#73d13d', '#36cfc9', '#40a9ff', '#597ef7', '#9254de', '#f759ab'],
+    },
+    {
+      label: 'Recientes',
+      colors: ['#1677ff', '#52c41a'],
+    },
+  ]}
+/>
+
+// Modo gradiente
+<ColorPicker
+  mode="gradient"
+  onGradientChange={(stops, css) => console.log(css)}
+/>
+
+// Ambos modos (pestañas)
+<ColorPicker
+  mode={['single', 'gradient']}
+  onChange={(c, hex) => console.log('single:', hex)}
+  onGradientChange={(stops, css) => console.log('gradient:', css)}
+/>
+
+// Trigger personalizado
+<ColorPicker defaultValue="#1677ff">
+  <button>Elegir un color</button>
+</ColorPicker>
+
+// Renderizado personalizado del panel
+<ColorPicker
+  defaultValue="#1677ff"
+  panelRender={(panel) => (
+    <div style={{ padding: 8 }}>
+      <h4>Elegir color</h4>
+      {panel}
+    </div>
+  )}
+/>
+
+// Estilizado semantico
+<ColorPicker
+  defaultValue="#1677ff"
+  styles={{
+    trigger: { borderRadius: 999 },
+    panel: { borderRadius: 16 },
+  }}
+/>
+```
+
+</details>
+
+---
+
+<details>
+<summary><strong>DatePicker</strong> - Seleccion de fecha con panel calendario, rango y soporte de hora</summary>
+
+### DatePicker
+
+Un selector de fecha completo con panel de calendario, multiples modos de seleccion (fecha, semana, mes, trimestre, año), seleccion de hora, seleccion de rangos con paneles duales, input con mascara, seleccion multiple de fechas, presets, fechas/horas deshabilitadas, renderizado personalizado de celdas, sistema de adaptador de fechas enchufable y posicionamiento con auto-flip. Incluye `DatePicker.RangePicker` para seleccionar rangos de fechas.
+
+#### Importar
+
+```tsx
+import { DatePicker } from 'j-ui'
+```
+
+#### Props de DatePicker
+
+| Prop | Tipo | Default | Descripcion |
+|------|------|---------|-------------|
+| `value` | `TDate \| null` | — | Fecha seleccionada (controlado) |
+| `defaultValue` | `TDate \| null` | — | Fecha inicial (no controlado) |
+| `onChange` | `(date: TDate \| null, dateString: string) => void` | — | Llamado cuando cambia la fecha |
+| `picker` | `'date' \| 'week' \| 'month' \| 'quarter' \| 'year'` | `'date'` | Tipo de panel selector |
+| `format` | `string \| ((date: TDate) => string)` | Auto | Formato de visualizacion de fecha (ej. `'YYYY-MM-DD'`) |
+| `placeholder` | `string` | Auto | Placeholder del input |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Tamaño del componente |
+| `variant` | `'outlined' \| 'borderless' \| 'filled'` | `'outlined'` | Variante del input |
+| `status` | `'error' \| 'warning'` | — | Estado de validacion |
+| `placement` | `DatePickerPlacement` | `'bottomLeft'` | Posicion del popup con auto-flip |
+| `disabled` | `boolean` | `false` | Deshabilita el selector |
+| `inputReadOnly` | `boolean` | `false` | Hace el input de solo lectura |
+| `allowClear` | `boolean` | `true` | Muestra boton de limpiar |
+| `prefix` | `ReactNode` | — | Contenido prefix en el input |
+| `suffix` | `ReactNode` | Icono calendario/reloj | Contenido suffix en el input |
+| `needConfirm` | `boolean` | `true` con `showTime` | Requiere boton OK para confirmar seleccion |
+| `multiple` | `boolean` | `false` | Permite seleccionar multiples fechas |
+| `mask` | `boolean` | `false` | Habilita input con mascara y edicion por segmento |
+| `disabledDate` | `(date: TDate) => boolean` | — | Funcion para deshabilitar fechas especificas |
+| `minDate` | `TDate` | — | Fecha minima seleccionable |
+| `maxDate` | `TDate` | — | Fecha maxima seleccionable |
+| `showTime` | `boolean \| TimePickerConfig` | — | Habilita seleccion de hora junto con fecha |
+| `showNow` | `boolean` | Auto | Muestra boton "Ahora" en el footer |
+| `showToday` | `boolean` | `true` | Muestra boton "Hoy" en el footer |
+| `presets` | `DatePickerPreset[]` | — | Fechas preestablecidas de seleccion rapida |
+| `open` | `boolean` | — | Si el popup esta abierto (controlado) |
+| `defaultOpen` | `boolean` | `false` | Estado inicial de apertura |
+| `onOpenChange` | `(open: boolean) => void` | — | Llamado cuando se abre/cierra el popup |
+| `panelRender` | `(panel: ReactNode) => ReactNode` | — | Wrapper personalizado del panel |
+| `cellRender` | `(current: TDate, info: CellRenderInfo) => ReactNode` | — | Renderizado personalizado de celdas |
+| `onPanelChange` | `(date: TDate, mode: DatePickerMode) => void` | — | Llamado al cambiar modo/vista del panel |
+| `renderExtraFooter` | `() => ReactNode` | — | Contenido extra del footer |
+| `disabledTime` | `(date: TDate) => DisabledTimes` | — | Deshabilita horas/minutos/segundos especificos |
+| `adapter` | `DateAdapter<TDate>` | `NativeDateAdapter` | Adaptador de libreria de fechas enchufable |
+| `className` | `string` | — | Clase CSS para el elemento raiz |
+| `style` | `CSSProperties` | — | Estilos inline para el elemento raiz |
+| `classNames` | `DatePickerClassNames` | — | Clases CSS de slots semanticos |
+| `styles` | `DatePickerStyles` | — | Estilos inline de slots semanticos |
+
+#### Props de DatePicker.RangePicker
+
+| Prop | Tipo | Default | Descripcion |
+|------|------|---------|-------------|
+| `value` | `[TDate \| null, TDate \| null] \| null` | — | Rango seleccionado (controlado) |
+| `defaultValue` | `[TDate \| null, TDate \| null] \| null` | — | Rango inicial (no controlado) |
+| `onChange` | `(dates: [TDate, TDate] \| null, dateStrings: [string, string]) => void` | — | Llamado cuando cambia el rango |
+| `onCalendarChange` | `(dates, dateStrings, info: { range: 'start' \| 'end' }) => void` | — | Llamado en cada seleccion del calendario |
+| `picker` | `DatePickerMode` | `'date'` | Modo del selector |
+| `format` | `string \| ((date: TDate) => string)` | Auto | Formato de fecha |
+| `placeholder` | `[string, string]` | Auto | Placeholders para inicio/fin |
+| `separator` | `ReactNode` | Icono flecha | Separador entre inputs |
+| `allowEmpty` | `[boolean, boolean]` | — | Permitir inicio/fin vacio |
+| `disabled` | `boolean \| [boolean, boolean]` | `false` | Deshabilitar inicio/fin independientemente |
+| `size` | `DatePickerSize` | `'md'` | Tamaño del componente |
+| `variant` | `DatePickerVariant` | `'outlined'` | Variante del input |
+| `status` | `DatePickerStatus` | — | Estado de validacion |
+| `placement` | `DatePickerPlacement` | `'bottomLeft'` | Posicion del popup |
+| `inputReadOnly` | `boolean` | `false` | Inputs de solo lectura |
+| `allowClear` | `boolean` | `true` | Mostrar boton de limpiar |
+| `prefix` | `ReactNode` | — | Contenido prefix |
+| `suffix` | `ReactNode` | Icono calendario | Contenido suffix |
+| `disabledDate` | `(date: TDate, info?: { from?: TDate }) => boolean` | — | Deshabilitar fechas especificas |
+| `minDate` | `TDate` | — | Fecha minima seleccionable |
+| `maxDate` | `TDate` | — | Fecha maxima seleccionable |
+| `showTime` | `boolean \| TimePickerConfig` | — | Habilitar seleccion de hora |
+| `showNow` | `boolean` | — | Mostrar boton "Ahora" |
+| `presets` | `RangePickerPreset[]` | — | Rangos preestablecidos |
+| `open` | `boolean` | — | Estado abierto controlado |
+| `defaultOpen` | `boolean` | `false` | Estado inicial de apertura |
+| `onOpenChange` | `(open: boolean) => void` | — | Callback de cambio de apertura |
+| `panelRender` | `(panel: ReactNode) => ReactNode` | — | Wrapper personalizado del panel |
+| `cellRender` | `(current: TDate, info: CellRenderInfo) => ReactNode` | — | Renderizado personalizado de celdas |
+| `onPanelChange` | `(dates, modes) => void` | — | Callback de cambio de panel |
+| `renderExtraFooter` | `() => ReactNode` | — | Contenido extra del footer |
+| `disabledTime` | `(date: TDate, type: 'start' \| 'end') => DisabledTimes` | — | Deshabilitar horas especificas |
+| `linkedPanels` | `boolean` | `true` | Vincular navegacion de paneles izquierdo/derecho |
+| `adapter` | `DateAdapter<TDate>` | `NativeDateAdapter` | Adaptador de fechas |
+| `className` | `string` | — | Clase CSS |
+| `style` | `CSSProperties` | — | Estilos inline |
+| `classNames` | `DatePickerClassNames` | — | Clases CSS de slots semanticos |
+| `styles` | `DatePickerStyles` | — | Estilos inline de slots semanticos |
+
+#### Tipos
+
+```typescript
+type DatePickerSize = 'sm' | 'md' | 'lg'
+type DatePickerVariant = 'outlined' | 'borderless' | 'filled'
+type DatePickerStatus = 'error' | 'warning'
+type DatePickerPlacement = 'bottomLeft' | 'bottomRight' | 'topLeft' | 'topRight'
+type DatePickerMode = 'date' | 'week' | 'month' | 'quarter' | 'year'
+
+interface DatePickerPreset<TDate> {
+  label: ReactNode
+  value: TDate | (() => TDate)
+}
+
+interface RangePickerPreset<TDate> {
+  label: ReactNode
+  value: [TDate, TDate] | (() => [TDate, TDate])
+}
+
+interface TimePickerConfig {
+  format?: string          // ej. 'HH:mm:ss'
+  hourStep?: number
+  minuteStep?: number
+  secondStep?: number
+  showHour?: boolean
+  showMinute?: boolean
+  showSecond?: boolean
+  use12Hours?: boolean
+  defaultValue?: any
+}
+
+interface DisabledTimes {
+  disabledHours?: () => number[]
+  disabledMinutes?: (hour: number) => number[]
+  disabledSeconds?: (hour: number, minute: number) => number[]
+}
+
+interface CellRenderInfo {
+  type: 'date' | 'month' | 'quarter' | 'year'
+  originNode: ReactNode
+  today: boolean
+  inView: boolean
+  inRange?: boolean
+  rangeStart?: boolean
+  rangeEnd?: boolean
+}
+
+// Interfaz de adaptador de fechas enchufable
+interface DateAdapter<TDate> {
+  today(): TDate
+  create(value?): TDate
+  clone(date: TDate): TDate
+  isValid(date): boolean
+  getYear/getMonth/getDate/getHour/getMinute/getSecond
+  setYear/setMonth/setDate/setHour/setMinute/setSecond
+  addDays/addMonths/addYears
+  isSameDay/isSameMonth/isSameYear/isBefore/isAfter
+  startOfWeek/endOfWeek/startOfMonth/endOfMonth
+  format(date, formatStr): string
+  parse(value, formatStr): TDate | null
+  getMonthNames/getDayNames/getQuarterLabel
+}
+
+// Tipos de slots semanticos
+type DatePickerSemanticSlot = 'root' | 'input' | 'popup' | 'header' | 'body' | 'cell' | 'footer'
+```
+
+#### DOM Semantico
+
+| Slot | Elemento | Descripcion |
+|------|----------|-------------|
+| `root` | `<div>` | Contenedor externo (position relative) |
+| `input` | `<div>` | Wrapper del input con borde, anillo de foco, prefix/suffix |
+| `popup` | `<div>` | Popup flotante del calendario |
+| `header` | `<div>` | Cabecera del calendario con flechas de navegacion y titulo |
+| `body` | `<div>` | Cuerpo del calendario con grilla de dia/mes/año/trimestre |
+| `cell` | `<div>` / `<button>` | Celda individual del calendario (dia, mes, año, trimestre) |
+| `footer` | `<div>` | Footer del panel con botones Hoy/Ahora/OK y presets |
+
+#### Ejemplos
+
+```tsx
+// Selector de fecha basico
+<DatePicker />
+
+// Controlado
+const [date, setDate] = useState<Date | null>(null)
+<DatePicker
+  value={date}
+  onChange={(d, dateStr) => setDate(d)}
+/>
+
+// Tamaños
+<DatePicker size="sm" />
+<DatePicker size="md" />
+<DatePicker size="lg" />
+
+// Variantes
+<DatePicker variant="outlined" />
+<DatePicker variant="filled" />
+<DatePicker variant="borderless" />
+
+// Estado de validacion
+<DatePicker status="error" />
+<DatePicker status="warning" />
+
+// Selector de mes
+<DatePicker picker="month" />
+
+// Selector de año
+<DatePicker picker="year" />
+
+// Selector de trimestre
+<DatePicker picker="quarter" />
+
+// Selector de semana
+<DatePicker picker="week" />
+
+// Fecha + Hora
+<DatePicker showTime />
+
+// Fecha + Hora con configuracion
+<DatePicker
+  showTime={{
+    format: 'HH:mm',
+    hourStep: 1,
+    minuteStep: 15,
+    showSecond: false,
+  }}
+/>
+
+// Fechas deshabilitadas
+<DatePicker
+  disabledDate={(date) => date.getDay() === 0 || date.getDay() === 6}
+/>
+
+// Fecha minima y maxima
+<DatePicker
+  minDate={new Date(2024, 0, 1)}
+  maxDate={new Date(2024, 11, 31)}
+/>
+
+// Presets
+<DatePicker
+  presets={[
+    { label: 'Hoy', value: new Date() },
+    { label: 'Ayer', value: () => { const d = new Date(); d.setDate(d.getDate() - 1); return d } },
+  ]}
+/>
+
+// Multiples fechas
+<DatePicker multiple />
+
+// Input con mascara
+<DatePicker mask />
+
+// Renderizado personalizado de celdas
+<DatePicker
+  cellRender={(date, info) => {
+    if (info.type === 'date' && date.getDate() === 25) {
+      return <span style={{ color: 'red' }}>{info.originNode}</span>
+    }
+    return info.originNode
+  }}
+/>
+
+// Formato personalizado
+<DatePicker format="DD/MM/YYYY" />
+
+// Selector de rango
+<DatePicker.RangePicker />
+
+// Selector de rango controlado
+const [range, setRange] = useState<[Date, Date] | null>(null)
+<DatePicker.RangePicker
+  value={range}
+  onChange={(dates, dateStrings) => setRange(dates)}
+/>
+
+// Selector de rango con presets
+<DatePicker.RangePicker
+  presets={[
+    { label: 'Ultimos 7 dias', value: () => {
+      const end = new Date()
+      const start = new Date()
+      start.setDate(start.getDate() - 7)
+      return [start, end]
+    }},
+    { label: 'Este mes', value: () => {
+      const now = new Date()
+      return [new Date(now.getFullYear(), now.getMonth(), 1), now]
+    }},
+  ]}
+/>
+
+// Selector de rango con hora
+<DatePicker.RangePicker showTime />
+
+// Prefix y suffix
+<DatePicker prefix={<CalendarIcon />} suffix={null} />
+
+// Estilizado semantico
+<DatePicker
+  styles={{
+    input: { borderRadius: 999 },
+    popup: { borderRadius: 16 },
+    cell: { borderRadius: '50%' },
+  }}
+/>
+
+// Adaptador enchufable (ej., dayjs, date-fns)
+import { DayjsAdapter } from 'j-ui/adapters/dayjs'
+<DatePicker adapter={new DayjsAdapter()} />
+```
+
+</details>
+
+---
+
+<details>
 <summary><strong>Divider</strong> - Linea separadora con texto opcional</summary>
 
 ### Divider
@@ -806,6 +2160,14 @@ import { Divider } from 'j-ui'
 | `medium` | 2px |
 | `thick` | 3px |
 | `number` | Valor personalizado en px |
+
+#### DOM Semántico
+
+| Slot | Descripción |
+|------|-------------|
+| `root` | Elemento contenedor exterior |
+| `line` | Elemento de la línea divisora |
+| `text` | Elemento del texto (cuando se proporcionan children) |
 
 #### Ejemplos
 
@@ -864,6 +2226,329 @@ import { Divider } from 'j-ui'
 <Divider dashed color="primary" thickness="medium" orientation="left">
   Seccion Importante
 </Divider>
+```
+
+</details>
+
+---
+
+<details>
+<summary><strong>Dropdown</strong> - Menús contextuales superpuestos</summary>
+
+### Dropdown
+
+Un componente de menú contextual que se activa al pasar el cursor, hacer clic o clic derecho. Soporta sub-menús anidados, grupos de items, divisores, items de peligro, renderizado personalizado del overlay, estado controlado, indicador de flecha y una variante compuesta `Dropdown.Button`.
+
+#### Importar
+
+```tsx
+import { Dropdown } from 'j-ui'
+```
+
+#### Props
+
+| Prop | Tipo | Por Defecto | Descripción |
+|------|------|-------------|-------------|
+| `children` | `ReactNode` | — | Elemento trigger |
+| `menu` | `DropdownMenuConfig` | — | Configuración del menú |
+| `trigger` | `DropdownTrigger[]` | `['hover']` | Tipo(s) de trigger: `'hover'`, `'click'`, `'contextMenu'` |
+| `placement` | `DropdownPlacement` | `'bottomLeft'` | Posición del menú |
+| `arrow` | `boolean` | `false` | Mostrar indicador de flecha |
+| `open` | `boolean` | — | Estado controlado de apertura |
+| `onOpenChange` | `(open: boolean) => void` | — | Callback al cambiar el estado |
+| `disabled` | `boolean` | `false` | Desactivar el dropdown |
+| `dropdownRender` | `(menu: ReactNode) => ReactNode` | — | Función de renderizado personalizado del overlay |
+| `className` | `string` | — | Clase CSS adicional |
+| `style` | `CSSProperties` | — | Estilos inline adicionales |
+| `classNames` | `DropdownClassNames` | — | Clases CSS para partes internas |
+| `styles` | `DropdownStyles` | — | Estilos para partes internas |
+
+#### DropdownMenuConfig
+
+```typescript
+interface DropdownMenuConfig {
+  items: DropdownMenuItemType[]   // Items del menú
+  onClick?: (info: { key: string; domEvent: MouseEvent }) => void  // Handler global de clic
+}
+```
+
+#### DropdownMenuItemType
+
+```typescript
+interface DropdownMenuItemType {
+  key: string                    // Clave única
+  label?: ReactNode              // Contenido del item
+  icon?: ReactNode               // Icono a la izquierda
+  disabled?: boolean             // Deshabilitar item
+  danger?: boolean               // Estilo peligro (rojo)
+  onClick?: (info: { key: string; domEvent: MouseEvent }) => void  // Handler individual
+  children?: DropdownMenuItemType[]  // Items del sub-menú
+  type?: 'divider' | 'group'    // Tipo especial
+  title?: ReactNode              // Título del grupo (cuando type: 'group')
+}
+```
+
+#### Posiciones
+
+| Posición | Descripción |
+|----------|-------------|
+| `bottom` | Debajo, centrado |
+| `bottomLeft` | Debajo, alineado a la izquierda |
+| `bottomRight` | Debajo, alineado a la derecha |
+| `top` | Arriba, centrado |
+| `topLeft` | Arriba, alineado a la izquierda |
+| `topRight` | Arriba, alineado a la derecha |
+
+#### Dropdown.Button
+
+Un botón dividido con una acción principal y un trigger de dropdown.
+
+| Prop | Tipo | Por Defecto | Descripción |
+|------|------|-------------|-------------|
+| `children` | `ReactNode` | — | Contenido del botón principal |
+| `menu` | `DropdownMenuConfig` | — | Configuración del menú |
+| `placement` | `DropdownPlacement` | `'bottomRight'` | Posición del menú |
+| `trigger` | `DropdownTrigger[]` | `['hover']` | Tipo(s) de trigger |
+| `onClick` | `(e: MouseEvent) => void` | — | Handler de clic del botón principal |
+| `icon` | `ReactNode` | `<ChevronDownIcon />` | Icono del botón dropdown |
+| `disabled` | `boolean` | `false` | Desactivar ambos botones |
+| `loading` | `boolean` | `false` | Estado de carga en botón principal |
+| `variant` | `ButtonVariant` | `'primary'` | Variante del botón |
+| `color` | `ButtonColor` | — | Color del botón |
+| `size` | `ButtonSize` | `'md'` | Tamaño del botón |
+| `className` | `string` | — | Clase CSS adicional |
+| `style` | `CSSProperties` | — | Estilos inline adicionales |
+| `classNames` | `DropdownClassNames` | — | Clases CSS para partes internas |
+| `styles` | `DropdownStyles` | — | Estilos para partes internas |
+
+#### DOM Semántico
+
+| Slot | Descripción |
+|------|-------------|
+| `root` | Elemento contenedor exterior |
+| `overlay` | Contenedor del menú superpuesto |
+| `item` | Item individual del menú |
+| `arrow` | Elemento indicador de flecha |
+
+#### Ejemplos
+
+```tsx
+// Dropdown básico (hover)
+<Dropdown
+  menu={{
+    items: [
+      { key: 'editar', label: 'Editar' },
+      { key: 'duplicar', label: 'Duplicar' },
+      { key: 'eliminar', label: 'Eliminar', danger: true },
+    ],
+  }}
+>
+  <a>Pasa el cursor</a>
+</Dropdown>
+
+// Trigger por clic
+<Dropdown
+  trigger={['click']}
+  menu={{
+    items: [
+      { key: 'perfil', label: 'Perfil' },
+      { key: 'ajustes', label: 'Ajustes' },
+      { key: 'salir', label: 'Cerrar sesión' },
+    ],
+  }}
+>
+  <Button>Haz clic</Button>
+</Dropdown>
+
+// Menú contextual (clic derecho)
+<Dropdown
+  trigger={['contextMenu']}
+  menu={{
+    items: [
+      { key: 'copiar', label: 'Copiar' },
+      { key: 'pegar', label: 'Pegar' },
+      { key: 'cortar', label: 'Cortar' },
+    ],
+  }}
+>
+  <div style={{ padding: 40, border: '1px dashed #ccc' }}>
+    Clic derecho aquí
+  </div>
+</Dropdown>
+
+// Con iconos
+<Dropdown
+  menu={{
+    items: [
+      { key: 'editar', label: 'Editar', icon: <EditIcon /> },
+      { key: 'copiar', label: 'Copiar', icon: <CopyIcon /> },
+      { key: 'eliminar', label: 'Eliminar', icon: <TrashIcon />, danger: true },
+    ],
+  }}
+>
+  <Button>Acciones</Button>
+</Dropdown>
+
+// Con divisores y grupos
+<Dropdown
+  menu={{
+    items: [
+      { key: 'nuevo', label: 'Nuevo Archivo' },
+      { key: 'abrir', label: 'Abrir Archivo' },
+      { key: 'd1', type: 'divider' },
+      {
+        key: 'recientes',
+        type: 'group',
+        title: 'Archivos Recientes',
+        children: [
+          { key: 'archivo1', label: 'documento.tsx' },
+          { key: 'archivo2', label: 'estilos.css' },
+        ],
+      },
+    ],
+  }}
+>
+  <Button>Archivo</Button>
+</Dropdown>
+
+// Sub-menús anidados
+<Dropdown
+  menu={{
+    items: [
+      { key: 'guardar', label: 'Guardar' },
+      {
+        key: 'exportar',
+        label: 'Exportar como...',
+        children: [
+          { key: 'pdf', label: 'PDF' },
+          { key: 'png', label: 'PNG' },
+          { key: 'svg', label: 'SVG' },
+        ],
+      },
+    ],
+  }}
+>
+  <Button>Archivo</Button>
+</Dropdown>
+
+// Items deshabilitados
+<Dropdown
+  menu={{
+    items: [
+      { key: 'editar', label: 'Editar' },
+      { key: 'eliminar', label: 'Eliminar', disabled: true },
+    ],
+  }}
+>
+  <Button>Acciones</Button>
+</Dropdown>
+
+// Con flecha
+<Dropdown
+  arrow
+  placement="bottom"
+  menu={{
+    items: [
+      { key: 'a', label: 'Opción A' },
+      { key: 'b', label: 'Opción B' },
+    ],
+  }}
+>
+  <Button>Con Flecha</Button>
+</Dropdown>
+
+// Opciones de posición
+<Dropdown
+  placement="topRight"
+  menu={{
+    items: [
+      { key: 'a', label: 'Opción A' },
+      { key: 'b', label: 'Opción B' },
+    ],
+  }}
+>
+  <Button>Arriba Derecha</Button>
+</Dropdown>
+
+// Handler global onClick
+<Dropdown
+  menu={{
+    items: [
+      { key: 'opt1', label: 'Opción 1' },
+      { key: 'opt2', label: 'Opción 2' },
+    ],
+    onClick: ({ key }) => console.log('Clic en:', key),
+  }}
+>
+  <Button>Seleccionar</Button>
+</Dropdown>
+
+// Estado controlado
+const [open, setOpen] = useState(false)
+
+<Dropdown
+  open={open}
+  onOpenChange={setOpen}
+  trigger={['click']}
+  menu={{
+    items: [
+      { key: 'a', label: 'Opción A' },
+      { key: 'b', label: 'Opción B' },
+    ],
+  }}
+>
+  <Button>Controlado</Button>
+</Dropdown>
+
+// Renderizado personalizado del overlay
+<Dropdown
+  trigger={['click']}
+  menu={{
+    items: [
+      { key: 'a', label: 'Opción A' },
+      { key: 'b', label: 'Opción B' },
+    ],
+  }}
+  dropdownRender={(menu) => (
+    <div>
+      {menu}
+      <div style={{ padding: 8, borderTop: '1px solid #eee' }}>
+        <a href="/ajustes">Más ajustes...</a>
+      </div>
+    </div>
+  )}
+>
+  <Button>Overlay Personalizado</Button>
+</Dropdown>
+
+// Dropdown.Button
+<Dropdown.Button
+  menu={{
+    items: [
+      { key: 'guardar-como', label: 'Guardar Como...' },
+      { key: 'exportar', label: 'Exportar' },
+    ],
+  }}
+  onClick={() => console.log('Clic en Guardar')}
+>
+  Guardar
+</Dropdown.Button>
+
+// Dropdown.Button con variantes
+<Dropdown.Button
+  variant="outlined"
+  color="success"
+  size="lg"
+  menu={{
+    items: [
+      { key: 'borrador', label: 'Guardar como Borrador' },
+      { key: 'plantilla', label: 'Guardar como Plantilla' },
+    ],
+  }}
+  onClick={() => console.log('Publicar')}
+>
+  Publicar
+</Dropdown.Button>
 ```
 
 </details>
@@ -1206,6 +2891,14 @@ Padding por defecto: 24px
 | `xl` | 1200px |
 | `xxl` | 1600px |
 
+#### DOM Semántico del Sider
+
+| Slot | Descripción |
+|------|-------------|
+| `root` | Elemento `<aside>` exterior |
+| `content` | Contenedor interno del contenido |
+| `trigger` | Botón disparador de colapso |
+
 #### Ejemplos
 
 ```tsx
@@ -1348,6 +3041,1610 @@ function ComponenteMenu() {
 ---
 
 <details>
+<summary><strong>Menu</strong> - Menú de navegación con múltiples modos</summary>
+
+### Menu
+
+Un componente de menú de navegación versátil que soporta modos vertical, horizontal e inline. Incluye sub-menús, grupos de items, divisores, gestión de selección (simple/múltiple), colapso inline y estado controlado/no controlado.
+
+#### Importar
+
+```tsx
+import { Menu } from 'j-ui'
+```
+
+#### Props
+
+| Prop | Tipo | Por Defecto | Descripción |
+|------|------|-------------|-------------|
+| `items` | `MenuItemType[]` | `[]` | Items del menú (declarativo) |
+| `mode` | `'vertical' \| 'horizontal' \| 'inline'` | `'vertical'` | Modo de visualización |
+| `selectedKeys` | `string[]` | — | Keys de items seleccionados (controlado) |
+| `defaultSelectedKeys` | `string[]` | `[]` | Keys seleccionados iniciales (no controlado) |
+| `openKeys` | `string[]` | — | Keys de sub-menús abiertos (controlado) |
+| `defaultOpenKeys` | `string[]` | `[]` | Keys de sub-menús abiertos iniciales (no controlado) |
+| `multiple` | `boolean` | `false` | Permitir selección múltiple |
+| `selectable` | `boolean` | `true` | Habilitar selección de items |
+| `inlineCollapsed` | `boolean` | `false` | Colapsar menú inline a solo iconos |
+| `inlineIndent` | `number` | `24` | Ancho de indentación (px) por nivel inline |
+| `triggerSubMenuAction` | `'hover' \| 'click'` | `'hover'` | Cómo se activan los sub-menús |
+| `onClick` | `(info: MenuClickInfo) => void` | — | Handler global de clic |
+| `onSelect` | `(info: MenuSelectInfo) => void` | — | Callback al seleccionar un item |
+| `onDeselect` | `(info: MenuSelectInfo) => void` | — | Callback al deseleccionar un item (modo múltiple) |
+| `onOpenChange` | `(openKeys: string[]) => void` | — | Callback al cambiar sub-menús abiertos |
+| `expandIcon` | `ReactNode` | — | Icono personalizado para expandir sub-menús |
+| `className` | `string` | — | Clase CSS adicional |
+| `style` | `CSSProperties` | — | Estilos inline adicionales |
+| `classNames` | `MenuClassNames` | — | Clases CSS para partes internas |
+| `styles` | `MenuStyles` | — | Estilos para partes internas |
+
+#### MenuItemType
+
+Una unión de los siguientes tipos:
+
+**MenuItemOption** — Item de menú regular:
+
+```typescript
+interface MenuItemOption {
+  key: string
+  label?: ReactNode       // Contenido del item
+  icon?: ReactNode        // Icono a la izquierda
+  disabled?: boolean      // Deshabilitar item
+  danger?: boolean        // Estilo peligro (rojo)
+  title?: string          // Atributo HTML title
+  onClick?: (info: MenuClickInfo) => void
+}
+```
+
+**SubMenuOption** — Item con hijos anidados:
+
+```typescript
+interface SubMenuOption {
+  key: string
+  label?: ReactNode       // Texto del trigger del sub-menú
+  icon?: ReactNode        // Icono a la izquierda
+  disabled?: boolean
+  children: MenuItemType[]  // Items anidados
+}
+```
+
+**MenuItemGroupOption** — Grupo visual con título:
+
+```typescript
+interface MenuItemGroupOption {
+  key?: string
+  type: 'group'
+  label?: ReactNode       // Título del grupo
+  children: MenuItemType[]
+}
+```
+
+**MenuDividerOption** — Línea separadora:
+
+```typescript
+interface MenuDividerOption {
+  key?: string
+  type: 'divider'
+  dashed?: boolean        // Estilo de línea discontinua
+}
+```
+
+#### Info de Callbacks
+
+```typescript
+interface MenuClickInfo {
+  key: string             // Key del item clicado
+  keyPath: string[]       // Ruta completa de keys del item a la raíz
+  domEvent: MouseEvent
+}
+
+interface MenuSelectInfo extends MenuClickInfo {
+  selectedKeys: string[]  // Todos los keys actualmente seleccionados
+}
+```
+
+#### DOM Semántico
+
+| Slot | Descripción |
+|------|-------------|
+| `root` | Elemento `<ul>` exterior |
+| `item` | Item individual del menú o trigger de sub-menú |
+| `submenu` | Contenedor `<ul>` del sub-menú (popup o inline) |
+| `group` | Contenedor `<li>` del grupo |
+| `groupTitle` | Elemento `<div>` del título del grupo |
+| `divider` | Elemento `<li>` divisor |
+
+#### Ejemplos
+
+```tsx
+// Menú vertical básico
+<Menu
+  items={[
+    { key: 'inicio', label: 'Inicio', icon: <HomeIcon /> },
+    { key: 'acerca', label: 'Acerca de' },
+    { key: 'contacto', label: 'Contacto' },
+  ]}
+  onClick={({ key }) => console.log('Clic en:', key)}
+/>
+
+// Menú horizontal
+<Menu
+  mode="horizontal"
+  items={[
+    { key: 'inicio', label: 'Inicio' },
+    { key: 'productos', label: 'Productos' },
+    { key: 'acerca', label: 'Acerca de' },
+  ]}
+  defaultSelectedKeys={['inicio']}
+/>
+
+// Con sub-menús
+<Menu
+  items={[
+    { key: 'bandeja', label: 'Bandeja', icon: <InboxIcon /> },
+    {
+      key: 'ajustes',
+      label: 'Ajustes',
+      icon: <SettingsIcon />,
+      children: [
+        { key: 'perfil', label: 'Perfil' },
+        { key: 'cuenta', label: 'Cuenta' },
+        { key: 'seguridad', label: 'Seguridad' },
+      ],
+    },
+    { key: 'salir', label: 'Cerrar sesión', danger: true },
+  ]}
+/>
+
+// Con grupos y divisores
+<Menu
+  items={[
+    {
+      key: 'grupo1',
+      type: 'group',
+      label: 'Navegación',
+      children: [
+        { key: 'inicio', label: 'Inicio' },
+        { key: 'panel', label: 'Panel' },
+      ],
+    },
+    { key: 'd1', type: 'divider' },
+    {
+      key: 'grupo2',
+      type: 'group',
+      label: 'Configuración',
+      children: [
+        { key: 'perfil', label: 'Perfil' },
+        { key: 'preferencias', label: 'Preferencias' },
+      ],
+    },
+  ]}
+/>
+
+// Divisor discontinuo
+<Menu
+  items={[
+    { key: 'item1', label: 'Item 1' },
+    { key: 'd1', type: 'divider', dashed: true },
+    { key: 'item2', label: 'Item 2' },
+  ]}
+/>
+
+// Modo inline (sidebar)
+<Menu
+  mode="inline"
+  defaultOpenKeys={['sub1']}
+  defaultSelectedKeys={['1']}
+  items={[
+    {
+      key: 'sub1',
+      label: 'Navegación Uno',
+      icon: <HomeIcon />,
+      children: [
+        { key: '1', label: 'Opción 1' },
+        { key: '2', label: 'Opción 2' },
+      ],
+    },
+    {
+      key: 'sub2',
+      label: 'Navegación Dos',
+      icon: <SettingsIcon />,
+      children: [
+        { key: '3', label: 'Opción 3' },
+        { key: '4', label: 'Opción 4' },
+      ],
+    },
+  ]}
+  style={{ width: 256 }}
+/>
+
+// Inline colapsado (sidebar solo iconos)
+<Menu
+  mode="inline"
+  inlineCollapsed={true}
+  items={[
+    { key: 'inicio', label: 'Inicio', icon: <HomeIcon /> },
+    {
+      key: 'ajustes',
+      label: 'Ajustes',
+      icon: <SettingsIcon />,
+      children: [
+        { key: 'perfil', label: 'Perfil' },
+        { key: 'cuenta', label: 'Cuenta' },
+      ],
+    },
+  ]}
+/>
+
+// Selección múltiple
+<Menu
+  multiple
+  items={[
+    { key: 'negrita', label: 'Negrita', icon: <BoldIcon /> },
+    { key: 'cursiva', label: 'Cursiva', icon: <ItalicIcon /> },
+    { key: 'subrayado', label: 'Subrayado', icon: <UnderlineIcon /> },
+  ]}
+  defaultSelectedKeys={['negrita']}
+  onSelect={({ selectedKeys }) => console.log('Seleccionados:', selectedKeys)}
+/>
+
+// Trigger por clic para sub-menús
+<Menu
+  triggerSubMenuAction="click"
+  items={[
+    { key: 'inicio', label: 'Inicio' },
+    {
+      key: 'mas',
+      label: 'Más',
+      children: [
+        { key: 'ayuda', label: 'Ayuda' },
+        { key: 'acerca', label: 'Acerca de' },
+      ],
+    },
+  ]}
+/>
+
+// Estado controlado
+const [selectedKeys, setSelectedKeys] = useState(['inicio'])
+const [openKeys, setOpenKeys] = useState<string[]>([])
+
+<Menu
+  selectedKeys={selectedKeys}
+  openKeys={openKeys}
+  onSelect={({ selectedKeys }) => setSelectedKeys(selectedKeys)}
+  onOpenChange={(keys) => setOpenKeys(keys)}
+  items={[
+    { key: 'inicio', label: 'Inicio' },
+    {
+      key: 'nav',
+      label: 'Navegación',
+      children: [
+        { key: 'pagina1', label: 'Página 1' },
+        { key: 'pagina2', label: 'Página 2' },
+      ],
+    },
+  ]}
+/>
+
+// Items deshabilitados
+<Menu
+  items={[
+    { key: 'activo', label: 'Activo' },
+    { key: 'deshabilitado', label: 'Deshabilitado', disabled: true },
+    { key: 'peligro', label: 'Eliminar', danger: true },
+  ]}
+/>
+
+// Icono de expansión personalizado
+<Menu
+  expandIcon={<span>+</span>}
+  items={[
+    {
+      key: 'sub',
+      label: 'Sub Menú',
+      children: [
+        { key: 'a', label: 'Item A' },
+        { key: 'b', label: 'Item B' },
+      ],
+    },
+  ]}
+/>
+
+// Menú no seleccionable (solo acciones)
+<Menu
+  selectable={false}
+  items={[
+    { key: 'copiar', label: 'Copiar', icon: <CopyIcon /> },
+    { key: 'pegar', label: 'Pegar', icon: <PasteIcon /> },
+  ]}
+  onClick={({ key }) => handleAction(key)}
+/>
+```
+
+</details>
+
+---
+
+<details>
+<summary><strong>NestedSelect</strong> - Selección jerárquica en cascada con búsqueda y modo múltiple</summary>
+
+### NestedSelect
+
+Un componente de selección en cascada para datos jerárquicos (ej. provincia/ciudad/distrito). Soporta selección simple y múltiple con checkboxes, búsqueda con resaltado, carga lazy, nombres de campos personalizados, renderizado personalizado, gestión de tags, expansión al pasar el mouse, y una variante de panel inline (`NestedSelect.Panel`).
+
+#### Importar
+
+```tsx
+import { NestedSelect } from 'j-ui'
+```
+
+#### Props
+
+| Prop | Tipo | Default | Descripción |
+|------|------|---------|-------------|
+| `options` | `NestedSelectOption[]` | `[]` | Opciones jerárquicas |
+| `value` | `(string\|number)[] \| (string\|number)[][]` | — | Valor controlado. Simple: array de ruta. Múltiple: array de rutas |
+| `defaultValue` | `(string\|number)[] \| (string\|number)[][]` | — | Valor por defecto (no controlado) |
+| `placeholder` | `string` | `'Seleccionar'` | Texto placeholder |
+| `open` | `boolean` | — | Visibilidad del desplegable (controlado) |
+| `disabled` | `boolean` | `false` | Deshabilitar el componente |
+| `allowClear` | `boolean` | `true` | Mostrar botón de limpieza |
+| `expandTrigger` | `'click' \| 'hover'` | `'click'` | Cómo expandir sub-opciones |
+| `changeOnSelect` | `boolean` | `false` | Permitir seleccionar niveles intermedios |
+| `showSearch` | `boolean \| NestedSelectSearchConfig` | `false` | Habilitar búsqueda |
+| `variant` | `'outlined' \| 'filled' \| 'borderless'` | `'outlined'` | Variante visual |
+| `status` | `'error' \| 'warning'` | — | Estado de validación |
+| `size` | `'large' \| 'middle' \| 'small'` | `'middle'` | Tamaño del componente |
+| `suffixIcon` | `ReactNode` | chevron | Icono sufijo personalizado |
+| `expandIcon` | `ReactNode` | chevron-right | Icono de expansión personalizado |
+| `notFoundContent` | `ReactNode` | `'Sin resultados'` | Contenido cuando la búsqueda no tiene coincidencias |
+| `displayRender` | `(labels, selectedOptions) => ReactNode` | — | Renderizado personalizado del valor (modo simple) |
+| `fieldNames` | `NestedSelectFieldNames` | — | Mapeo de nombres de campos personalizados |
+| `placement` | `NestedSelectPlacement` | `'bottomLeft'` | Posición del desplegable |
+| `multiple` | `boolean` | `false` | Habilitar selección múltiple con checkboxes |
+| `showCheckedStrategy` | `'SHOW_PARENT' \| 'SHOW_CHILD'` | `'SHOW_CHILD'` | Estrategia de visualización de tags en modo múltiple |
+| `maxTagCount` | `number` | — | Máximo de tags visibles en modo múltiple |
+| `maxTagPlaceholder` | `ReactNode \| ((omitted) => ReactNode)` | — | Placeholder para tags ocultos |
+| `tagRender` | `(props: NestedSelectTagRenderProps) => ReactNode` | — | Renderizado personalizado de tags |
+| `loadData` | `(selectedOptions) => void` | — | Callback para carga lazy |
+| `prefix` | `ReactNode` | — | Contenido antes del valor en el selector |
+| `popupRender` | `(menus: ReactNode) => ReactNode` | — | Wrapper personalizado del contenido del desplegable |
+| `onChange` | `(value, selectedOptions) => void` | — | Llamado cuando cambia la selección |
+| `onDropdownVisibleChange` | `(open: boolean) => void` | — | Llamado cuando cambia la visibilidad del desplegable |
+| `className` | `string` | — | Clase CSS para el elemento raíz |
+| `style` | `CSSProperties` | — | Estilos inline para el elemento raíz |
+| `classNames` | `NestedSelectClassNames` | — | Clases CSS para partes internas |
+| `styles` | `NestedSelectStyles` | — | Estilos inline para partes internas |
+
+#### Props de NestedSelect.Panel
+
+Una versión inline de los menús en cascada (sin desplegable/selector).
+
+| Prop | Tipo | Default | Descripción |
+|------|------|---------|-------------|
+| `options` | `NestedSelectOption[]` | `[]` | Opciones jerárquicas |
+| `value` | `(string\|number)[] \| (string\|number)[][]` | — | Valor controlado |
+| `defaultValue` | `(string\|number)[] \| (string\|number)[][]` | — | Valor por defecto |
+| `onChange` | `(value, selectedOptions) => void` | — | Llamado cuando cambia la selección |
+| `multiple` | `boolean` | `false` | Habilitar selección múltiple |
+| `expandTrigger` | `'click' \| 'hover'` | `'click'` | Cómo expandir sub-opciones |
+| `changeOnSelect` | `boolean` | `false` | Permitir seleccionar niveles intermedios |
+| `fieldNames` | `NestedSelectFieldNames` | — | Mapeo de nombres de campos |
+| `expandIcon` | `ReactNode` | — | Icono de expansión personalizado |
+| `disabled` | `boolean` | `false` | Deshabilitar el panel |
+
+#### Tipos
+
+```tsx
+type NestedSelectExpandTrigger = 'click' | 'hover'
+type NestedSelectPlacement = 'bottomLeft' | 'bottomRight' | 'topLeft' | 'topRight'
+type NestedSelectSize = 'large' | 'middle' | 'small'
+type NestedSelectVariant = 'outlined' | 'filled' | 'borderless'
+type NestedSelectStatus = 'error' | 'warning'
+type NestedSelectFieldNames = { label?: string; value?: string; children?: string }
+type NestedSelectShowCheckedStrategy = 'SHOW_PARENT' | 'SHOW_CHILD'
+
+interface NestedSelectOption {
+  value: string | number
+  label?: ReactNode
+  children?: NestedSelectOption[]
+  disabled?: boolean
+  disableCheckbox?: boolean
+  isLeaf?: boolean
+  loading?: boolean
+}
+
+interface NestedSelectSearchConfig {
+  filter?: (inputValue: string, path: NestedSelectOption[]) => boolean
+  render?: (inputValue: string, path: NestedSelectOption[]) => ReactNode
+  limit?: number | false
+}
+
+interface NestedSelectTagRenderProps {
+  label: ReactNode
+  value: (string | number)[]
+  closable: boolean
+  onClose: () => void
+}
+```
+
+#### DOM Semántico
+
+| Slot | Descripción |
+|------|-------------|
+| `root` | Contenedor exterior |
+| `selector` | Elemento trigger/input |
+| `dropdown` | Contenedor del popup desplegable |
+| `menu` | Cada columna de menú en cascada |
+| `option` | Elemento individual de opción |
+
+#### Ejemplos
+
+**Uso básico**
+
+```tsx
+<NestedSelect
+  options={[
+    {
+      value: 'zhejiang',
+      label: 'Zhejiang',
+      children: [
+        { value: 'hangzhou', label: 'Hangzhou' },
+        { value: 'ningbo', label: 'Ningbo' },
+      ],
+    },
+    {
+      value: 'jiangsu',
+      label: 'Jiangsu',
+      children: [
+        { value: 'nanjing', label: 'Nanjing' },
+      ],
+    },
+  ]}
+  placeholder="Seleccionar ubicación"
+/>
+```
+
+**Valor controlado**
+
+```tsx
+const [value, setValue] = useState<(string | number)[]>([])
+
+<NestedSelect
+  value={value}
+  onChange={(val) => setValue(val)}
+  options={options}
+/>
+```
+
+**Expandir al pasar el mouse**
+
+```tsx
+<NestedSelect
+  expandTrigger="hover"
+  options={options}
+/>
+```
+
+**Permitir seleccionar niveles intermedios**
+
+```tsx
+<NestedSelect
+  changeOnSelect
+  options={options}
+/>
+```
+
+**Con búsqueda**
+
+```tsx
+<NestedSelect
+  showSearch
+  options={options}
+  placeholder="Buscar..."
+/>
+```
+
+**Filtro y render de búsqueda personalizados**
+
+```tsx
+<NestedSelect
+  showSearch={{
+    filter: (inputValue, path) =>
+      path.some((opt) => opt.label?.toString().includes(inputValue)),
+    render: (inputValue, path) =>
+      path.map((opt) => opt.label).join(' > '),
+    limit: 20,
+  }}
+  options={options}
+/>
+```
+
+**Selección múltiple**
+
+```tsx
+<NestedSelect
+  multiple
+  options={options}
+  placeholder="Seleccionar múltiples..."
+/>
+```
+
+**Estrategia SHOW_PARENT**
+
+```tsx
+<NestedSelect
+  multiple
+  showCheckedStrategy={NestedSelect.SHOW_PARENT}
+  options={options}
+/>
+```
+
+**Máximo de tags**
+
+```tsx
+<NestedSelect
+  multiple
+  maxTagCount={2}
+  maxTagPlaceholder={(omitted) => `+${omitted.length} más`}
+  options={options}
+/>
+```
+
+**Renderizado personalizado del valor**
+
+```tsx
+<NestedSelect
+  displayRender={(labels) => labels.join(' > ')}
+  options={options}
+/>
+```
+
+**Nombres de campos personalizados**
+
+```tsx
+<NestedSelect
+  fieldNames={{ label: 'nombre', value: 'codigo', children: 'items' }}
+  options={[
+    { codigo: 'es', nombre: 'España', items: [{ codigo: 'mad', nombre: 'Madrid' }] },
+  ]}
+/>
+```
+
+**Carga lazy**
+
+```tsx
+const [options, setOptions] = useState(initialOptions)
+
+<NestedSelect
+  options={options}
+  loadData={(selectedOptions) => {
+    const target = selectedOptions[selectedOptions.length - 1]
+    target.loading = true
+    // Obtener hijos...
+    setTimeout(() => {
+      target.loading = false
+      target.children = [{ value: 'hijo1', label: 'Hijo 1' }]
+      setOptions([...options])
+    }, 1000)
+  }}
+/>
+```
+
+**Variante Panel inline**
+
+```tsx
+<NestedSelect.Panel
+  options={options}
+  onChange={(value, selectedOptions) => console.log(value)}
+/>
+```
+
+**Deshabilitado y estado de validación**
+
+```tsx
+<NestedSelect disabled options={options} value={['zhejiang', 'hangzhou']} />
+<NestedSelect status="error" options={options} />
+<NestedSelect status="warning" options={options} />
+```
+
+**Tamaños y variantes**
+
+```tsx
+<NestedSelect size="small" options={options} />
+<NestedSelect size="middle" options={options} />
+<NestedSelect size="large" options={options} />
+<NestedSelect variant="filled" options={options} />
+<NestedSelect variant="borderless" options={options} />
+```
+
+</details>
+
+---
+
+<details>
+<summary><strong>Pagination</strong> - Navegación por páginas con selector de tamaño y salto rápido</summary>
+
+### Pagination
+
+Un componente de navegación para dividir el contenido en múltiples páginas. Soporta estado controlado/no controlado, selección de tamaño de página, salto rápido, modo simple, renderizado personalizado de items, y dos tamaños.
+
+#### Importar
+
+```tsx
+import { Pagination } from 'j-ui'
+```
+
+#### Props
+
+| Prop | Tipo | Default | Descripción |
+|------|------|---------|-------------|
+| `total` | `number` | `0` | Número total de elementos |
+| `current` | `number` | — | Página actual (controlado) |
+| `defaultCurrent` | `number` | `1` | Página inicial por defecto (no controlado) |
+| `pageSize` | `number` | — | Elementos por página (controlado) |
+| `defaultPageSize` | `number` | `10` | Elementos por página por defecto (no controlado) |
+| `pageSizeOptions` | `number[]` | `[10, 20, 50, 100]` | Opciones para el selector de tamaño de página |
+| `showSizeChanger` | `boolean` | auto (`total > 50`) | Mostrar selector de tamaño de página |
+| `showQuickJumper` | `boolean` | `false` | Mostrar input de salto rápido |
+| `showTotal` | `(total, range) => ReactNode` | — | Función para mostrar información del total |
+| `simple` | `boolean` | `false` | Modo simple (input + total de páginas) |
+| `size` | `'default' \| 'small'` | `'default'` | Tamaño del paginador |
+| `disabled` | `boolean` | `false` | Deshabilitar todas las interacciones |
+| `hideOnSinglePage` | `boolean` | `false` | Ocultar cuando solo hay una página |
+| `showLessItems` | `boolean` | `false` | Mostrar menos botones de página |
+| `showTitle` | `boolean` | `true` | Mostrar tooltips en los botones |
+| `itemRender` | `PaginationItemRender` | — | Función de renderizado personalizado para los items |
+| `onChange` | `(page, pageSize) => void` | — | Llamado cuando cambia la página o el tamaño |
+| `onShowSizeChange` | `(current, size) => void` | — | Llamado cuando cambia el tamaño de página |
+| `className` | `string` | — | Clase CSS para el elemento raíz |
+| `style` | `CSSProperties` | — | Estilos inline para el elemento raíz |
+| `classNames` | `PaginationClassNames` | — | Clases CSS para partes internas |
+| `styles` | `PaginationStyles` | — | Estilos inline para partes internas |
+
+#### Tipos
+
+```tsx
+type PaginationSize = 'default' | 'small'
+
+type PaginationItemType = 'page' | 'prev' | 'next' | 'jump-prev' | 'jump-next'
+
+type PaginationItemRender = (
+  page: number,
+  type: PaginationItemType,
+  originalElement: ReactNode,
+) => ReactNode
+```
+
+#### DOM Semántico
+
+| Slot | Descripción |
+|------|-------------|
+| `root` | Contenedor `<nav>` exterior |
+| `item` | Cada botón de página/navegación |
+| `options` | Contenedor del selector de tamaño y salto rápido |
+
+#### Ejemplos
+
+**Uso básico**
+
+```tsx
+<Pagination total={50} />
+```
+
+**Página actual controlada**
+
+```tsx
+const [page, setPage] = useState(1)
+
+<Pagination
+  current={page}
+  total={100}
+  onChange={(p) => setPage(p)}
+/>
+```
+
+**Mostrar total y salto rápido**
+
+```tsx
+<Pagination
+  total={500}
+  showTotal={(total, range) => `${range[0]}-${range[1]} de ${total} elementos`}
+  showQuickJumper
+/>
+```
+
+**Selector de tamaño de página**
+
+```tsx
+<Pagination
+  total={200}
+  showSizeChanger
+  pageSizeOptions={[10, 25, 50]}
+  onShowSizeChange={(current, size) => console.log(current, size)}
+/>
+```
+
+**Tamaño pequeño**
+
+```tsx
+<Pagination total={100} size="small" />
+```
+
+**Modo simple**
+
+```tsx
+<Pagination total={100} simple />
+```
+
+**Renderizado personalizado de items**
+
+```tsx
+<Pagination
+  total={100}
+  itemRender={(page, type, originalElement) => {
+    if (type === 'prev') return <a href="#">Anterior</a>
+    if (type === 'next') return <a href="#">Siguiente</a>
+    return originalElement
+  }}
+/>
+```
+
+**Ocultar con una sola página**
+
+```tsx
+<Pagination total={5} pageSize={10} hideOnSinglePage />
+```
+
+**Estado deshabilitado**
+
+```tsx
+<Pagination total={100} disabled />
+```
+
+**Mostrar menos items**
+
+```tsx
+<Pagination total={500} showLessItems />
+```
+
+</details>
+
+---
+
+<details>
+<summary><strong>Space</strong> - Espaciado y agrupación compacta para elementos inline</summary>
+
+### Space
+
+Un componente para establecer el espaciado entre elementos inline. Soporta dirección horizontal/vertical, tamaños personalizados, separadores, y un subcomponente `Space.Compact` para agrupar elementos sin espacios entre ellos.
+
+#### Importar
+
+```tsx
+import { Space } from 'j-ui'
+```
+
+#### Props
+
+| Prop | Tipo | Por Defecto | Descripción |
+|------|------|-------------|-------------|
+| `children` | `ReactNode` | — | Contenido |
+| `size` | `SpaceSize \| [SpaceSize, SpaceSize]` | `'small'` | Espacio entre elementos. Puede ser un valor o `[horizontal, vertical]` |
+| `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | Orientación |
+| `align` | `'start' \| 'end' \| 'center' \| 'baseline'` | `'center'` (horizontal) | Alineación en el eje cruzado |
+| `wrap` | `boolean` | `false` | Permitir wrap cuando se desborden los items |
+| `split` | `ReactNode` | — | Elemento separador entre items |
+| `className` | `string` | — | Clase CSS adicional |
+| `style` | `CSSProperties` | — | Estilos inline adicionales |
+
+#### SpaceSize
+
+| Valor | Tamaño |
+|-------|--------|
+| `'small'` | 8px |
+| `'middle'` | 16px |
+| `'large'` | 24px |
+| `number` | Valor personalizado en px |
+
+#### Space.Compact
+
+Agrupa elementos eliminando espacios y ajustando el border-radius para que aparezcan como una sola unidad.
+
+| Prop | Tipo | Por Defecto | Descripción |
+|------|------|-------------|-------------|
+| `children` | `ReactNode` | — | Contenido |
+| `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | Dirección del grupo compacto |
+| `block` | `boolean` | `false` | Ocupa el 100% del ancho disponible |
+| `className` | `string` | — | Clase CSS adicional |
+| `style` | `CSSProperties` | — | Estilos inline adicionales |
+
+#### Hook: useCompactItemContext
+
+Devuelve información de contexto para items dentro de `Space.Compact`:
+
+```typescript
+interface CompactItemContextValue {
+  isFirstItem: boolean
+  isLastItem: boolean
+  direction: 'horizontal' | 'vertical'
+}
+```
+
+#### DOM Semántico
+
+| Slot | Descripción |
+|------|-------------|
+| `root` | Elemento contenedor exterior |
+| `item` | Contenedor individual de cada item |
+| `separator` | Elemento separador (split) |
+
+#### Ejemplos
+
+```tsx
+// Espaciado horizontal básico
+<Space>
+  <Button>Botón 1</Button>
+  <Button>Botón 2</Button>
+  <Button>Botón 3</Button>
+</Space>
+
+// Espaciado vertical
+<Space direction="vertical">
+  <Text>Línea 1</Text>
+  <Text>Línea 2</Text>
+  <Text>Línea 3</Text>
+</Space>
+
+// Tamaño personalizado
+<Space size="large">
+  <Badge>Tag 1</Badge>
+  <Badge>Tag 2</Badge>
+</Space>
+
+// Tamaño numérico
+<Space size={32}>
+  <Button>A</Button>
+  <Button>B</Button>
+</Space>
+
+// Tamaños horizontal y vertical diferentes
+<Space size={['middle', 'large']} wrap>
+  <Button>1</Button>
+  <Button>2</Button>
+  <Button>3</Button>
+  <Button>4</Button>
+</Space>
+
+// Con separador
+<Space split={<Divider type="vertical" />}>
+  <a href="#">Enlace 1</a>
+  <a href="#">Enlace 2</a>
+  <a href="#">Enlace 3</a>
+</Space>
+
+// Modo wrap
+<Space wrap size="middle">
+  {tags.map((tag) => (
+    <Badge key={tag}>{tag}</Badge>
+  ))}
+</Space>
+
+// Alineación
+<Space align="baseline">
+  <Text style={{ fontSize: 24 }}>Grande</Text>
+  <Text style={{ fontSize: 12 }}>Pequeño</Text>
+</Space>
+
+// Space.Compact - grupo horizontal
+<Space.Compact>
+  <Button>Izquierda</Button>
+  <Button>Centro</Button>
+  <Button>Derecha</Button>
+</Space.Compact>
+
+// Space.Compact - grupo vertical
+<Space.Compact direction="vertical">
+  <Button>Arriba</Button>
+  <Button>Medio</Button>
+  <Button>Abajo</Button>
+</Space.Compact>
+
+// Space.Compact - ancho completo
+<Space.Compact block>
+  <Input style={{ flex: 1 }} />
+  <Button>Buscar</Button>
+</Space.Compact>
+```
+
+</details>
+
+---
+
+<details>
+<summary><strong>Splitter</strong> - Paneles redimensionables</summary>
+
+### Splitter
+
+Un componente para crear paneles redimensionables. Soporta orientación horizontal/vertical, paneles colapsables, restricciones min/max, tamaños controlados y modo lazy de redimensionamiento.
+
+#### Importar
+
+```tsx
+import { Splitter } from 'j-ui'
+```
+
+#### Props
+
+| Prop | Tipo | Por Defecto | Descripción |
+|------|------|-------------|-------------|
+| `children` | `ReactNode` | — | Solo acepta `Splitter.Panel` como hijos |
+| `orientation` | `'horizontal' \| 'vertical'` | `'horizontal'` | Dirección del split |
+| `lazy` | `boolean` | `false` | Modo lazy: solo actualiza tamaños al soltar |
+| `onResize` | `(sizes: number[]) => void` | — | Callback cuando cambian los tamaños |
+| `onResizeStart` | `(sizes: number[]) => void` | — | Callback al empezar a arrastrar |
+| `onResizeEnd` | `(sizes: number[]) => void` | — | Callback al terminar de arrastrar |
+| `className` | `string` | — | Clase CSS adicional |
+| `style` | `CSSProperties` | — | Estilos inline adicionales |
+
+#### Splitter.Panel
+
+| Prop | Tipo | Por Defecto | Descripción |
+|------|------|-------------|-------------|
+| `children` | `ReactNode` | — | Contenido del panel |
+| `defaultSize` | `number \| string` | — | Tamaño inicial (px o porcentaje como `"50%"`) |
+| `size` | `number \| string` | — | Tamaño controlado |
+| `min` | `number \| string` | — | Tamaño mínimo (px o porcentaje) |
+| `max` | `number \| string` | — | Tamaño máximo (px o porcentaje) |
+| `resizable` | `boolean` | `true` | Permitir redimensionar este panel |
+| `collapsible` | `boolean \| { start?: boolean; end?: boolean }` | `false` | Permitir colapsar. `true` = ambos lados, o especificar por lado |
+| `className` | `string` | — | Clase CSS adicional |
+| `style` | `CSSProperties` | — | Estilos inline adicionales |
+
+#### DOM Semántico
+
+| Slot | Descripción |
+|------|-------------|
+| `root` | Elemento contenedor exterior |
+| `panel` | Contenedor individual de cada panel |
+| `bar` | Barra de arrastre entre paneles |
+| `collapseButton` | Botón de colapsar/expandir en la barra |
+
+#### Ejemplos
+
+```tsx
+// Split básico de dos paneles
+<Splitter style={{ height: 400 }}>
+  <Splitter.Panel>
+    <div>Panel Izquierdo</div>
+  </Splitter.Panel>
+  <Splitter.Panel>
+    <div>Panel Derecho</div>
+  </Splitter.Panel>
+</Splitter>
+
+// Split vertical
+<Splitter orientation="vertical" style={{ height: 600 }}>
+  <Splitter.Panel>
+    <div>Panel Superior</div>
+  </Splitter.Panel>
+  <Splitter.Panel>
+    <div>Panel Inferior</div>
+  </Splitter.Panel>
+</Splitter>
+
+// Con tamaños por defecto
+<Splitter style={{ height: 400 }}>
+  <Splitter.Panel defaultSize="30%">
+    <div>Sidebar (30%)</div>
+  </Splitter.Panel>
+  <Splitter.Panel defaultSize="70%">
+    <div>Contenido (70%)</div>
+  </Splitter.Panel>
+</Splitter>
+
+// Tres paneles
+<Splitter style={{ height: 400 }}>
+  <Splitter.Panel defaultSize="25%">
+    <div>Izquierda</div>
+  </Splitter.Panel>
+  <Splitter.Panel defaultSize="50%">
+    <div>Centro</div>
+  </Splitter.Panel>
+  <Splitter.Panel defaultSize="25%">
+    <div>Derecha</div>
+  </Splitter.Panel>
+</Splitter>
+
+// Con restricciones min y max
+<Splitter style={{ height: 400 }}>
+  <Splitter.Panel min="20%" max="60%">
+    <div>Restringido (20%-60%)</div>
+  </Splitter.Panel>
+  <Splitter.Panel>
+    <div>Flexible</div>
+  </Splitter.Panel>
+</Splitter>
+
+// Min/max en píxeles
+<Splitter style={{ height: 400 }}>
+  <Splitter.Panel min={200} max={500}>
+    <div>200px-500px</div>
+  </Splitter.Panel>
+  <Splitter.Panel>
+    <div>Restante</div>
+  </Splitter.Panel>
+</Splitter>
+
+// Paneles colapsables
+<Splitter style={{ height: 400 }}>
+  <Splitter.Panel collapsible>
+    <div>Panel colapsable</div>
+  </Splitter.Panel>
+  <Splitter.Panel>
+    <div>Contenido principal</div>
+  </Splitter.Panel>
+</Splitter>
+
+// Colapsable en un lado específico
+<Splitter style={{ height: 400 }}>
+  <Splitter.Panel collapsible={{ end: true }}>
+    <div>Colapsar hacia el final</div>
+  </Splitter.Panel>
+  <Splitter.Panel collapsible={{ start: true }}>
+    <div>Colapsar hacia el inicio</div>
+  </Splitter.Panel>
+</Splitter>
+
+// Panel no redimensionable
+<Splitter style={{ height: 400 }}>
+  <Splitter.Panel defaultSize={80} resizable={false}>
+    <div>Sidebar fijo de 80px</div>
+  </Splitter.Panel>
+  <Splitter.Panel>
+    <div>Contenido flexible</div>
+  </Splitter.Panel>
+</Splitter>
+
+// Modo lazy (línea de preview al arrastrar)
+<Splitter lazy style={{ height: 400 }}>
+  <Splitter.Panel>
+    <div>Izquierda</div>
+  </Splitter.Panel>
+  <Splitter.Panel>
+    <div>Derecha</div>
+  </Splitter.Panel>
+</Splitter>
+
+// Con callbacks de redimensionamiento
+<Splitter
+  style={{ height: 400 }}
+  onResizeStart={(sizes) => console.log('Inicio:', sizes)}
+  onResize={(sizes) => console.log('Redimensionando:', sizes)}
+  onResizeEnd={(sizes) => console.log('Fin:', sizes)}
+>
+  <Splitter.Panel>
+    <div>Izquierda</div>
+  </Splitter.Panel>
+  <Splitter.Panel>
+    <div>Derecha</div>
+  </Splitter.Panel>
+</Splitter>
+
+// Splitters anidados (layout tipo IDE)
+<Splitter style={{ height: '100vh' }}>
+  <Splitter.Panel defaultSize="20%" min="15%" collapsible>
+    <div>Explorador de Archivos</div>
+  </Splitter.Panel>
+  <Splitter.Panel>
+    <Splitter orientation="vertical">
+      <Splitter.Panel defaultSize="70%">
+        <div>Editor</div>
+      </Splitter.Panel>
+      <Splitter.Panel collapsible>
+        <div>Terminal</div>
+      </Splitter.Panel>
+    </Splitter>
+  </Splitter.Panel>
+</Splitter>
+```
+
+</details>
+
+---
+
+<details>
+<summary><strong>Steps</strong> - Barra de navegación paso a paso con múltiples modos de visualización</summary>
+
+### Steps
+
+Un componente de navegación que guía a los usuarios a través de un flujo de trabajo de varios pasos. Soporta dirección horizontal y vertical, tipo navegación, estilo de puntos, porcentaje de progreso, iconos personalizados, pasos clicables y dos tamaños.
+
+#### Importar
+
+```tsx
+import { Steps } from 'j-ui'
+```
+
+#### Props
+
+| Prop | Tipo | Default | Descripción |
+|------|------|---------|-------------|
+| `items` | `StepItem[]` | `[]` | Definiciones de los pasos |
+| `current` | `number` | `0` | Índice del paso actual |
+| `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | Dirección del layout |
+| `size` | `'default' \| 'small'` | `'default'` | Tamaño de los pasos |
+| `status` | `StepStatus` | `'process'` | Estado del paso actual |
+| `type` | `'default' \| 'navigation'` | `'default'` | Tipo de visualización |
+| `labelPlacement` | `'horizontal' \| 'vertical'` | `'horizontal'` | Posición de la etiqueta respecto al icono |
+| `progressDot` | `boolean \| ProgressDotRender` | `false` | Usar estilo de puntos o render personalizado |
+| `percent` | `number` | — | Anillo de porcentaje de progreso en el icono del paso actual |
+| `initial` | `number` | `0` | Número inicial para la numeración de pasos |
+| `onChange` | `(current: number) => void` | — | Callback al hacer clic en un paso (habilita pasos clicables) |
+| `className` | `string` | — | Clase CSS para el elemento raíz |
+| `style` | `CSSProperties` | — | Estilos inline para el elemento raíz |
+| `classNames` | `StepsClassNames` | — | Clases CSS para partes internas |
+| `styles` | `StepsStyles` | — | Estilos inline para partes internas |
+
+#### Tipos
+
+```tsx
+type StepStatus = 'wait' | 'process' | 'finish' | 'error'
+
+type StepsSize = 'default' | 'small'
+
+type StepsType = 'default' | 'navigation'
+
+type StepsDirection = 'horizontal' | 'vertical'
+
+type StepsLabelPlacement = 'horizontal' | 'vertical'
+
+type ProgressDotRender = (
+  dot: ReactNode,
+  info: { index: number; status: StepStatus; title: ReactNode; description: ReactNode },
+) => ReactNode
+
+interface StepItem {
+  title?: ReactNode
+  description?: ReactNode
+  subTitle?: ReactNode
+  icon?: ReactNode
+  status?: StepStatus
+  disabled?: boolean
+}
+```
+
+#### DOM Semántico
+
+| Slot | Descripción |
+|------|-------------|
+| `root` | Contenedor exterior |
+| `step` | Contenedor individual de cada paso |
+| `icon` | Círculo del icono/número del paso |
+| `content` | Contenedor del título y la descripción |
+| `tail` | Línea conectora entre pasos |
+
+#### Ejemplos
+
+**Uso básico**
+
+```tsx
+<Steps
+  current={1}
+  items={[
+    { title: 'Finalizado', description: 'Esta es una descripción' },
+    { title: 'En Progreso', description: 'Esta es una descripción' },
+    { title: 'En Espera', description: 'Esta es una descripción' },
+  ]}
+/>
+```
+
+**Tamaño pequeño**
+
+```tsx
+<Steps
+  size="small"
+  current={1}
+  items={[
+    { title: 'Finalizado' },
+    { title: 'En Progreso' },
+    { title: 'En Espera' },
+  ]}
+/>
+```
+
+**Dirección vertical**
+
+```tsx
+<Steps
+  direction="vertical"
+  current={1}
+  items={[
+    { title: 'Paso 1', description: 'Descripción del paso 1' },
+    { title: 'Paso 2', description: 'Descripción del paso 2' },
+    { title: 'Paso 3', description: 'Descripción del paso 3' },
+  ]}
+/>
+```
+
+**Con iconos personalizados**
+
+```tsx
+<Steps
+  current={1}
+  items={[
+    { title: 'Iniciar sesión', icon: <UserIcon /> },
+    { title: 'Verificación', icon: <IdIcon /> },
+    { title: 'Listo', icon: <CheckIcon /> },
+  ]}
+/>
+```
+
+**Estado de error**
+
+```tsx
+<Steps
+  current={1}
+  status="error"
+  items={[
+    { title: 'Finalizado' },
+    { title: 'Error', description: 'Algo salió mal' },
+    { title: 'En Espera' },
+  ]}
+/>
+```
+
+**Estilo de puntos**
+
+```tsx
+<Steps
+  progressDot
+  current={1}
+  items={[
+    { title: 'Finalizado', description: 'Esta es una descripción' },
+    { title: 'En Progreso', description: 'Esta es una descripción' },
+    { title: 'En Espera', description: 'Esta es una descripción' },
+  ]}
+/>
+```
+
+**Tipo navegación**
+
+```tsx
+<Steps
+  type="navigation"
+  current={1}
+  onChange={(step) => console.log(step)}
+  items={[
+    { title: 'Paso 1' },
+    { title: 'Paso 2' },
+    { title: 'Paso 3' },
+  ]}
+/>
+```
+
+**Pasos clicables**
+
+```tsx
+const [current, setCurrent] = useState(0)
+
+<Steps
+  current={current}
+  onChange={setCurrent}
+  items={[
+    { title: 'Paso 1' },
+    { title: 'Paso 2' },
+    { title: 'Paso 3' },
+  ]}
+/>
+```
+
+**Con porcentaje de progreso**
+
+```tsx
+<Steps
+  current={1}
+  percent={60}
+  items={[
+    { title: 'Finalizado' },
+    { title: 'En Progreso' },
+    { title: 'En Espera' },
+  ]}
+/>
+```
+
+**Etiquetas verticales**
+
+```tsx
+<Steps
+  current={1}
+  labelPlacement="vertical"
+  items={[
+    { title: 'Finalizado' },
+    { title: 'En Progreso' },
+    { title: 'En Espera' },
+  ]}
+/>
+```
+
+**Estado por paso y deshabilitado**
+
+```tsx
+<Steps
+  items={[
+    { title: 'Finalizado', status: 'finish' },
+    { title: 'Error', status: 'error' },
+    { title: 'Deshabilitado', disabled: true },
+  ]}
+/>
+```
+
+**Render personalizado de puntos**
+
+```tsx
+<Steps
+  current={1}
+  progressDot={(dot, { index, status }) => (
+    <Tooltip title={`Paso ${index + 1}: ${status}`}>
+      {dot}
+    </Tooltip>
+  )}
+  items={[
+    { title: 'Finalizado', description: 'Listo' },
+    { title: 'En Progreso', description: 'Trabajando' },
+    { title: 'En Espera', description: 'Pendiente' },
+  ]}
+/>
+```
+
+</details>
+
+---
+
+<details>
+<summary><strong>Tabs</strong> - Navegación por pestañas con modos línea, tarjeta y editable</summary>
+
+### Tabs
+
+Un componente de navegación por pestañas para alternar entre paneles de contenido. Soporta tipos línea, tarjeta y tarjeta editable, cuatro posiciones de pestañas (arriba/abajo/izquierda/derecha), scroll con flechas cuando se desbordan, indicador ink bar con tamaño y alineación personalizables, contenido extra en la barra de pestañas, y estado controlado/no controlado.
+
+#### Importar
+
+```tsx
+import { Tabs } from 'j-ui'
+```
+
+#### Props
+
+| Prop | Tipo | Default | Descripción |
+|------|------|---------|-------------|
+| `items` | `TabItem[]` | `[]` | Definiciones de las pestañas |
+| `activeKey` | `string` | — | Clave de la pestaña activa (controlado) |
+| `defaultActiveKey` | `string` | clave del primer item | Clave de la pestaña activa por defecto (no controlado) |
+| `type` | `'line' \| 'card' \| 'editable-card'` | `'line'` | Estilo de visualización |
+| `size` | `'large' \| 'middle' \| 'small'` | `'middle'` | Tamaño de las pestañas |
+| `tabPosition` | `'top' \| 'bottom' \| 'left' \| 'right'` | `'top'` | Posición de la barra de pestañas |
+| `centered` | `boolean` | `false` | Centrar las pestañas en la barra |
+| `animated` | `boolean \| { inkBar: boolean; tabPane: boolean }` | `{ inkBar: true, tabPane: false }` | Configuración de animaciones |
+| `tabBarGutter` | `number` | — | Espacio entre pestañas en píxeles |
+| `tabBarStyle` | `CSSProperties` | — | Estilos extra para la barra de pestañas |
+| `tabBarExtraContent` | `ReactNode \| { left?: ReactNode; right?: ReactNode }` | — | Contenido extra en la barra de pestañas |
+| `indicator` | `IndicatorConfig` | — | Tamaño y alineación del indicador ink bar |
+| `addIcon` | `ReactNode` | `+` | Icono personalizado para añadir (editable-card) |
+| `removeIcon` | `ReactNode` | `×` | Icono personalizado para eliminar (editable-card) |
+| `hideAdd` | `boolean` | `false` | Ocultar botón de añadir (editable-card) |
+| `destroyOnHidden` | `boolean` | `false` | Destruir paneles de pestañas inactivas |
+| `onChange` | `(activeKey: string) => void` | — | Llamado cuando cambia la pestaña activa |
+| `onEdit` | `(key, action) => void` | — | Llamado al añadir/eliminar (editable-card) |
+| `onTabClick` | `(key, event) => void` | — | Llamado al hacer clic en una pestaña |
+| `className` | `string` | — | Clase CSS para el elemento raíz |
+| `style` | `CSSProperties` | — | Estilos inline para el elemento raíz |
+| `classNames` | `TabsClassNames` | — | Clases CSS para partes internas |
+| `styles` | `TabsStyles` | — | Estilos inline para partes internas |
+
+#### Tipos
+
+```tsx
+type TabsType = 'line' | 'card' | 'editable-card'
+
+type TabsSize = 'large' | 'middle' | 'small'
+
+type TabsPosition = 'top' | 'bottom' | 'left' | 'right'
+
+interface IndicatorConfig {
+  size?: number | ((origin: number) => number)
+  align?: 'start' | 'center' | 'end'
+}
+
+interface TabItem {
+  key: string
+  label?: ReactNode
+  children?: ReactNode
+  icon?: ReactNode
+  disabled?: boolean
+  closable?: boolean
+  closeIcon?: ReactNode
+  forceRender?: boolean
+  destroyOnHidden?: boolean
+}
+```
+
+#### DOM Semántico
+
+| Slot | Descripción |
+|------|-------------|
+| `root` | Contenedor exterior |
+| `tabBar` | Área de navegación de la barra de pestañas |
+| `tab` | Botón individual de pestaña |
+| `content` | Área de contenido del panel |
+| `inkBar` | Línea indicadora de la pestaña activa |
+
+#### Ejemplos
+
+**Uso básico**
+
+```tsx
+<Tabs
+  items={[
+    { key: '1', label: 'Pestaña 1', children: 'Contenido de Pestaña 1' },
+    { key: '2', label: 'Pestaña 2', children: 'Contenido de Pestaña 2' },
+    { key: '3', label: 'Pestaña 3', children: 'Contenido de Pestaña 3' },
+  ]}
+/>
+```
+
+**Pestaña activa controlada**
+
+```tsx
+const [activeKey, setActiveKey] = useState('1')
+
+<Tabs
+  activeKey={activeKey}
+  onChange={setActiveKey}
+  items={[
+    { key: '1', label: 'Pestaña 1', children: 'Contenido 1' },
+    { key: '2', label: 'Pestaña 2', children: 'Contenido 2' },
+  ]}
+/>
+```
+
+**Tipo tarjeta**
+
+```tsx
+<Tabs
+  type="card"
+  items={[
+    { key: '1', label: 'Tarjeta 1', children: 'Contenido 1' },
+    { key: '2', label: 'Tarjeta 2', children: 'Contenido 2' },
+    { key: '3', label: 'Tarjeta 3', children: 'Contenido 3' },
+  ]}
+/>
+```
+
+**Tarjeta editable (añadir/eliminar)**
+
+```tsx
+const [items, setItems] = useState([
+  { key: '1', label: 'Pestaña 1', children: 'Contenido 1' },
+  { key: '2', label: 'Pestaña 2', children: 'Contenido 2' },
+])
+
+<Tabs
+  type="editable-card"
+  items={items}
+  onEdit={(key, action) => {
+    if (action === 'add') {
+      const newKey = String(Date.now())
+      setItems([...items, { key: newKey, label: 'Nueva Pestaña', children: 'Nuevo contenido' }])
+    } else {
+      setItems(items.filter((item) => item.key !== key))
+    }
+  }}
+/>
+```
+
+**Posiciones de pestañas**
+
+```tsx
+<Tabs
+  tabPosition="left"
+  items={[
+    { key: '1', label: 'Pestaña 1', children: 'Contenido 1' },
+    { key: '2', label: 'Pestaña 2', children: 'Contenido 2' },
+  ]}
+/>
+```
+
+**Tamaños**
+
+```tsx
+<Tabs size="small" items={[...]} />
+<Tabs size="middle" items={[...]} />
+<Tabs size="large" items={[...]} />
+```
+
+**Con iconos**
+
+```tsx
+<Tabs
+  items={[
+    { key: '1', label: 'Inicio', icon: <HomeIcon />, children: 'Contenido de inicio' },
+    { key: '2', label: 'Ajustes', icon: <SettingsIcon />, children: 'Contenido de ajustes' },
+  ]}
+/>
+```
+
+**Pestañas centradas**
+
+```tsx
+<Tabs
+  centered
+  items={[
+    { key: '1', label: 'Pestaña 1', children: 'Contenido 1' },
+    { key: '2', label: 'Pestaña 2', children: 'Contenido 2' },
+  ]}
+/>
+```
+
+**Pestaña deshabilitada**
+
+```tsx
+<Tabs
+  items={[
+    { key: '1', label: 'Activa' },
+    { key: '2', label: 'Deshabilitada', disabled: true },
+    { key: '3', label: 'Normal' },
+  ]}
+/>
+```
+
+**Contenido extra en la barra**
+
+```tsx
+<Tabs
+  tabBarExtraContent={<button>Acción Extra</button>}
+  items={[
+    { key: '1', label: 'Pestaña 1', children: 'Contenido 1' },
+    { key: '2', label: 'Pestaña 2', children: 'Contenido 2' },
+  ]}
+/>
+
+{/* Contenido extra izquierdo y derecho */}
+<Tabs
+  tabBarExtraContent={{ left: <span>Izquierda</span>, right: <span>Derecha</span> }}
+  items={[...]}
+/>
+```
+
+**Indicador personalizado**
+
+```tsx
+<Tabs
+  indicator={{ size: 40, align: 'center' }}
+  items={[
+    { key: '1', label: 'Pestaña 1', children: 'Contenido 1' },
+    { key: '2', label: 'Pestaña 2', children: 'Contenido 2' },
+  ]}
+/>
+```
+
+**Destruir paneles inactivos**
+
+```tsx
+<Tabs
+  destroyOnHidden
+  items={[
+    { key: '1', label: 'Pestaña 1', children: <ComponentePesado /> },
+    { key: '2', label: 'Pestaña 2', children: <OtroComponente /> },
+  ]}
+/>
+```
+
+</details>
+
+---
+
+<details>
 <summary><strong>Text</strong> - Tipografia con formato y copiar al portapapeles</summary>
 
 ### Text
@@ -1422,6 +4719,15 @@ interface EllipsisConfig {
 | `normal` | 1.5 |
 | `relaxed` | 1.625 |
 | `loose` | 2 |
+
+#### DOM Semántico
+
+| Slot | Descripción |
+|------|-------------|
+| `root` | Elemento contenedor exterior |
+| `content` | Elemento del contenido de texto |
+| `copyButton` | Botón de copiar al portapapeles |
+| `expandButton` | Botón de expandir/contraer |
 
 #### Ejemplos
 
@@ -1555,6 +4861,14 @@ interface WaterfallItemRenderInfo<T> extends WaterfallItem<T> {
 | `lg` | 992px |
 | `xl` | 1200px |
 | `xxl` | 1600px |
+
+#### DOM Semántico
+
+| Slot | Descripción |
+|------|-------------|
+| `root` | Elemento contenedor exterior |
+| `column` | Contenedor individual de cada columna |
+| `item` | Contenedor individual de cada item |
 
 #### Ejemplos
 
@@ -1718,6 +5032,14 @@ import { Tooltip } from 'j-ui'
 | `bottom` | Debajo del elemento disparador |
 | `left` | A la izquierda del elemento disparador |
 | `right` | A la derecha del elemento disparador |
+
+#### DOM Semántico
+
+| Slot | Descripción |
+|------|-------------|
+| `root` | Contenedor alrededor del elemento trigger |
+| `popup` | Contenedor popup del tooltip |
+| `arrow` | Elemento de la flecha del tooltip |
 
 #### Ejemplos
 

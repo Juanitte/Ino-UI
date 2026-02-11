@@ -1,5 +1,7 @@
 import { type ButtonHTMLAttributes, type ReactNode, useRef } from 'react'
 import { tokens } from '../../theme/tokens'
+import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
+import { mergeSemanticClassName, mergeSemanticStyle } from '../../utils/semanticDom'
 
 export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'dashed' | 'ghost' | 'link'
 export type ButtonSize = 'sm' | 'md' | 'lg'
@@ -95,6 +97,10 @@ const colorTokens: Record<ButtonColor, {
   },
 }
 
+export type ButtonSemanticSlot = 'root' | 'icon' | 'spinner' | 'content'
+export type ButtonClassNames = SemanticClassNames<ButtonSemanticSlot>
+export type ButtonStyles = SemanticStyles<ButtonSemanticSlot>
+
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant
   size?: ButtonSize
@@ -120,6 +126,10 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   gradientCss?: string
   /** El botón ocupa el 100% del ancho de su contenedor */
   block?: boolean
+  /** Clases CSS para partes internas del componente */
+  classNames?: ButtonClassNames
+  /** Estilos para partes internas del componente */
+  styles?: ButtonStyles
   children?: ReactNode
 }
 
@@ -142,6 +152,8 @@ export function Button({
   children,
   className,
   style,
+  classNames,
+  styles,
   onMouseEnter,
   onMouseLeave,
   onClick,
@@ -253,15 +265,18 @@ export function Button({
 
   const gradientStyles = getGradientStyles()
 
-  const combinedStyles: React.CSSProperties = {
-    ...baseStyles,
-    ...sizeStyles[size],
-    ...variantStyles[variant],
-    ...borderStyle,
-    ...gradientStyles, // Aplica gradiente si existe (sobreescribe backgroundColor)
-    ...(block && { width: '100%' }),
-    ...style,
-  }
+  const combinedStyles = mergeSemanticStyle(
+    {
+      ...baseStyles,
+      ...sizeStyles[size],
+      ...variantStyles[variant],
+      ...borderStyle,
+      ...gradientStyles,
+      ...(block && { width: '100%' }),
+    },
+    styles?.root,
+    style,
+  )
 
   // Función para ejecutar animaciones
   const runAnimation = (animation: ButtonAnimation, e: React.MouseEvent<HTMLButtonElement>) => {
@@ -347,19 +362,37 @@ export function Button({
         ref={buttonRef}
         disabled={isDisabled}
         style={combinedStyles}
-        className={className}
+        className={mergeSemanticClassName(className, classNames?.root)}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         onClick={handleClick}
         {...props}
       >
-        {loading && <Spinner />}
-        {!loading && icon && iconPlacement === 'start' && (
-          <span style={{ display: 'inline-flex', fontSize: '1.1em' }}>{icon}</span>
+        {loading && (
+          <span className={classNames?.spinner} style={styles?.spinner}>
+            <Spinner />
+          </span>
         )}
-        {children}
+        {!loading && icon && iconPlacement === 'start' && (
+          <span
+            style={{ display: 'inline-flex', fontSize: '1.1em', ...styles?.icon }}
+            className={classNames?.icon}
+          >
+            {icon}
+          </span>
+        )}
+        {classNames?.content || styles?.content ? (
+          <span className={classNames?.content} style={styles?.content}>{children}</span>
+        ) : (
+          children
+        )}
         {!loading && icon && iconPlacement === 'end' && (
-          <span style={{ display: 'inline-flex', fontSize: '1.1em' }}>{icon}</span>
+          <span
+            style={{ display: 'inline-flex', fontSize: '1.1em', ...styles?.icon }}
+            className={classNames?.icon}
+          >
+            {icon}
+          </span>
         )}
       </button>
     </>
