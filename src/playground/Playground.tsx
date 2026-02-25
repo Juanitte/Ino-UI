@@ -3,6 +3,7 @@ import { Text, ThemeProvider, useTheme, tokens } from '../index'
 import { NavItem } from './sections/shared'
 import { ButtonSection } from './sections/ButtonSection'
 import { TooltipSection } from './sections/TooltipSection'
+import { PopoverSection } from './sections/PopoverSection'
 import { BadgeSection } from './sections/BadgeSection'
 import { BubbleSection } from './sections/BubbleSection'
 import { TextSection } from './sections/TextSection'
@@ -30,6 +31,9 @@ import { CarouselSection } from './sections/CarouselSection'
 import { CollapseSection } from './sections/CollapseSection'
 import { EmptySection } from './sections/EmptySection'
 import { ImageSection } from './sections/ImageSection'
+import { QRCodeSection } from './sections/QRCodeSection'
+import { StatisticSection } from './sections/StatisticSection'
+import { TableSection } from './sections/TableSection'
 import { DataDisplaySection } from './sections/DataDisplaySection'
 import { DatePickerSection } from './sections/DatePickerSection'
 import { FormSection } from './sections/FormSection'
@@ -42,10 +46,13 @@ import { SelectSection } from './sections/SelectSection'
 import { SliderSection } from './sections/SliderSection'
 import { SwitchSection } from './sections/SwitchSection'
 import { TimePickerSection } from './sections/TimePickerSection'
+import { ToggleSection } from './sections/ToggleSection'
 import { TransferSection } from './sections/TransferSection'
 import { TreeSelectSection } from './sections/TreeSelectSection'
 import { UploadSection } from './sections/UploadSection'
 import { AvatarSection } from './sections/AvatarSection'
+import { TagSection } from './sections/TagSection'
+import { TimelineSection } from './sections/TimelineSection'
 import { ThemeSection } from './sections/ThemeSection'
 
 export function Playground() {
@@ -135,6 +142,11 @@ function PlaygroundContent() {
               label="Tooltip"
               active={activeSection === 'tooltip'}
               onClick={() => handleNavClick('tooltip')}
+            />
+            <NavItem
+              label="Popover"
+              active={activeSection === 'popover'}
+              onClick={() => handleNavClick('popover')}
             />
             <NavItem
               label="Badge"
@@ -277,6 +289,21 @@ function PlaygroundContent() {
               onClick={() => handleNavClick('image')}
             />
             <NavItem
+              label="QRCode"
+              active={activeSection === 'qrcode'}
+              onClick={() => handleNavClick('qrcode')}
+            />
+            <NavItem
+              label="Statistic"
+              active={activeSection === 'statistic'}
+              onClick={() => handleNavClick('statistic')}
+            />
+            <NavItem
+              label="Table"
+              active={activeSection === 'table'}
+              onClick={() => handleNavClick('table')}
+            />
+            <NavItem
               label="DatePicker"
               active={activeSection === 'datepicker'}
               onClick={() => handleNavClick('datepicker')}
@@ -332,6 +359,11 @@ function PlaygroundContent() {
               onClick={() => handleNavClick('timepicker')}
             />
             <NavItem
+              label="Toggle"
+              active={activeSection === 'toggle'}
+              onClick={() => handleNavClick('toggle')}
+            />
+            <NavItem
               label="Transfer"
               active={activeSection === 'transfer'}
               onClick={() => handleNavClick('transfer')}
@@ -345,6 +377,16 @@ function PlaygroundContent() {
               label="Upload"
               active={activeSection === 'upload'}
               onClick={() => handleNavClick('upload')}
+            />
+            <NavItem
+              label="Tag"
+              active={activeSection === 'tag'}
+              onClick={() => handleNavClick('tag')}
+            />
+            <NavItem
+              label="Timeline"
+              active={activeSection === 'timeline'}
+              onClick={() => handleNavClick('timeline')}
             />
             <NavItem
               label="Avatar"
@@ -444,6 +486,7 @@ function PlaygroundContent() {
       <main style={{ flex: 1, padding: isMobile ? '64px 16px 16px' : 32, minWidth: 0, marginLeft: isMobile ? 0 : 240 }}>
         {activeSection === 'button' && <ButtonSection />}
         {activeSection === 'tooltip' && <TooltipSection />}
+        {activeSection === 'popover' && <PopoverSection />}
         {activeSection === 'badge' && <BadgeSection />}
         {activeSection === 'bubble' && <BubbleSection />}
         {activeSection === 'text' && <TextSection />}
@@ -472,6 +515,9 @@ function PlaygroundContent() {
         {activeSection === 'datadisplay' && <DataDisplaySection />}
         {activeSection === 'empty' && <EmptySection />}
         {activeSection === 'image' && <ImageSection />}
+        {activeSection === 'qrcode' && <QRCodeSection />}
+        {activeSection === 'statistic' && <StatisticSection />}
+        {activeSection === 'table' && <TableSection />}
         {activeSection === 'datepicker' && <DatePickerSection />}
         {activeSection === 'form' && <FormSection />}
         {activeSection === 'input' && <InputSection />}
@@ -483,9 +529,12 @@ function PlaygroundContent() {
         {activeSection === 'slider' && <SliderSection />}
         {activeSection === 'switch' && <SwitchSection />}
         {activeSection === 'timepicker' && <TimePickerSection />}
+        {activeSection === 'toggle' && <ToggleSection />}
         {activeSection === 'transfer' && <TransferSection />}
         {activeSection === 'treeselect' && <TreeSelectSection />}
         {activeSection === 'upload' && <UploadSection />}
+        {activeSection === 'tag' && <TagSection />}
+        {activeSection === 'timeline' && <TimelineSection />}
         {activeSection === 'avatar' && <AvatarSection />}
         {activeSection === 'theme' && <ThemeSection />}
       </main>

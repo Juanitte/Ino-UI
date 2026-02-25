@@ -3,6 +3,7 @@ import {
   useContext,
   useState,
   useEffect,
+  useLayoutEffect,
   useMemo,
   type ReactNode,
 } from 'react'
@@ -105,8 +106,8 @@ export function ThemeProvider({ children, config = {} }: ThemeProviderProps) {
     localStorage.setItem('j-ui-theme', mode)
   }, [mode])
 
-  // Inyectar CSS variables
-  useEffect(() => {
+  // Inyectar CSS variables (useLayoutEffect to update before child useEffects read them)
+  useLayoutEffect(() => {
     const css = generateCssVariables(config, mode)
     const styleId = 'j-ui-theme-vars'
     let style = document.getElementById(styleId) as HTMLStyleElement | null
@@ -138,4 +139,9 @@ export function useTheme(): ThemeContextValue {
     throw new Error('useTheme must be used within ThemeProvider')
   }
   return ctx
+}
+
+/** Returns current theme mode or null when outside ThemeProvider (never throws) */
+export function useThemeMode(): ThemeMode | null {
+  return useContext(ThemeContext)?.mode ?? null
 }

@@ -46,6 +46,8 @@ A modern, lightweight React component library with built-in theming support.
   - [Mention](#mention)
   - [NestedSelect](#nestedselect)
   - [Pagination](#pagination)
+  - [Popover](#popover)
+  - [QRCode](#qrcode)
   - [Radio](#radio)
   - [Rate](#rate)
   - [Select](#select)
@@ -53,10 +55,15 @@ A modern, lightweight React component library with built-in theming support.
   - [Space](#space)
   - [Splitter](#splitter)
   - [Steps](#steps)
+  - [Statistic](#statistic)
   - [Switch](#switch)
+  - [Table](#table)
   - [Tabs](#tabs)
+  - [Tag](#tag)
   - [Text](#text)
   - [TimePicker](#timepicker)
+  - [Timeline](#timeline)
+  - [Toggle](#toggle)
   - [Transfer](#transfer)
   - [TreeSelect](#treeselect)
   - [Upload](#upload)
@@ -7188,6 +7195,585 @@ const [page, setPage] = useState(1)
 ---
 
 <details>
+<summary><strong>Popover</strong> - Floating card with title and content</summary>
+
+### Popover
+
+`Popover` displays a floating card with title and content next to a trigger element. Supports 12 placements, multiple trigger modes (hover, click, focus, context menu), auto-flip when overflowing viewport, configurable delays, and arrow indicator.
+
+#### Import
+
+```tsx
+import { Popover } from 'j-ui'
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `title` | `ReactNode \| () => ReactNode` | - | Title content of the popover card |
+| `content` | `ReactNode \| () => ReactNode` | - | Body content of the popover card |
+| `children` | `ReactNode` | - | Trigger element (required) |
+| `placement` | `PopoverPlacement` | `'top'` | Popover position relative to trigger |
+| `trigger` | `PopoverTrigger \| PopoverTrigger[]` | `'hover'` | Trigger mode(s) to open popover |
+| `open` | `boolean` | - | Controlled open state |
+| `onOpenChange` | `(open: boolean) => void` | - | Callback when open state changes |
+| `arrow` | `boolean` | `true` | Show arrow pointing to trigger |
+| `mouseEnterDelay` | `number` | `100` | Delay in ms before showing on hover |
+| `mouseLeaveDelay` | `number` | `100` | Delay in ms before hiding on mouse leave |
+| `disabled` | `boolean` | `false` | Disable the popover |
+| `className` | `string` | - | Root element class name |
+| `style` | `CSSProperties` | - | Root element inline styles |
+| `classNames` | `PopoverClassNames` | - | Semantic class names for popover slots |
+| `styles` | `PopoverStyles` | - | Semantic inline styles for popover slots |
+
+#### PopoverPlacement
+
+```tsx
+type PopoverPlacement =
+  | 'top'    | 'topLeft'    | 'topRight'
+  | 'bottom' | 'bottomLeft' | 'bottomRight'
+  | 'left'   | 'leftTop'    | 'leftBottom'
+  | 'right'  | 'rightTop'   | 'rightBottom'
+```
+
+#### PopoverTrigger
+
+```tsx
+type PopoverTrigger = 'hover' | 'click' | 'focus' | 'contextMenu'
+```
+
+#### Semantic DOM
+
+The Popover component uses semantic class names and styles for customization:
+
+```tsx
+type PopoverSemanticSlot = 'root' | 'popup' | 'title' | 'content' | 'arrow'
+
+interface PopoverClassNames {
+  root?: string
+  popup?: string
+  title?: string
+  content?: string
+  arrow?: string
+}
+
+interface PopoverStyles {
+  root?: CSSProperties
+  popup?: CSSProperties
+  title?: CSSProperties
+  content?: CSSProperties
+  arrow?: CSSProperties
+}
+```
+
+#### Examples
+
+**Basic popover (hover):**
+
+```tsx
+<Popover title="Popover Title" content="This is the popover content.">
+  <Button>Hover me</Button>
+</Popover>
+```
+
+**Click trigger:**
+
+```tsx
+<Popover
+  title="Click Popover"
+  content="Click outside to close."
+  trigger="click"
+>
+  <Button>Click me</Button>
+</Popover>
+```
+
+**Focus trigger:**
+
+```tsx
+<Popover
+  title="Focus Popover"
+  content="Triggered on focus."
+  trigger="focus"
+>
+  <Input placeholder="Focus me" />
+</Popover>
+```
+
+**Context menu trigger:**
+
+```tsx
+<Popover
+  title="Context Menu"
+  content="Right-click triggered popover."
+  trigger="contextMenu"
+>
+  <div style={{ padding: '2rem', border: '1px dashed #ccc', textAlign: 'center' }}>
+    Right-click this area
+  </div>
+</Popover>
+```
+
+**Multiple triggers:**
+
+```tsx
+<Popover
+  title="Multi Trigger"
+  content="Opens on hover or click."
+  trigger={['hover', 'click']}
+>
+  <Button>Hover or Click</Button>
+</Popover>
+```
+
+**Placement variations:**
+
+```tsx
+<Popover title="Bottom" content="Placed at bottom." placement="bottom">
+  <Button>Bottom</Button>
+</Popover>
+
+<Popover title="Left" content="Placed at left." placement="left">
+  <Button>Left</Button>
+</Popover>
+
+<Popover title="Right" content="Placed at right." placement="right">
+  <Button>Right</Button>
+</Popover>
+
+<Popover title="Top Left" content="Placed at top-left." placement="topLeft">
+  <Button>Top Left</Button>
+</Popover>
+```
+
+**Without arrow:**
+
+```tsx
+<Popover
+  title="No Arrow"
+  content="Popover without an arrow indicator."
+  arrow={false}
+>
+  <Button>No Arrow</Button>
+</Popover>
+```
+
+**Content only (no title):**
+
+```tsx
+<Popover content="Simple tooltip-like popover without a title.">
+  <Button>Content Only</Button>
+</Popover>
+```
+
+**Title only (no content):**
+
+```tsx
+<Popover title="Just a title">
+  <Button>Title Only</Button>
+</Popover>
+```
+
+**Controlled popover:**
+
+```tsx
+const [open, setOpen] = useState(false)
+
+<div>
+  <Button onClick={() => setOpen(!open)}>Toggle Popover</Button>
+  <Popover
+    title="Controlled"
+    content="This popover is controlled externally."
+    open={open}
+    onOpenChange={setOpen}
+    trigger="click"
+  >
+    <Button>Target</Button>
+  </Popover>
+</div>
+```
+
+**Function content (lazy rendering):**
+
+```tsx
+<Popover
+  title={() => <strong>Dynamic Title</strong>}
+  content={() => (
+    <div>
+      <p>Content rendered lazily as a function.</p>
+      <p>Current time: {new Date().toLocaleTimeString()}</p>
+    </div>
+  )}
+>
+  <Button>Lazy Content</Button>
+</Popover>
+```
+
+**Custom delays:**
+
+```tsx
+<Popover
+  title="Slow Popover"
+  content="Appears after 500ms, hides after 300ms."
+  mouseEnterDelay={500}
+  mouseLeaveDelay={300}
+>
+  <Button>Slow Hover</Button>
+</Popover>
+```
+
+**Disabled popover:**
+
+```tsx
+<Popover
+  title="Disabled"
+  content="This popover won't open."
+  disabled
+>
+  <Button>Disabled Popover</Button>
+</Popover>
+```
+
+**Rich content with actions:**
+
+```tsx
+<Popover
+  title="User Profile"
+  content={
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+      <p style={{ margin: 0 }}>John Doe - Admin</p>
+      <p style={{ margin: 0, color: '#888' }}>john@example.com</p>
+      <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+        <Button size="sm">Profile</Button>
+        <Button size="sm" color="error">Logout</Button>
+      </div>
+    </div>
+  }
+  trigger="click"
+>
+  <Avatar>JD</Avatar>
+</Popover>
+```
+
+</details>
+
+---
+
+<details>
+<summary><strong>QRCode</strong> - QR code generator component</summary>
+
+### QRCode
+
+A component that generates QR codes from any text or URL. Supports canvas and SVG rendering, embedded logos, four error correction levels, and status overlays (loading, expired, scanned) with full theme awareness.
+
+#### Import
+
+```tsx
+import { QRCode } from 'j-ui'
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `value` | `string` | — | **Required.** Text or URL to encode |
+| `type` | `'canvas' \| 'svg'` | `'canvas'` | Render method |
+| `icon` | `string` | — | URL of logo/image to embed at center |
+| `size` | `number` | `160` | QR code size in pixels |
+| `iconSize` | `number \| { width: number; height: number }` | `40` | Icon dimensions |
+| `color` | `string` | `tokens.colorText` | Module (dot) color — supports CSS variables |
+| `bgColor` | `string` | `'transparent'` | Background color |
+| `marginSize` | `number` | `0` | Quiet zone in modules |
+| `bordered` | `boolean` | `true` | Adds padding, border, and background |
+| `errorLevel` | `'L' \| 'M' \| 'Q' \| 'H'` | `'M'` | Error correction level |
+| `status` | `QRCodeStatus` | `'active'` | Current display status |
+| `statusRender` | `(info: StatusRenderInfo) => ReactNode` | — | Custom status overlay renderer |
+| `onRefresh` | `() => void` | — | Called when Refresh button is clicked (expired status) |
+| `className` | `string` | — | Root CSS class |
+| `style` | `CSSProperties` | — | Root inline style |
+| `classNames` | `QRCodeClassNames` | — | Semantic class names per slot |
+| `styles` | `QRCodeStyles` | — | Semantic inline styles per slot |
+
+#### Type Definitions
+
+```ts
+type QRCodeType     = 'canvas' | 'svg'
+type QRCodeStatus   = 'active' | 'expired' | 'loading' | 'scanned'
+type QRCodeErrorLevel = 'L' | 'M' | 'Q' | 'H'
+
+interface StatusRenderInfo {
+  status: QRCodeStatus
+  locale: { expired: string; loading: string; scanned: string }
+  onRefresh?: () => void
+}
+
+type QRCodeSemanticSlot = 'root' | 'canvas' | 'mask'
+type QRCodeClassNames   = SemanticClassNames<QRCodeSemanticSlot>
+type QRCodeStyles       = SemanticStyles<QRCodeSemanticSlot>
+```
+
+#### Error Correction Levels
+
+| Level | Data Recovery | Typical Use |
+|-------|--------------|-------------|
+| `'L'` | ~7% | Clean, controlled environments |
+| `'M'` | ~15% | General use (default) |
+| `'Q'` | ~25% | Slightly damaged surfaces |
+| `'H'` | ~30% | Logo overlay, high-damage risk |
+
+#### Semantic DOM
+
+| Slot | Element | Description |
+|------|---------|-------------|
+| `root` | `<div>` | Outer wrapper (border, padding when `bordered`) |
+| `canvas` | `<canvas>` or `<svg>` | The QR code render surface |
+| `mask` | `<div>` | Status overlay (loading / expired / scanned) |
+
+#### Examples
+
+**1. Basic URL**
+
+```tsx
+<QRCode value="https://example.com" />
+```
+
+---
+
+**2. SVG render mode**
+
+```tsx
+<QRCode value="https://example.com" type="svg" />
+```
+
+---
+
+**3. Custom size**
+
+```tsx
+<QRCode value="https://example.com" size={200} />
+```
+
+---
+
+**4. Custom colors**
+
+```tsx
+<QRCode
+  value="https://example.com"
+  color="#1677ff"
+  bgColor="#f0f5ff"
+/>
+```
+
+---
+
+**5. With embedded logo**
+
+Use `errorLevel="H"` when embedding a logo to ensure the QR remains readable even with the center covered.
+
+```tsx
+<QRCode
+  value="https://example.com"
+  icon="/logo.png"
+  iconSize={40}
+  errorLevel="H"
+/>
+```
+
+---
+
+**6. Icon with custom dimensions**
+
+```tsx
+<QRCode
+  value="https://example.com"
+  icon="/logo.png"
+  iconSize={{ width: 60, height: 30 }}
+  errorLevel="H"
+/>
+```
+
+---
+
+**7. Without border**
+
+```tsx
+<QRCode value="https://example.com" bordered={false} />
+```
+
+---
+
+**8. Quiet zone (margin)**
+
+```tsx
+<QRCode value="https://example.com" marginSize={2} />
+```
+
+---
+
+**9. Loading status**
+
+```tsx
+<QRCode value="https://example.com" status="loading" />
+```
+
+---
+
+**10. Expired status with refresh**
+
+```tsx
+<QRCode
+  value="https://example.com"
+  status="expired"
+  onRefresh={() => console.log('refresh!')}
+/>
+```
+
+---
+
+**11. Scanned status**
+
+```tsx
+<QRCode value="https://example.com" status="scanned" />
+```
+
+---
+
+**12. Custom status overlay**
+
+```tsx
+<QRCode
+  value="https://example.com"
+  status="expired"
+  statusRender={({ onRefresh }) => (
+    <div style={{ textAlign: 'center', padding: '1rem' }}>
+      <p style={{ marginBottom: '0.5rem' }}>Session expired</p>
+      <button onClick={onRefresh}>Regenerate</button>
+    </div>
+  )}
+/>
+```
+
+---
+
+**13. Semantic style customization**
+
+```tsx
+<QRCode
+  value="https://example.com"
+  styles={{
+    root: { borderRadius: '1rem', padding: '1.5rem' },
+    mask: { borderRadius: '1rem', backgroundColor: 'rgba(0,0,0,0.7)' },
+  }}
+/>
+```
+
+---
+
+**14. Complete state flow in an app**
+
+This example shows how to wire all four statuses together — useful for one-time payment QR codes, session tokens, or any time-limited code.
+
+```tsx
+import { useState, useEffect, useRef } from 'react'
+import { QRCode } from 'j-ui'
+
+const EXPIRY_SECONDS = 60          // QR valid for 60 s
+const LOADING_DURATION_MS = 1500   // Simulate server round-trip
+
+function PaymentQR() {
+  type Status = 'active' | 'loading' | 'expired' | 'scanned'
+
+  const [status, setStatus] = useState<Status>('active')
+  const [qrValue, setQrValue] = useState(() => generateToken())
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  /** Create a fresh signed token (call your API here) */
+  function generateToken() {
+    return `https://pay.example.com/checkout?token=${crypto.randomUUID()}`
+  }
+
+  /** Start expiry countdown */
+  function startExpiry() {
+    if (timerRef.current) clearTimeout(timerRef.current)
+    timerRef.current = setTimeout(() => {
+      setStatus('expired')
+    }, EXPIRY_SECONDS * 1000)
+  }
+
+  /** User clicked Refresh — fetch a new token */
+  function handleRefresh() {
+    setStatus('loading')
+    setTimeout(() => {
+      setQrValue(generateToken())
+      setStatus('active')
+      startExpiry()
+    }, LOADING_DURATION_MS)
+  }
+
+  /** Simulate a webhook / WebSocket that notifies when scanned */
+  useEffect(() => {
+    if (status !== 'active') return
+
+    // Replace with a real WebSocket or polling call:
+    // const ws = new WebSocket('wss://api.example.com/qr-events')
+    // ws.onmessage = (e) => { if (JSON.parse(e.data).event === 'scanned') setStatus('scanned') }
+    // return () => ws.close()
+
+    // Demo: mark as scanned after 8 s
+    const demo = setTimeout(() => setStatus('scanned'), 8000)
+    return () => clearTimeout(demo)
+  }, [status, qrValue])
+
+  /** Start countdown on mount and after each refresh */
+  useEffect(() => {
+    if (status === 'active') startExpiry()
+    return () => { if (timerRef.current) clearTimeout(timerRef.current) }
+  }, [status, qrValue])
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem' }}>
+      <QRCode
+        value={qrValue}
+        size={200}
+        errorLevel="H"
+        status={status}
+        onRefresh={handleRefresh}
+      />
+      <p style={{ fontSize: '0.875rem', color: '#666' }}>
+        {status === 'active'  && 'Scan to pay — expires in 60 s'}
+        {status === 'loading' && 'Generating new code…'}
+        {status === 'expired' && 'Code expired. Tap Refresh to get a new one.'}
+        {status === 'scanned' && 'Payment received!'}
+      </p>
+    </div>
+  )
+}
+```
+
+**Status transition diagram**
+
+```
+         mount / refresh complete
+               │
+               ▼
+           ┌────────┐   60 s timeout    ┌─────────┐
+           │ active │ ────────────────► │ expired │
+           └────────┘                   └────────-┘
+               │                             │
+      WebSocket │ scanned               User │ clicks Refresh
+               ▼                             ▼
+           ┌─────────┐              ┌─────────┐
+           │ scanned │              │ loading │ ──► (fetch) ──► active
+           └─────────┘              └─────────┘
+```
+
+</details>
+
+---
+
+<details>
 <summary><strong>Radio</strong> - Single selection from options</summary>
 
 ### Radio
@@ -8703,6 +9289,311 @@ const [current, setCurrent] = useState(0)
 ---
 
 <details>
+<summary><strong>Statistic</strong> - Formatted numeric display and live countdown timer</summary>
+
+### Statistic
+
+A display component for formatted numbers, metrics, and KPIs. Includes `Statistic.Countdown` for live countdown timers with a flexible format string. Both variants share the same semantic slots and styling API.
+
+#### Import
+
+```tsx
+import { Statistic } from 'j-ui'
+```
+
+#### Props — `Statistic`
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `title` | `ReactNode` | — | Label rendered above the value |
+| `value` | `string \| number` | `0` | Numeric or string value to display |
+| `precision` | `number` | — | Number of decimal places |
+| `decimalSeparator` | `string` | `'.'` | Character used to separate the decimal part |
+| `groupSeparator` | `string` | `','` | Character used to group thousands |
+| `prefix` | `ReactNode` | — | Content rendered before the value |
+| `suffix` | `ReactNode` | — | Content rendered after the value |
+| `formatter` | `(value: string \| number) => ReactNode` | — | Custom formatter — overrides built-in number formatting |
+| `loading` | `boolean` | `false` | Show an animated placeholder instead of the value |
+| `loadingWidth` | `string` | `'7rem'` | Width of the loading placeholder |
+| `className` | `string` | — | Root CSS class |
+| `style` | `CSSProperties` | — | Root inline style |
+| `classNames` | `StatisticClassNames` | — | Semantic class names per slot |
+| `styles` | `StatisticStyles` | — | Semantic inline styles per slot |
+
+#### Props — `Statistic.Countdown`
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `value` | `number` | — | **Required.** Target timestamp in milliseconds (`Date.now()` based) |
+| `title` | `ReactNode` | — | Label rendered above the countdown |
+| `format` | `string` | `'HH:mm:ss'` | Display format string (see tokens below) |
+| `prefix` | `ReactNode` | — | Content rendered before the countdown |
+| `suffix` | `ReactNode` | — | Content rendered after the countdown |
+| `onFinish` | `() => void` | — | Called once when the countdown reaches zero |
+| `onChange` | `(value: number) => void` | — | Called on every tick with remaining milliseconds |
+| `className` | `string` | — | Root CSS class |
+| `style` | `CSSProperties` | — | Root inline style |
+| `classNames` | `CountdownClassNames` | — | Semantic class names per slot |
+| `styles` | `CountdownStyles` | — | Semantic inline styles per slot |
+
+#### Countdown Format Tokens
+
+| Token | Output | Example |
+|-------|--------|---------|
+| `D` | Days (no padding) | `3` |
+| `DD` | Days (zero-padded to 2) | `03` |
+| `H` | Hours (no padding) | `9` |
+| `HH` | Hours (zero-padded to 2) | `09` |
+| `m` | Minutes (no padding) | `5` |
+| `mm` | Minutes (zero-padded to 2) | `05` |
+| `s` | Seconds (no padding) | `4` |
+| `ss` | Seconds (zero-padded to 2) | `04` |
+| `SSS` | Milliseconds (3 digits) | `347` |
+| `[text]` | Literal string (escaped) | `[days]` → `days` |
+| `[singular\|plural]` | Inflected literal based on preceding number | `[day\|days]` |
+
+> When `SSS` is included in the format, the timer ticks at ~30 fps (33 ms interval) instead of 1 s for smooth millisecond display.
+
+#### Type Definitions
+
+```ts
+type StatisticSemanticSlot = 'root' | 'title' | 'content' | 'prefix' | 'suffix'
+type StatisticClassNames   = SemanticClassNames<StatisticSemanticSlot>
+type StatisticStyles       = SemanticStyles<StatisticSemanticSlot>
+
+// Countdown shares the same slot types:
+type CountdownSemanticSlot = StatisticSemanticSlot
+type CountdownClassNames   = SemanticClassNames<CountdownSemanticSlot>
+type CountdownStyles       = SemanticStyles<CountdownSemanticSlot>
+```
+
+#### Semantic DOM
+
+| Slot | Element | Description |
+|------|---------|-------------|
+| `root` | `<div>` | Outer wrapper |
+| `title` | `<div>` | Label above the value |
+| `content` | `<div>` | Row containing prefix + value + suffix |
+| `prefix` | `<span>` | Content before the value |
+| `suffix` | `<span>` | Content after the value |
+
+#### Examples
+
+**1. Simple number**
+
+```tsx
+<Statistic title="Downloads" value={93120} />
+```
+
+---
+
+**2. Currency with prefix**
+
+```tsx
+<Statistic
+  title="Revenue"
+  value={9280.5}
+  precision={2}
+  prefix="$"
+/>
+```
+
+---
+
+**3. Custom separators**
+
+```tsx
+<Statistic
+  title="Visitors"
+  value={1234567}
+  groupSeparator="."
+  decimalSeparator=","
+/>
+```
+
+---
+
+**4. Suffix unit**
+
+```tsx
+<Statistic title="CPU Usage" value={72.4} precision={1} suffix="%" />
+```
+
+---
+
+**5. Trend with colored suffix**
+
+```tsx
+<Statistic
+  title="Weekly Growth"
+  value={12.5}
+  precision={1}
+  suffix={<span style={{ color: tokens.colorSuccess, fontSize: '1rem' }}>▲</span>}
+/>
+```
+
+---
+
+**6. Icon prefix**
+
+```tsx
+import { UserIcon } from 'j-ui/icons'
+
+<Statistic
+  title="Active Users"
+  value={4890}
+  prefix={<UserIcon style={{ fontSize: '1.25rem', color: tokens.colorPrimary }} />}
+/>
+```
+
+---
+
+**7. Custom formatter**
+
+```tsx
+<Statistic
+  title="Score"
+  value={0.856}
+  formatter={(v) => `${(Number(v) * 100).toFixed(1)}%`}
+/>
+```
+
+---
+
+**8. Loading state**
+
+```tsx
+<Statistic title="Total Orders" loading />
+```
+
+---
+
+**9. Loading with custom placeholder width**
+
+```tsx
+<Statistic title="Revenue" loading loadingWidth="10rem" />
+```
+
+---
+
+**10. Basic countdown (HH:mm:ss)**
+
+```tsx
+<Statistic.Countdown
+  title="Sale ends in"
+  value={Date.now() + 2 * 60 * 60 * 1000}  // 2 hours from now
+/>
+```
+
+---
+
+**11. Countdown with days**
+
+```tsx
+<Statistic.Countdown
+  title="Event starts in"
+  value={Date.now() + 3 * 24 * 60 * 60 * 1000}
+  format="D[d] HH:mm:ss"
+/>
+```
+
+---
+
+**12. Countdown with inflected day label**
+
+```tsx
+<Statistic.Countdown
+  title="Time left"
+  value={Date.now() + 2 * 24 * 60 * 60 * 1000}
+  format="D [day|days] HH:mm:ss"
+/>
+// Renders: "2 days 00:00:00" → "1 day 00:00:00"
+```
+
+---
+
+**13. Millisecond countdown**
+
+```tsx
+<Statistic.Countdown
+  title="Reaction time"
+  value={Date.now() + 10000}
+  format="ss.SSS"
+/>
+```
+
+---
+
+**14. onFinish callback**
+
+```tsx
+<Statistic.Countdown
+  title="Session expires"
+  value={Date.now() + 30 * 1000}
+  onFinish={() => alert('Session expired!')}
+/>
+```
+
+---
+
+**15. onChange progress bar**
+
+```tsx
+function CountdownWithBar() {
+  const DURATION = 60 * 1000
+  const target = useRef(Date.now() + DURATION)
+  const [pct, setPct] = useState(100)
+
+  return (
+    <div>
+      <Statistic.Countdown
+        title="Time remaining"
+        value={target.current}
+        onChange={(ms) => setPct(Math.round((ms / DURATION) * 100))}
+      />
+      <div style={{ height: 4, background: tokens.colorBgMuted, borderRadius: 2, marginTop: 8 }}>
+        <div style={{ height: '100%', width: `${pct}%`, background: tokens.colorPrimary, borderRadius: 2, transition: 'width 1s linear' }} />
+      </div>
+    </div>
+  )
+}
+```
+
+---
+
+**16. KPI dashboard row**
+
+```tsx
+<div style={{ display: 'flex', gap: '2rem' }}>
+  <Statistic title="Total Users"   value={128430} />
+  <Statistic title="Monthly Revenue" value={54200}  precision={2} prefix="$" />
+  <Statistic title="Conversion"    value={3.7}    precision={1} suffix="%" />
+  <Statistic title="Uptime"        value={99.98}  precision={2} suffix="%" />
+</div>
+```
+
+---
+
+**17. Semantic style customization**
+
+```tsx
+<Statistic
+  title="Net Profit"
+  value={18500}
+  precision={2}
+  prefix="$"
+  styles={{
+    title:   { color: tokens.colorTextSubtle, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' },
+    content: { color: tokens.colorSuccess, fontSize: '2rem' },
+  }}
+/>
+```
+
+</details>
+
+---
+
+<details>
 <summary><strong>Switch</strong> - Toggle switch for on/off states with loading support</summary>
 
 ### Switch
@@ -8846,6 +9737,584 @@ The Switch component is fully keyboard accessible:
 // These are equivalent to checked/defaultChecked
 <Switch value={isEnabled} onChange={setEnabled} />
 <Switch defaultValue={true} />
+```
+
+</details>
+
+---
+
+<details>
+<summary><strong>Table</strong> - Full-featured data table with sorting, filtering, pagination, and more</summary>
+
+### Table
+
+A feature-rich data table supporting client-side and server-side scenarios. Includes column sorting (single and multi-column), filter dropdowns, row selection (checkbox and radio), expandable rows with animation, tree data, fixed header and columns, pagination, column groups, and full semantic slot customization.
+
+#### Import
+
+```tsx
+import { Table } from 'j-ui'
+```
+
+#### Props — `TableProps<T>`
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `dataSource` | `T[]` | — | Array of data records |
+| `columns` | `ColumnType<T>[]` | — | Column definitions |
+| `rowKey` | `string \| ((record: T) => string \| number)` | `'key'` | Unique row identifier |
+| `bordered` | `boolean` | `false` | Show cell borders |
+| `size` | `'large' \| 'middle' \| 'small'` | `'large'` | Cell padding variant |
+| `showHeader` | `boolean` | `true` | Show the table header |
+| `loading` | `boolean` | `false` | Overlay a loading spinner |
+| `pagination` | `TablePaginationConfig \| false` | — | Pagination config; `false` disables it |
+| `rowSelection` | `TableRowSelection<T>` | — | Row selection config |
+| `scroll` | `{ x?: number \| string; y?: number \| string }` | — | `y` fixes header height; `x` sets min-width for horizontal scroll |
+| `expandable` | `TableExpandable<T>` | — | Expandable row config |
+| `sortDirections` | `SortDirection[]` | — | Global sort direction cycle for all sortable columns |
+| `rowHoverable` | `boolean` | `true` | Highlight rows on hover |
+| `title` | `(currentPageData: T[]) => ReactNode` | — | Content rendered above the table body |
+| `footer` | `(currentPageData: T[]) => ReactNode` | — | Content rendered below the table body |
+| `childrenColumnName` | `string` | `'children'` | Field name for tree data children |
+| `indentSize` | `number` | `15` | Tree indent in px per level |
+| `keepPreviousData` | `boolean` | `false` | Keep showing previous data while `loading` (useful for server-side pagination) |
+| `onChange` | `(pagination, sorter, filters) => void` | — | Called when pagination, sort, or filters change |
+| `onRow` | `(record: T, index: number) => HTMLAttributes<HTMLTableRowElement>` | — | Custom HTML attributes per row |
+| `tableLayout` | `'auto' \| 'fixed'` | auto-detected | HTML table-layout property |
+| `locale` | `{ emptyText?: ReactNode }` | — | Localization — empty state text |
+| `className` | `string` | — | Root CSS class |
+| `style` | `CSSProperties` | — | Root inline style |
+| `classNames` | `TableClassNames` | — | Semantic class names per slot |
+| `styles` | `TableStyles` | — | Semantic inline styles per slot |
+
+#### `ColumnType<T>`
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `title` | `ReactNode` | — | Column header content |
+| `dataIndex` | `string \| string[]` | — | Field path in the record; use `string[]` for nested access |
+| `key` | `string` | — | Unique column key (falls back to `dataIndex`) |
+| `render` | `(value, record, index) => ReactNode` | — | Custom cell renderer |
+| `align` | `'left' \| 'right' \| 'center'` | `'left'` | Cell text alignment |
+| `width` | `string \| number` | — | Column width |
+| `ellipsis` | `boolean` | `false` | Truncate overflowing text with `…` |
+| `sorter` | `fn \| boolean \| { compare: fn; multiple?: number }` | — | Sort comparator; `true` = default value comparison; `multiple` enables multi-sort with priority |
+| `sortOrder` | `'ascend' \| 'descend' \| null` | — | Controlled sort order |
+| `defaultSortOrder` | `'ascend' \| 'descend' \| null` | — | Initial sort order (uncontrolled) |
+| `sortDirections` | `SortDirection[]` | — | Direction cycle for this column |
+| `filters` | `ColumnFilterItem[]` | — | Filter menu items |
+| `onFilter` | `(value, record) => boolean` | — | Filter predicate |
+| `filterMultiple` | `boolean` | `true` | Allow multiple filter selections |
+| `filteredValue` | `(string \| number \| boolean)[]` | — | Controlled filter values |
+| `defaultFilteredValue` | `(string \| number \| boolean)[]` | — | Initial filter values (uncontrolled) |
+| `filterSearch` | `boolean \| fn` | — | Enable search in filter dropdown |
+| `filterDropdown` | `ReactNode \| ((props: FilterDropdownProps) => ReactNode)` | — | Custom filter dropdown |
+| `filterIcon` | `ReactNode \| ((filtered: boolean) => ReactNode)` | — | Custom filter icon |
+| `filterOnClose` | `boolean` | `true` | Apply filter when dropdown closes |
+| `hidden` | `boolean` | `false` | Hide this column |
+| `className` | `string` | — | Extra CSS class for all cells in this column |
+| `fixed` | `'left' \| 'right' \| boolean` | — | Fix column position; `true` = `'left'` |
+| `children` | `ColumnType<T>[]` | — | Nested columns for grouped headers |
+| `onCell` | `(record, index) => HTMLAttributes<td>` | — | Custom attributes per data cell (supports `colSpan`/`rowSpan`) |
+| `onHeaderCell` | `(column) => HTMLAttributes<th>` | — | Custom attributes per header cell |
+
+#### `TableRowSelection<T>`
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `type` | `'checkbox' \| 'radio'` | `'checkbox'` | Selection input type |
+| `selectedRowKeys` | `(string \| number)[]` | — | Controlled selected keys |
+| `onChange` | `(keys, rows) => void` | — | Called on selection change |
+| `onSelect` | `(record, selected, selectedRows) => void` | — | Called on single row toggle |
+| `getCheckboxProps` | `(record) => Partial<CheckboxProps>` | — | Customize checkbox/radio props per row (e.g. `disabled`) |
+| `columnWidth` | `string \| number` | `'2.5rem'` | Width of the selection column |
+| `hideSelectAll` | `boolean` | `false` | Hide the header select-all checkbox |
+| `preserveSelectedRowKeys` | `boolean` | `false` | Keep selection when `dataSource` changes |
+
+#### `TableExpandable<T>`
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `expandedRowRender` | `(record, index, indent, expanded) => ReactNode` | — | Render expanded row content |
+| `expandedRowKeys` | `(string \| number)[]` | — | Controlled expanded keys |
+| `defaultExpandedRowKeys` | `(string \| number)[]` | `[]` | Initial expanded keys |
+| `defaultExpandAllRows` | `boolean` | `false` | Expand all rows by default |
+| `onExpand` | `(expanded, record) => void` | — | Called when a row is expanded/collapsed |
+| `onExpandedRowsChange` | `(keys) => void` | — | Called when expanded keys change |
+| `rowExpandable` | `(record) => boolean` | — | Determine if a row can be expanded |
+| `expandRowByClick` | `boolean` | `false` | Clicking the row toggles expansion |
+| `columnWidth` | `string \| number` | `'2.5rem'` | Width of the expand icon column |
+| `showExpandColumn` | `boolean` | `true` | Show the expand icon column |
+
+#### `TablePaginationConfig`
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `total` | `number` | — | Total record count (required for server-side pagination) |
+| `current` | `number` | — | Controlled current page |
+| `pageSize` | `number` | — | Controlled page size |
+| `defaultCurrent` | `number` | `1` | Initial page |
+| `defaultPageSize` | `number` | `10` | Initial page size |
+| `size` | `PaginationSize` | — | Pagination component size |
+| `showSizeChanger` | `boolean` | — | Show page size selector |
+| `showQuickJumper` | `boolean` | — | Show page number input |
+| `showTotal` | `(total, range) => ReactNode` | — | Total count renderer |
+| `simple` | `boolean` | — | Simple pagination mode |
+| `hideOnSinglePage` | `boolean` | — | Hide when only one page |
+| `disabled` | `boolean` | — | Disable all pagination controls |
+| `position` | `('topLeft' \| 'topCenter' \| 'topRight' \| 'bottomLeft' \| 'bottomCenter' \| 'bottomRight')[]` | `['bottomRight']` | Pagination placement |
+| `onChange` | `(page, pageSize) => void` | — | Direct pagination callback |
+
+#### `FilterDropdownProps`
+
+```ts
+interface FilterDropdownProps {
+  selectedKeys: (string | number | boolean)[]
+  setSelectedKeys: (keys: (string | number | boolean)[]) => void
+  confirm: () => void      // Apply + close
+  clearFilters: () => void // Clear + apply
+  close: () => void        // Close without applying
+}
+```
+
+#### Size Config
+
+| Size | V-Padding | H-Padding | Font size |
+|------|-----------|-----------|-----------|
+| `'large'` | 1 rem | 1 rem | 0.875 rem |
+| `'middle'` | 0.625 rem | 0.75 rem | 0.875 rem |
+| `'small'` | 0.375 rem | 0.5 rem | 0.8125 rem |
+
+#### Semantic DOM
+
+| Slot | Element | Description |
+|------|---------|-------------|
+| `root` | `<div>` | Outermost container |
+| `header` | `<thead>` | Table header element |
+| `headerRow` | `<tr>` | Header row(s) |
+| `headerCell` | `<th>` | Header cells |
+| `body` | `<tbody>` | Table body element |
+| `row` | `<tr>` | Data rows |
+| `cell` | `<td>` | Data cells |
+| `expandedRow` | `<tr>` | Expanded content row |
+| `pagination` | `<div>` | Pagination wrapper |
+| `empty` | `<td>` | Empty state cell |
+| `loading` | `<div>` | Loading overlay |
+| `title` | `<div>` | Table title bar |
+| `footer` | `<div>` | Table footer bar |
+| `filterDropdown` | — | Reserved for custom filter dropdown styling |
+
+#### Examples
+
+**1. Basic table**
+
+```tsx
+interface User { key: string; name: string; age: number; email: string }
+
+const data: User[] = [
+  { key: '1', name: 'Alice', age: 28, email: 'alice@example.com' },
+  { key: '2', name: 'Bob',   age: 34, email: 'bob@example.com'   },
+  { key: '3', name: 'Carol', age: 22, email: 'carol@example.com' },
+]
+
+const columns: ColumnType<User>[] = [
+  { title: 'Name',  dataIndex: 'name',  key: 'name' },
+  { title: 'Age',   dataIndex: 'age',   key: 'age'  },
+  { title: 'Email', dataIndex: 'email', key: 'email' },
+]
+
+<Table dataSource={data} columns={columns} />
+```
+
+---
+
+**2. Custom cell renderer**
+
+```tsx
+const columns: ColumnType<User>[] = [
+  { title: 'Name', dataIndex: 'name', key: 'name' },
+  { title: 'Age',  dataIndex: 'age',  key: 'age'  },
+  {
+    title: 'Actions',
+    key: 'actions',
+    align: 'right',
+    render: (_, record) => (
+      <button onClick={() => console.log('edit', record.key)}>Edit</button>
+    ),
+  },
+]
+```
+
+---
+
+**3. Nested dataIndex**
+
+```tsx
+interface Order { key: string; customer: { name: string; city: string }; total: number }
+
+const columns: ColumnType<Order>[] = [
+  { title: 'Customer', dataIndex: ['customer', 'name'], key: 'name' },
+  { title: 'City',     dataIndex: ['customer', 'city'], key: 'city' },
+  { title: 'Total',    dataIndex: 'total',              key: 'total' },
+]
+```
+
+---
+
+**4. Sorting — single column**
+
+```tsx
+const columns: ColumnType<User>[] = [
+  {
+    title: 'Name',
+    dataIndex: 'name',
+    sorter: (a, b) => a.name.localeCompare(b.name),
+    defaultSortOrder: 'ascend',
+  },
+  {
+    title: 'Age',
+    dataIndex: 'age',
+    sorter: (a, b) => a.age - b.age,
+  },
+]
+```
+
+---
+
+**5. Multi-column sort**
+
+Use `sorter.multiple` to assign priority — lower number = higher priority.
+
+```tsx
+const columns: ColumnType<User>[] = [
+  {
+    title: 'Name',
+    dataIndex: 'name',
+    sorter: { compare: (a, b) => a.name.localeCompare(b.name), multiple: 2 },
+  },
+  {
+    title: 'Age',
+    dataIndex: 'age',
+    sorter: { compare: (a, b) => a.age - b.age, multiple: 1 },
+  },
+]
+```
+
+---
+
+**6. Column filters**
+
+```tsx
+const columns: ColumnType<User>[] = [
+  {
+    title: 'Name',
+    dataIndex: 'name',
+    filters: [
+      { text: 'Alice', value: 'Alice' },
+      { text: 'Bob',   value: 'Bob'   },
+    ],
+    onFilter: (value, record) => record.name === value,
+  },
+]
+```
+
+---
+
+**7. Filter with search**
+
+```tsx
+{
+  title: 'City',
+  dataIndex: 'city',
+  filterSearch: true,
+  filters: cities.map(c => ({ text: c, value: c })),
+  onFilter: (value, record) => record.city === value,
+}
+```
+
+---
+
+**8. Custom filter dropdown**
+
+```tsx
+{
+  title: 'Age',
+  dataIndex: 'age',
+  filterDropdown: ({ selectedKeys, setSelectedKeys, confirm, clearFilters }) => (
+    <div style={{ padding: '0.5rem' }}>
+      <input
+        value={selectedKeys[0] as string ?? ''}
+        onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+        placeholder="Min age"
+        style={{ marginBottom: '0.5rem', display: 'block' }}
+      />
+      <button onClick={() => confirm()}>OK</button>
+      <button onClick={clearFilters}>Reset</button>
+    </div>
+  ),
+  onFilter: (value, record) => record.age >= Number(value),
+}
+```
+
+---
+
+**9. Checkbox row selection**
+
+```tsx
+const [selectedRowKeys, setSelectedRowKeys] = useState<(string | number)[]>([])
+
+<Table
+  dataSource={data}
+  columns={columns}
+  rowSelection={{
+    selectedRowKeys,
+    onChange: (keys) => setSelectedRowKeys(keys),
+  }}
+/>
+```
+
+---
+
+**10. Radio row selection**
+
+```tsx
+<Table
+  dataSource={data}
+  columns={columns}
+  rowSelection={{ type: 'radio', onChange: (keys, rows) => console.log(keys, rows) }}
+/>
+```
+
+---
+
+**11. Disable selection on specific rows**
+
+```tsx
+rowSelection={{
+  getCheckboxProps: (record) => ({ disabled: record.age < 18 }),
+}}
+```
+
+---
+
+**12. Expandable rows**
+
+```tsx
+<Table
+  dataSource={data}
+  columns={columns}
+  expandable={{
+    expandedRowRender: (record) => (
+      <p style={{ margin: 0 }}>Details for {record.name}: {record.email}</p>
+    ),
+    rowExpandable: (record) => record.age >= 18,
+  }}
+/>
+```
+
+---
+
+**13. Expand row by clicking**
+
+```tsx
+expandable={{
+  expandedRowRender: (record) => <p>{record.email}</p>,
+  expandRowByClick: true,
+}}
+```
+
+---
+
+**14. Tree data**
+
+Tree data is auto-detected when records have a `children` field containing nested records. No extra configuration needed.
+
+```tsx
+interface Employee { key: string; name: string; role: string; children?: Employee[] }
+
+const treeData: Employee[] = [
+  {
+    key: '1', name: 'Alice', role: 'Manager',
+    children: [
+      { key: '1-1', name: 'Bob',   role: 'Engineer' },
+      { key: '1-2', name: 'Carol', role: 'Designer'  },
+    ],
+  },
+  { key: '2', name: 'Dave', role: 'Director' },
+]
+
+<Table dataSource={treeData} columns={columns} rowKey="key" />
+```
+
+---
+
+**15. Fixed header (vertical scroll)**
+
+```tsx
+<Table
+  dataSource={data}
+  columns={columns}
+  scroll={{ y: 300 }}
+/>
+```
+
+---
+
+**16. Fixed columns (horizontal scroll)**
+
+Fixed columns require explicit `width` on each column and a `scroll.x` wide enough to cause scrolling.
+
+```tsx
+const columns: ColumnType<User>[] = [
+  { title: 'Name',  dataIndex: 'name',  key: 'name',  width: 150, fixed: 'left'  },
+  { title: 'Age',   dataIndex: 'age',   key: 'age',   width: 80  },
+  { title: 'Email', dataIndex: 'email', key: 'email', width: 200 },
+  { title: 'City',  dataIndex: 'city',  key: 'city',  width: 150 },
+  { title: 'Phone', dataIndex: 'phone', key: 'phone', width: 150 },
+  { title: 'Action',key: 'action',       width: 100, fixed: 'right',
+    render: () => <button>Edit</button> },
+]
+
+<Table dataSource={data} columns={columns} scroll={{ x: 800 }} />
+```
+
+---
+
+**17. Column groups**
+
+Use `children` in a column to span multiple sub-columns under one header.
+
+```tsx
+const columns: ColumnType<any>[] = [
+  { title: 'Name', dataIndex: 'name', key: 'name' },
+  {
+    title: 'Contact',
+    children: [
+      { title: 'Email', dataIndex: 'email', key: 'email' },
+      { title: 'Phone', dataIndex: 'phone', key: 'phone' },
+    ],
+  },
+  {
+    title: 'Address',
+    children: [
+      { title: 'City',    dataIndex: 'city',    key: 'city'    },
+      { title: 'Country', dataIndex: 'country', key: 'country' },
+    ],
+  },
+]
+```
+
+---
+
+**18. Pagination**
+
+```tsx
+<Table
+  dataSource={data}
+  columns={columns}
+  pagination={{
+    defaultPageSize: 10,
+    showSizeChanger: true,
+    showTotal: (total, range) => `${range[0]}–${range[1]} of ${total} items`,
+    position: ['bottomCenter'],
+  }}
+/>
+```
+
+---
+
+**19. Server-side pagination + sorting + filtering**
+
+When `pagination.total` exceeds `dataSource.length`, the Table switches to server-side mode — it passes the current page state to `onChange` and skips client-side slicing.
+
+```tsx
+const [data, setData] = useState<User[]>([])
+const [loading, setLoading] = useState(false)
+const [total, setTotal] = useState(0)
+
+async function fetchData(page: number, pageSize: number, sorter: SorterResult<User>, filters: Record<string, any>) {
+  setLoading(true)
+  const res = await api.getUsers({ page, pageSize, sorter, filters })
+  setData(res.rows)
+  setTotal(res.total)
+  setLoading(false)
+}
+
+useEffect(() => { fetchData(1, 10, {}, {}) }, [])
+
+<Table
+  dataSource={data}
+  columns={columns}
+  loading={loading}
+  keepPreviousData
+  pagination={{ total, showSizeChanger: true }}
+  onChange={(pagination, sorter, filters) => {
+    fetchData(pagination.current, pagination.pageSize, sorter as SorterResult<User>, filters)
+  }}
+/>
+```
+
+---
+
+**20. Cell merging with onCell**
+
+Return `colSpan: 0` from `onCell` on cells that should be hidden when a sibling spans them.
+
+```tsx
+const columns: ColumnType<any>[] = [
+  {
+    title: 'Name',
+    dataIndex: 'name',
+    onCell: (record) => ({
+      colSpan: record.isGroupHeader ? 4 : 1,
+    }),
+  },
+  {
+    title: 'Age',
+    dataIndex: 'age',
+    onCell: (record) => ({ colSpan: record.isGroupHeader ? 0 : 1 }),
+  },
+  // ...
+]
+```
+
+---
+
+**21. Row click + custom row attributes**
+
+```tsx
+<Table
+  dataSource={data}
+  columns={columns}
+  onRow={(record) => ({
+    onClick: () => console.log('clicked', record.key),
+    style: { cursor: 'pointer' },
+  })}
+/>
+```
+
+---
+
+**22. Size + bordered**
+
+```tsx
+<Table dataSource={data} columns={columns} size="small" bordered />
+```
+
+---
+
+**23. Semantic style customization**
+
+```tsx
+<Table
+  dataSource={data}
+  columns={columns}
+  styles={{
+    headerCell: { backgroundColor: tokens.colorPrimary, color: '#fff' },
+    row: { fontFamily: 'monospace' },
+    cell: { fontSize: '0.75rem' },
+  }}
+/>
 ```
 
 </details>
@@ -9089,6 +10558,335 @@ const [items, setItems] = useState([
     { key: '2', label: 'Tab 2', children: <AnotherComponent /> },
   ]}
 />
+```
+
+</details>
+
+---
+
+<details>
+<summary><strong>Tag</strong> - Compact label with color presets, variants, close, and checkable mode</summary>
+
+### Tag
+
+A compact label component for categorization, status display, and filtering. Supports 19 preset colors (6 semantic + 13 decorative), 3 variants (outlined / filled / solid), closable behavior with exit animation, icon prefix, link mode, and a `Tag.CheckableTag` sub-component for toggle-style filter chips.
+
+#### Import
+
+```tsx
+import { Tag } from 'j-ui'
+```
+
+#### Props — `Tag`
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `children` | `ReactNode` | — | Tag label content |
+| `color` | `TagPresetColor \| string` | — | Preset name or any CSS color string |
+| `variant` | `'outlined' \| 'filled' \| 'solid'` | `'outlined'` | Visual variant |
+| `closable` | `boolean` | `false` | Show close button |
+| `closeIcon` | `ReactNode` | — | Custom close icon (replaces default ×) |
+| `onClose` | `(e: MouseEvent) => void` | — | Called when close is clicked; call `e.preventDefault()` to cancel removal |
+| `icon` | `ReactNode` | — | Leading icon |
+| `bordered` | `boolean` | `true` | Show border |
+| `href` | `string` | — | Renders the tag as an `<a>` link |
+| `target` | `string` | — | Link target (e.g. `'_blank'`) |
+| `disabled` | `boolean` | `false` | Disables interaction and reduces opacity |
+| `onClick` | `(e: MouseEvent) => void` | — | Click handler |
+| `className` | `string` | — | Root CSS class |
+| `style` | `CSSProperties` | — | Root inline style |
+| `classNames` | `TagClassNames` | — | Semantic class names per slot |
+| `styles` | `TagStyles` | — | Semantic inline styles per slot |
+
+#### Props — `Tag.CheckableTag`
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `children` | `ReactNode` | — | Label content |
+| `checked` | `boolean` | `false` | Controlled checked state |
+| `onChange` | `(checked: boolean) => void` | — | Called when toggled |
+| `color` | `TagPresetColor \| string` | `'primary'` | Checked background color |
+| `disabled` | `boolean` | `false` | Disables interaction |
+| `className` | `string` | — | Root CSS class |
+| `style` | `CSSProperties` | — | Root inline style |
+| `classNames` | `CheckableTagClassNames` | — | Semantic class names per slot |
+| `styles` | `CheckableTagStyles` | — | Semantic inline styles per slot |
+
+#### Type Definitions
+
+```ts
+type TagPresetColor =
+  // Semantic
+  | 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info'
+  // Decorative
+  | 'pink' | 'red' | 'yellow' | 'orange' | 'cyan' | 'green'
+  | 'blue' | 'purple' | 'geekblue' | 'magenta' | 'volcano' | 'gold' | 'lime'
+
+type TagVariant = 'outlined' | 'filled' | 'solid'
+
+type TagSemanticSlot         = 'root' | 'icon' | 'content' | 'closeIcon'
+type TagClassNames           = SemanticClassNames<TagSemanticSlot>
+type TagStyles               = SemanticStyles<TagSemanticSlot>
+
+type CheckableTagSemanticSlot = 'root' | 'content'
+type CheckableTagClassNames   = SemanticClassNames<CheckableTagSemanticSlot>
+type CheckableTagStyles       = SemanticStyles<CheckableTagSemanticSlot>
+```
+
+#### Color × Variant Matrix
+
+| Variant | No color | Semantic (`success` etc.) | Decorative / custom |
+|---------|----------|--------------------------|---------------------|
+| `outlined` | border + text in `colorBorder`/`colorText` | colored border + text | colored border (45% opacity) + text |
+| `filled` | subtle `colorBgMuted` fill, no border | 25% color-mix fill, colored text | 25% hex fill, colored text |
+| `solid` | solid `colorTextMuted` bg, white text | solid semantic color, white text | solid hex bg, white text |
+
+#### Semantic DOM
+
+| Slot | Element | Description |
+|------|---------|-------------|
+| `root` | `<span>` or `<a>` | Outer wrapper (switches to `<a>` when `href` is set) |
+| `icon` | `<span>` | Leading icon wrapper |
+| `content` | `<span>` | Text/children wrapper |
+| `closeIcon` | `<span>` | Close button wrapper |
+
+#### Examples
+
+**1. Plain tag**
+
+```tsx
+<Tag>Default</Tag>
+```
+
+---
+
+**2. Semantic preset colors**
+
+```tsx
+<Tag color="primary">Primary</Tag>
+<Tag color="success">Success</Tag>
+<Tag color="warning">Warning</Tag>
+<Tag color="error">Error</Tag>
+<Tag color="info">Info</Tag>
+<Tag color="secondary">Secondary</Tag>
+```
+
+---
+
+**3. Decorative preset colors**
+
+```tsx
+<Tag color="magenta">Magenta</Tag>
+<Tag color="volcano">Volcano</Tag>
+<Tag color="orange">Orange</Tag>
+<Tag color="gold">Gold</Tag>
+<Tag color="lime">Lime</Tag>
+<Tag color="green">Green</Tag>
+<Tag color="cyan">Cyan</Tag>
+<Tag color="blue">Blue</Tag>
+<Tag color="geekblue">Geekblue</Tag>
+<Tag color="purple">Purple</Tag>
+```
+
+---
+
+**4. Custom hex / CSS color**
+
+```tsx
+<Tag color="#f50">Custom #f50</Tag>
+<Tag color="hsl(270 60% 50%)">Custom HSL</Tag>
+```
+
+---
+
+**5. Variants**
+
+```tsx
+<Tag color="primary" variant="outlined">Outlined</Tag>
+<Tag color="primary" variant="filled">Filled</Tag>
+<Tag color="primary" variant="solid">Solid</Tag>
+```
+
+---
+
+**6. No border**
+
+```tsx
+<Tag color="success" bordered={false}>No border</Tag>
+```
+
+---
+
+**7. Closable tag**
+
+Clicking × triggers `onClose`. Call `e.preventDefault()` to keep the tag visible.
+
+```tsx
+<Tag
+  closable
+  onClose={(e) => {
+    console.log('closed')
+    // e.preventDefault() // call this to cancel removal
+  }}
+>
+  Closable
+</Tag>
+```
+
+---
+
+**8. Custom close icon**
+
+```tsx
+<Tag closable closeIcon={<span>✕</span>} color="error">
+  Custom close
+</Tag>
+```
+
+---
+
+**9. With leading icon**
+
+```tsx
+import { StarIcon } from 'j-ui/icons'
+
+<Tag icon={<StarIcon />} color="gold">
+  Featured
+</Tag>
+```
+
+---
+
+**10. Spinner icon (loading state)**
+
+`Tag.SpinnerIcon` is exported for use as a leading icon in async scenarios.
+
+```tsx
+<Tag icon={<Tag.SpinnerIcon />} color="primary">
+  Processing…
+</Tag>
+```
+
+---
+
+**11. Link tag**
+
+Renders as `<a>` when `href` is set.
+
+```tsx
+<Tag href="https://example.com" target="_blank" color="blue">
+  Visit site
+</Tag>
+```
+
+---
+
+**12. Disabled**
+
+```tsx
+<Tag color="primary" disabled>Disabled</Tag>
+```
+
+---
+
+**13. Clickable tag**
+
+```tsx
+<Tag
+  color="info"
+  variant="filled"
+  onClick={() => console.log('tag clicked')}
+>
+  Clickable
+</Tag>
+```
+
+---
+
+**14. Dynamic tag list with close**
+
+```tsx
+function TagList() {
+  const [tags, setTags] = useState(['React', 'TypeScript', 'Vite'])
+
+  return (
+    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+      {tags.map((tag) => (
+        <Tag
+          key={tag}
+          closable
+          color="primary"
+          variant="filled"
+          onClose={() => setTags((prev) => prev.filter((t) => t !== tag))}
+        >
+          {tag}
+        </Tag>
+      ))}
+    </div>
+  )
+}
+```
+
+---
+
+**15. Tag.CheckableTag — single**
+
+```tsx
+const [checked, setChecked] = useState(false)
+
+<Tag.CheckableTag checked={checked} onChange={setChecked} color="primary">
+  Featured
+</Tag.CheckableTag>
+```
+
+---
+
+**16. CheckableTag — filter group**
+
+```tsx
+const CATEGORIES = ['Design', 'Engineering', 'Marketing', 'Sales']
+
+function CategoryFilter() {
+  const [active, setActive] = useState<string[]>([])
+
+  const toggle = (cat: string) =>
+    setActive((prev) =>
+      prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat],
+    )
+
+  return (
+    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+      {CATEGORIES.map((cat) => (
+        <Tag.CheckableTag
+          key={cat}
+          checked={active.includes(cat)}
+          onChange={() => toggle(cat)}
+          color="primary"
+        >
+          {cat}
+        </Tag.CheckableTag>
+      ))}
+    </div>
+  )
+}
+```
+
+---
+
+**17. Semantic style customization**
+
+```tsx
+<Tag
+  color="primary"
+  styles={{
+    root:      { borderRadius: '9999px', padding: '0 0.75rem' },
+    content:   { fontWeight: 700, letterSpacing: '0.05em' },
+    closeIcon: { color: 'red' },
+  }}
+  closable
+>
+  Pill tag
+</Tag>
 ```
 
 </details>
@@ -9475,6 +11273,668 @@ const [range, setRange] = useState<[Date | null, Date | null]>([null, null])
 **With prefix:**
 ```tsx
 <TimePicker prefix={<ClockCircleOutlined />} />
+```
+
+</details>
+
+---
+
+<details>
+<summary><strong>Timeline</strong> - Vertical and horizontal event sequence display</summary>
+
+### Timeline
+
+A component for displaying a sequence of events in chronological order. Supports vertical and horizontal layouts, left/right/alternate content modes, two dot variants (outlined/solid), custom dot nodes, per-item labels, a pending spinner item, and reverse order.
+
+#### Import
+
+```tsx
+import { Timeline } from 'j-ui'
+```
+
+#### Props — `TimelineProps`
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `items` | `TimelineItemType[]` | `[]` | Array of timeline events |
+| `mode` | `'left' \| 'right' \| 'alternate'` | `'left'` | Content placement relative to the axis |
+| `variant` | `'outlined' \| 'solid'` | `'outlined'` | Dot style — ring with bg or filled circle |
+| `horizontal` | `boolean` | `false` | Render the timeline horizontally |
+| `titleSpan` | `number` | — | Label column width as a 24-column fraction (e.g. `6` = 25%). Only applies in `alternate`/label mode |
+| `pending` | `boolean \| ReactNode` | — | Append a spinning pending item; pass `ReactNode` for custom pending text |
+| `pendingDot` | `ReactNode` | — | Custom dot for the pending item (replaces the default spinner) |
+| `reverse` | `boolean` | `false` | Reverse the item order |
+| `className` | `string` | — | Root CSS class |
+| `style` | `CSSProperties` | — | Root inline style |
+| `classNames` | `TimelineClassNames` | — | Semantic class names per slot |
+| `styles` | `TimelineStyles` | — | Semantic inline styles per slot |
+
+#### `TimelineItemType`
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `children` | `ReactNode` | Event content |
+| `color` | `string` | Dot color — preset name or any CSS color |
+| `dot` | `ReactNode` | Custom dot node (replaces the default circle) |
+| `label` | `ReactNode` | Secondary label rendered on the opposite side of the axis |
+| `position` | `'left' \| 'right'` | Override `mode` for this specific item |
+
+#### Preset Dot Colors
+
+| Name | Resolves to |
+|------|-------------|
+| `'blue'` / `'primary'` | `tokens.colorPrimary` |
+| `'green'` / `'success'` | `tokens.colorSuccess` |
+| `'red'` / `'error'` | `tokens.colorError` |
+| `'gray'` | `tokens.colorTextMuted` |
+| `'secondary'` | `tokens.colorSecondary` |
+| `'warning'` | `tokens.colorWarning` |
+| `'info'` | `tokens.colorInfo` |
+| Any other string | Used as-is (hex, rgb, hsl…) |
+
+#### Layout Details
+
+| Mode | Layout | Three-column grid? |
+|------|--------|--------------------|
+| `'left'` (default) | Content on the right of the axis | No |
+| `'right'` | Content on the left of the axis | No |
+| `'alternate'` | Even items right, odd items left | Yes |
+| Any mode + `label` present | Label opposite to content | Yes |
+| `horizontal: true` | Items side-by-side with horizontal rail | — |
+
+In three-column mode, `titleSpan` controls the label column width as a fraction of 24 units (same convention as CSS Grid / Ant Design).
+
+#### Semantic DOM
+
+| Slot | Element | Description |
+|------|---------|-------------|
+| `root` | `<div>` | Outer flex container |
+| `item` | `<div>` | Per-event wrapper |
+| `dot` | `<div>` | Dot or custom node |
+| `tail` | `<div>` | Connecting line segment between dots |
+| `content` | `<div>` | Main event content |
+| `label` | `<div>` | Secondary label (opposite side) |
+
+#### Examples
+
+**1. Basic vertical (left mode)**
+
+```tsx
+<Timeline
+  items={[
+    { children: 'Create account' },
+    { children: 'Verify email' },
+    { children: 'Complete profile' },
+    { children: 'Start using the app' },
+  ]}
+/>
+```
+
+---
+
+**2. Semantic dot colors**
+
+```tsx
+<Timeline
+  items={[
+    { children: 'Deployed to production',    color: 'success' },
+    { children: 'Failed smoke test',         color: 'error'   },
+    { children: 'Waiting for review',        color: 'warning' },
+    { children: 'PR opened',                 color: 'primary' },
+  ]}
+/>
+```
+
+---
+
+**3. Custom hex color**
+
+```tsx
+<Timeline
+  items={[
+    { children: 'Design handoff', color: '#722ed1' },
+    { children: 'Sprint kickoff', color: '#13c2c2' },
+    { children: 'Retrospective',  color: '#fa8c16' },
+  ]}
+/>
+```
+
+---
+
+**4. Solid variant**
+
+```tsx
+<Timeline
+  variant="solid"
+  items={[
+    { children: 'Order placed',    color: 'primary' },
+    { children: 'Payment confirmed', color: 'success' },
+    { children: 'Shipped',         color: 'info'    },
+  ]}
+/>
+```
+
+---
+
+**5. Custom dot node**
+
+```tsx
+import { ClockIcon, CheckIcon } from 'j-ui/icons'
+
+<Timeline
+  items={[
+    { children: 'Scheduled',  dot: <ClockIcon style={{ color: tokens.colorWarning }} /> },
+    { children: 'Completed',  dot: <CheckIcon style={{ color: tokens.colorSuccess }} /> },
+    { children: 'In progress' },
+  ]}
+/>
+```
+
+---
+
+**6. Right mode**
+
+Content appears on the left of the axis.
+
+```tsx
+<Timeline
+  mode="right"
+  items={[
+    { children: 'Step one' },
+    { children: 'Step two' },
+    { children: 'Step three' },
+  ]}
+/>
+```
+
+---
+
+**7. Alternate mode**
+
+```tsx
+<Timeline
+  mode="alternate"
+  items={[
+    { children: 'Event A — 9:00 am' },
+    { children: 'Event B — 10:30 am' },
+    { children: 'Event C — 12:00 pm' },
+    { children: 'Event D — 2:00 pm' },
+  ]}
+/>
+```
+
+---
+
+**8. Labels (timestamp opposite content)**
+
+```tsx
+<Timeline
+  items={[
+    { label: '09:00', children: 'Stand-up meeting' },
+    { label: '11:30', children: 'Design review' },
+    { label: '14:00', children: 'Sprint planning' },
+    { label: '16:30', children: 'Code review' },
+  ]}
+/>
+```
+
+---
+
+**9. Labels with `titleSpan`**
+
+`titleSpan` accepts a value from 1–24. `6` gives the label column 25% of the width.
+
+```tsx
+<Timeline
+  titleSpan={6}
+  items={[
+    { label: 'Jan 2023', children: 'Founded the company' },
+    { label: 'Jun 2023', children: 'Closed seed round' },
+    { label: 'Dec 2023', children: 'Launched v1.0' },
+    { label: 'Mar 2024', children: 'Reached 10 k users' },
+  ]}
+/>
+```
+
+---
+
+**10. Per-item position override**
+
+```tsx
+<Timeline
+  mode="alternate"
+  items={[
+    { children: 'Normal alternate (right)' },
+    { children: 'Normal alternate (left)' },
+    { children: 'Forced right', position: 'right' },
+    { children: 'Normal alternate (left)' },
+  ]}
+/>
+```
+
+---
+
+**11. Pending item**
+
+```tsx
+<Timeline
+  pending="Waiting for approval…"
+  items={[
+    { children: 'Submitted request',  color: 'success' },
+    { children: 'Manager notified',   color: 'success' },
+  ]}
+/>
+```
+
+---
+
+**12. Pending with custom dot**
+
+```tsx
+import { HourglassIcon } from 'j-ui/icons'
+
+<Timeline
+  pending="Processing…"
+  pendingDot={<HourglassIcon style={{ color: tokens.colorWarning }} />}
+  items={[
+    { children: 'Payment received' },
+    { children: 'Order queued' },
+  ]}
+/>
+```
+
+---
+
+**13. Reverse order**
+
+```tsx
+<Timeline
+  reverse
+  items={[
+    { children: 'Oldest event', color: 'gray' },
+    { children: 'Middle event' },
+    { children: 'Latest event', color: 'success' },
+  ]}
+/>
+```
+
+---
+
+**14. Horizontal layout**
+
+```tsx
+<Timeline
+  horizontal
+  items={[
+    { children: 'Order placed',   label: 'Day 1',  color: 'primary' },
+    { children: 'Shipped',        label: 'Day 2',  color: 'info'    },
+    { children: 'Out for delivery', label: 'Day 3', color: 'warning' },
+    { children: 'Delivered',      label: 'Day 4',  color: 'success' },
+  ]}
+/>
+```
+
+---
+
+**15. Rich content per item**
+
+```tsx
+<Timeline
+  items={[
+    {
+      color: 'primary',
+      children: (
+        <div>
+          <strong>Pull request merged</strong>
+          <p style={{ margin: '0.25rem 0 0', color: tokens.colorTextMuted }}>
+            feat: add Timeline component — by @alice
+          </p>
+        </div>
+      ),
+    },
+    {
+      color: 'success',
+      children: (
+        <div>
+          <strong>CI passed</strong>
+          <p style={{ margin: '0.25rem 0 0', color: tokens.colorTextMuted }}>
+            All 142 tests green in 38 s
+          </p>
+        </div>
+      ),
+    },
+    {
+      color: 'info',
+      children: (
+        <div>
+          <strong>Deployed to production</strong>
+          <p style={{ margin: '0.25rem 0 0', color: tokens.colorTextMuted }}>
+            v2.4.0 — 3 minutes ago
+          </p>
+        </div>
+      ),
+    },
+  ]}
+/>
+```
+
+---
+
+**16. Semantic style customization**
+
+```tsx
+<Timeline
+  items={[
+    { children: 'Alpha', color: 'primary' },
+    { children: 'Beta',  color: 'success' },
+    { children: 'GA',    color: 'info'    },
+  ]}
+  styles={{
+    tail:    { width: 3, backgroundColor: tokens.colorBorderHover },
+    content: { fontWeight: 500 },
+    label:   { fontStyle: 'italic' },
+  }}
+/>
+```
+
+</details>
+
+---
+
+<details>
+<summary><strong>Toggle</strong> - Segmented control for exclusive option selection</summary>
+
+### Toggle
+
+A segmented control (also known as a segmented button or tab bar) that lets users pick one option from a set. The selected segment is indicated by a smoothly animated sliding thumb. Supports icons, disabled items, vertical layout, block mode, and full keyboard navigation.
+
+#### Import
+
+```tsx
+import { Toggle } from 'j-ui'
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `options` | `(string \| number \| ToggleItemType)[]` | — | **Required.** Array of segments |
+| `value` | `string \| number` | — | Controlled selected value |
+| `defaultValue` | `string \| number` | first option | Uncontrolled initial value |
+| `onChange` | `(value: string \| number) => void` | — | Called when selection changes |
+| `disabled` | `boolean` | `false` | Disable all segments |
+| `block` | `boolean` | `false` | Expand to full container width |
+| `vertical` | `boolean` | `false` | Stack segments vertically |
+| `size` | `'large' \| 'middle' \| 'small'` | `'middle'` | Size variant |
+| `name` | `string` | — | HTML radio group name — enables native radio semantics and arrow key navigation |
+| `className` | `string` | — | Root CSS class |
+| `style` | `CSSProperties` | — | Root inline style |
+| `classNames` | `ToggleClassNames` | — | Semantic class names per slot |
+| `styles` | `ToggleStyles` | — | Semantic inline styles per slot |
+
+#### Type Definitions
+
+```ts
+type ToggleSize = 'large' | 'middle' | 'small'
+
+interface ToggleItemType {
+  value: string | number
+  label?: ReactNode       // Defaults to String(value) when no icon
+  icon?: ReactNode        // Optional leading icon
+  disabled?: boolean      // Disable this segment individually
+  className?: string      // Per-item CSS class
+}
+
+type ToggleSemanticSlot = 'root' | 'item' | 'thumb'
+type ToggleClassNames   = SemanticClassNames<ToggleSemanticSlot>
+type ToggleStyles       = SemanticStyles<ToggleSemanticSlot>
+```
+
+#### Size Config
+
+| Size | Height | Font size | H-Padding |
+|------|--------|-----------|-----------|
+| `'small'` | 1.5 rem | 0.75 rem | 0.4375 rem |
+| `'middle'` | 2 rem | 0.875 rem | 0.6875 rem |
+| `'large'` | 2.5 rem | 1 rem | 0.75 rem |
+
+#### Keyboard Navigation
+
+| Key | Action |
+|-----|--------|
+| `←` / `↑` | Move to previous enabled segment |
+| `→` / `↓` | Move to next enabled segment |
+| `Enter` / `Space` | Select focused segment |
+
+Arrow direction adapts to the `vertical` prop: `↑`/`↓` for vertical, `←`/`→` for horizontal.
+
+#### Semantic DOM
+
+| Slot | Element | Description |
+|------|---------|-------------|
+| `root` | `<div>` | Track background and outer wrapper |
+| `item` | `<div>` | Each individual segment |
+| `thumb` | `<div>` | Animated sliding indicator behind selected segment |
+
+#### Examples
+
+**1. String shortcuts**
+
+```tsx
+<Toggle options={['Day', 'Week', 'Month']} />
+```
+
+---
+
+**2. Number options**
+
+```tsx
+<Toggle options={[1, 7, 30]} defaultValue={7} />
+```
+
+---
+
+**3. Controlled mode**
+
+```tsx
+const [period, setPeriod] = useState<string>('Week')
+
+<Toggle
+  options={['Day', 'Week', 'Month']}
+  value={period}
+  onChange={(v) => setPeriod(String(v))}
+/>
+```
+
+---
+
+**4. ToggleItemType objects**
+
+```tsx
+<Toggle
+  options={[
+    { value: 'day',   label: 'Day' },
+    { value: 'week',  label: 'Week' },
+    { value: 'month', label: 'Month' },
+  ]}
+  defaultValue="week"
+/>
+```
+
+---
+
+**5. With icons**
+
+```tsx
+import { ListIcon, GridIcon, MapIcon } from 'j-ui/icons'
+
+<Toggle
+  options={[
+    { value: 'list', icon: <ListIcon />, label: 'List' },
+    { value: 'grid', icon: <GridIcon />, label: 'Grid' },
+    { value: 'map',  icon: <MapIcon />,  label: 'Map'  },
+  ]}
+  defaultValue="list"
+/>
+```
+
+---
+
+**6. Icon-only segments**
+
+Omit `label` (and provide no fallback icon) to render icon-only buttons.
+
+```tsx
+<Toggle
+  options={[
+    { value: 'list', icon: <ListIcon /> },
+    { value: 'grid', icon: <GridIcon /> },
+    { value: 'map',  icon: <MapIcon />  },
+  ]}
+  defaultValue="list"
+/>
+```
+
+---
+
+**7. Size variants**
+
+```tsx
+<Toggle options={['A', 'B', 'C']} size="small"  />
+<Toggle options={['A', 'B', 'C']} size="middle" />
+<Toggle options={['A', 'B', 'C']} size="large"  />
+```
+
+---
+
+**8. Block (full-width)**
+
+```tsx
+<Toggle
+  options={['Left', 'Center', 'Right']}
+  block
+  defaultValue="Center"
+/>
+```
+
+---
+
+**9. Vertical layout**
+
+```tsx
+<Toggle
+  options={['Top', 'Middle', 'Bottom']}
+  vertical
+  defaultValue="Middle"
+/>
+```
+
+---
+
+**10. Disabled — all segments**
+
+```tsx
+<Toggle options={['A', 'B', 'C']} disabled defaultValue="A" />
+```
+
+---
+
+**11. Disabled — individual segments**
+
+```tsx
+<Toggle
+  options={[
+    { value: 'free',  label: 'Free' },
+    { value: 'pro',   label: 'Pro' },
+    { value: 'enterprise', label: 'Enterprise', disabled: true },
+  ]}
+  defaultValue="free"
+/>
+```
+
+---
+
+**12. Native form with `name`**
+
+`name` wires a hidden `<input type="radio">` per segment, making the Toggle submittable inside a `<form>`.
+
+```tsx
+<form onSubmit={(e) => { e.preventDefault(); console.log(new FormData(e.currentTarget).get('view')) }}>
+  <Toggle
+    options={['Grid', 'List', 'Card']}
+    name="view"
+    defaultValue="Grid"
+  />
+  <button type="submit">Submit</button>
+</form>
+```
+
+---
+
+**13. Semantic style customization**
+
+```tsx
+<Toggle
+  options={['Monthly', 'Annual']}
+  defaultValue="Annual"
+  styles={{
+    root:  { backgroundColor: '#f0f5ff', borderRadius: '2rem' },
+    item:  { fontWeight: 500 },
+    thumb: { backgroundColor: '#1677ff', borderRadius: '2rem' },
+  }}
+/>
+```
+
+---
+
+**14. Per-item className**
+
+```tsx
+<Toggle
+  options={[
+    { value: 'a', label: 'Alpha',   className: 'segment-alpha' },
+    { value: 'b', label: 'Beta',    className: 'segment-beta'  },
+    { value: 'c', label: 'Gamma',   className: 'segment-gamma' },
+  ]}
+  defaultValue="a"
+/>
+```
+
+---
+
+**15. View mode switcher — complete example**
+
+```tsx
+import { useState } from 'react'
+import { Toggle } from 'j-ui'
+
+type View = 'grid' | 'list' | 'map'
+
+const VIEW_OPTIONS = [
+  { value: 'grid', label: 'Grid' },
+  { value: 'list', label: 'List' },
+  { value: 'map',  label: 'Map'  },
+]
+
+function ProductCatalog() {
+  const [view, setView] = useState<View>('grid')
+
+  return (
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
+        <Toggle
+          options={VIEW_OPTIONS}
+          value={view}
+          onChange={(v) => setView(v as View)}
+        />
+      </div>
+
+      {view === 'grid' && <GridView />}
+      {view === 'list' && <ListView />}
+      {view === 'map'  && <MapView />}
+    </div>
+  )
+}
 ```
 
 </details>
@@ -10607,11 +13067,11 @@ The waterfall layout uses a "shortest column first" algorithm:
 ---
 
 <details>
-<summary><strong>Tooltip</strong> - Lightweight hover tooltips</summary>
+<summary><strong>Tooltip</strong> - Lightweight hover tooltips with 12 placements and color presets</summary>
 
 ### Tooltip
 
-A lightweight tooltip component for displaying additional information on hover.
+A lightweight tooltip component for displaying additional information on hover or focus. Renders into a portal (`document.body`), supports 12 placements, auto-flip on viewport overflow, an optional arrow with `pointAtCenter` mode, and colorful presets.
 
 #### Import
 
@@ -10623,80 +13083,237 @@ import { Tooltip } from 'j-ui'
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `content` | `ReactNode` | — | Tooltip content |
-| `children` | `ReactNode` | — | Trigger element |
-| `position` | `'top' \| 'bottom' \| 'left' \| 'right'` | `'top'` | Tooltip position |
+| `content` | `ReactNode` | — | **Required.** Tooltip content |
+| `children` | `ReactNode` | — | **Required.** Trigger element |
+| `placement` | `TooltipPlacement` | `'top'` | Preferred placement — 12 options |
+| `position` | `TooltipPlacement` | — | **Deprecated.** Use `placement` instead |
+| `arrow` | `boolean \| { pointAtCenter: boolean }` | `true` | Show arrow; pass `{ pointAtCenter: true }` to center it on corner placements |
+| `color` | `string` | — | Preset color name or any CSS color — colorizes the tooltip background |
+| `autoAdjustOverflow` | `boolean` | `true` | Flip to the opposite side when the tooltip overflows the viewport |
 | `delay` | `number` | `200` | Delay before showing (ms) |
 | `disabled` | `boolean` | `false` | Disable tooltip |
+| `className` | `string` | — | Root CSS class |
+| `style` | `CSSProperties` | — | Root inline style |
+| `classNames` | `TooltipClassNames` | — | Semantic class names per slot |
+| `styles` | `TooltipStyles` | — | Semantic inline styles per slot |
 
-#### Positions
+#### Type Definitions
 
-| Position | Description |
-|----------|-------------|
-| `top` | Above the trigger element |
-| `bottom` | Below the trigger element |
-| `left` | Left of the trigger element |
-| `right` | Right of the trigger element |
+```ts
+type TooltipPlacement =
+  | 'top' | 'topLeft' | 'topRight'
+  | 'bottom' | 'bottomLeft' | 'bottomRight'
+  | 'left' | 'leftTop' | 'leftBottom'
+  | 'right' | 'rightTop' | 'rightBottom'
+
+type TooltipSemanticSlot = 'root' | 'popup' | 'arrow'
+type TooltipClassNames   = SemanticClassNames<TooltipSemanticSlot>
+type TooltipStyles       = SemanticStyles<TooltipSemanticSlot>
+```
+
+#### Placements
+
+All 12 placements relative to the trigger element:
+
+```
+         topLeft   top   topRight
+  leftTop  ┌─────────────────┐  rightTop
+  left     │    trigger      │  right
+  leftBottom └─────────────────┘  rightBottom
+       bottomLeft  bottom  bottomRight
+```
+
+#### Preset Colors
+
+| Name | Hex |
+|------|-----|
+| `'blue'` | `#1677ff` |
+| `'geekblue'` | `#2f54eb` |
+| `'purple'` | `#722ed1` |
+| `'cyan'` | `#13c2c2` |
+| `'green'` | `#52c41a` |
+| `'lime'` | `#a0d911` |
+| `'yellow'` | `#fadb14` |
+| `'gold'` | `#faad14` |
+| `'orange'` | `#fa8c16` |
+| `'volcano'` | `#fa541c` |
+| `'red'` | `#f5222d` |
+| `'pink'` / `'magenta'` | `#eb2f96` |
+
+Any other string is used as-is (hex, rgb, hsl…).
 
 #### Semantic DOM
 
-| Slot | Description |
-|------|-------------|
-| `root` | Wrapper around the trigger element |
-| `popup` | Tooltip popup container |
-| `arrow` | Tooltip arrow element |
+| Slot | Element | Description |
+|------|---------|-------------|
+| `root` | `<div>` | Inline wrapper around the trigger element |
+| `popup` | `<div>` | Tooltip popup — portaled to `document.body` |
+| `arrow` | `<div>` | Arrow pointing at the trigger |
 
 #### Examples
 
+**1. Basic**
+
 ```tsx
-// Basic
-<Tooltip content="Hello!">
+<Tooltip content="This is a tooltip">
   <Button>Hover me</Button>
 </Tooltip>
+```
 
-// Positions
-<Tooltip content="Top tooltip" position="top">
-  <Button>Top</Button>
+---
+
+**2. All 12 placements**
+
+```tsx
+<Tooltip content="Top center"       placement="top">          <Button>top</Button>          </Tooltip>
+<Tooltip content="Top left"         placement="topLeft">      <Button>topLeft</Button>      </Tooltip>
+<Tooltip content="Top right"        placement="topRight">     <Button>topRight</Button>     </Tooltip>
+<Tooltip content="Bottom center"    placement="bottom">       <Button>bottom</Button>       </Tooltip>
+<Tooltip content="Bottom left"      placement="bottomLeft">   <Button>bottomLeft</Button>   </Tooltip>
+<Tooltip content="Bottom right"     placement="bottomRight">  <Button>bottomRight</Button>  </Tooltip>
+<Tooltip content="Left center"      placement="left">         <Button>left</Button>         </Tooltip>
+<Tooltip content="Left top"         placement="leftTop">      <Button>leftTop</Button>      </Tooltip>
+<Tooltip content="Left bottom"      placement="leftBottom">   <Button>leftBottom</Button>   </Tooltip>
+<Tooltip content="Right center"     placement="right">        <Button>right</Button>        </Tooltip>
+<Tooltip content="Right top"        placement="rightTop">     <Button>rightTop</Button>     </Tooltip>
+<Tooltip content="Right bottom"     placement="rightBottom">  <Button>rightBottom</Button>  </Tooltip>
+```
+
+---
+
+**3. No arrow**
+
+```tsx
+<Tooltip content="No arrow" arrow={false}>
+  <Button>Hover</Button>
+</Tooltip>
+```
+
+---
+
+**4. Arrow pointing at center (corner placements)**
+
+```tsx
+<Tooltip content="Centered arrow" placement="topLeft" arrow={{ pointAtCenter: true }}>
+  <Button>topLeft + pointAtCenter</Button>
+</Tooltip>
+```
+
+---
+
+**5. Preset color**
+
+```tsx
+<Tooltip content="Success action" color="green">
+  <Button>Green</Button>
 </Tooltip>
 
-<Tooltip content="Bottom tooltip" position="bottom">
-  <Button>Bottom</Button>
+<Tooltip content="Danger zone" color="red">
+  <Button>Red</Button>
 </Tooltip>
 
-<Tooltip content="Left tooltip" position="left">
-  <Button>Left</Button>
+<Tooltip content="Information" color="blue">
+  <Button>Blue</Button>
 </Tooltip>
+```
 
-<Tooltip content="Right tooltip" position="right">
-  <Button>Right</Button>
+---
+
+**6. Custom CSS color**
+
+```tsx
+<Tooltip content="Brand tooltip" color="#722ed1">
+  <Button>Custom purple</Button>
 </Tooltip>
+```
 
-// Custom delay
-<Tooltip content="Quick!" delay={0}>
+---
+
+**7. Disable auto-flip**
+
+```tsx
+<Tooltip content="Always on top" placement="top" autoAdjustOverflow={false}>
+  <Button>No flip</Button>
+</Tooltip>
+```
+
+---
+
+**8. Custom delay**
+
+```tsx
+<Tooltip content="Instant" delay={0}>
   <Button>No delay</Button>
 </Tooltip>
 
-<Tooltip content="Patient..." delay={1000}>
-  <Button>1 second delay</Button>
+<Tooltip content="Slow reveal" delay={800}>
+  <Button>800 ms delay</Button>
 </Tooltip>
+```
 
-// Disabled
+---
+
+**9. Disabled**
+
+```tsx
 <Tooltip content="Won't show" disabled>
   <Button>Disabled tooltip</Button>
 </Tooltip>
+```
 
-// With complex content
-<Tooltip content={<span>Styled <strong>content</strong></span>}>
-  <Button>Rich content</Button>
+---
+
+**10. Rich content**
+
+```tsx
+<Tooltip
+  content={
+    <div>
+      <strong>Keyboard shortcut</strong>
+      <p style={{ margin: '0.25rem 0 0', opacity: 0.85 }}>⌘ + K to open command palette</p>
+    </div>
+  }
+  placement="bottom"
+>
+  <Button>Hover for shortcut</Button>
+</Tooltip>
+```
+
+---
+
+**11. Semantic style customization**
+
+```tsx
+<Tooltip
+  content="Styled tooltip"
+  styles={{
+    popup: { borderRadius: '0.75rem', fontSize: '0.75rem', padding: '0.375rem 0.625rem' },
+  }}
+>
+  <Button>Custom style</Button>
+</Tooltip>
+```
+
+---
+
+**12. Wrapping a disabled element**
+
+Disabled elements do not fire mouse events. Wrap them in a `<span>` so the Tooltip trigger receives events correctly.
+
+```tsx
+<Tooltip content="Button is disabled">
+  <span style={{ display: 'inline-flex' }}>
+    <Button disabled>Submit</Button>
+  </span>
 </Tooltip>
 ```
 
 #### Accessibility
 
-The tooltip supports keyboard navigation:
-- Shows on focus
-- Hides on blur
-- Works with screen readers
+- Shows on `mouseenter` and `focus`
+- Hides on `mouseleave` and `blur`
+- Popup has `role="tooltip"`
+- Repositions on scroll and window resize while visible
 
 </details>
 

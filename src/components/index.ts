@@ -8,7 +8,11 @@ export type { ButtonProps, ButtonAnimation, ButtonSemanticSlot, ButtonClassNames
 
 // Tooltip
 export { Tooltip } from './Tooltip'
-export type { TooltipProps, TooltipPosition, TooltipSemanticSlot, TooltipClassNames, TooltipStyles } from './Tooltip'
+export type { TooltipProps, TooltipPlacement, TooltipPosition, TooltipSemanticSlot, TooltipClassNames, TooltipStyles } from './Tooltip'
+
+// Popover
+export { Popover } from './Popover'
+export type { PopoverProps, PopoverPlacement, PopoverTrigger, PopoverSemanticSlot, PopoverClassNames, PopoverStyles } from './Popover'
 
 // Badge
 export { Badge } from './Badge'
@@ -164,6 +168,10 @@ export type { SliderProps, SliderRef, SliderRangeConfig, SliderSemanticSlot, Sli
 export { Switch } from './Switch'
 export type { SwitchProps, SwitchRef, SwitchSize, SwitchSemanticSlot, SwitchClassNames, SwitchStyles } from './Switch'
 
+// Toggle
+export { Toggle } from './Toggle'
+export type { ToggleProps, ToggleItemType, ToggleSize, ToggleSemanticSlot, ToggleClassNames, ToggleStyles } from './Toggle'
+
 // TimePicker
 export { TimePicker } from './TimePicker'
 export type { TimePickerProps, TimeRangePickerProps, TimePickerSize, TimePickerVariant, TimePickerStatus, TimePickerPlacement, TimePickerSemanticSlot, TimePickerClassNames, TimePickerStyles, DisabledTimeConfig } from './TimePicker'
@@ -183,3 +191,23 @@ export type { UploadProps, UploadDraggerProps, UploadFile, UploadFileStatus, Upl
 // Avatar
 export { Avatar } from './Avatar'
 export type { AvatarProps, AvatarGroupProps, AvatarShape, AvatarBreakpoint, AvatarResponsiveSize, AvatarSize, AvatarSemanticSlot, AvatarClassNames, AvatarStyles } from './Avatar'
+
+// QRCode
+export { QRCode } from './QRCode'
+export type { QRCodeProps, QRCodeType, QRCodeErrorLevel, QRCodeStatus, QRCodeSemanticSlot, QRCodeClassNames, QRCodeStyles, StatusRenderInfo } from './QRCode'
+
+// Statistic
+export { Statistic } from './Statistic'
+export type { StatisticProps, StatisticCountdownProps, StatisticSemanticSlot, StatisticClassNames, StatisticStyles, CountdownSemanticSlot, CountdownClassNames, CountdownStyles } from './Statistic'
+
+// Table
+export { Table } from './Table'
+export type { TableProps, ColumnType, ColumnFilterItem, FilterDropdownProps, TableRowSelection, TableExpandable, TablePaginationConfig, SorterResult, TableSize, SortOrder, SortDirection, TableSemanticSlot, TableClassNames, TableStyles } from './Table'
+
+// Tag
+export { Tag } from './Tag'
+export type { TagProps, CheckableTagProps, TagPresetColor, TagVariant, TagSemanticSlot, TagClassNames, TagStyles, CheckableTagSemanticSlot, CheckableTagClassNames, CheckableTagStyles } from './Tag'
+
+// Timeline
+export { Timeline } from './Timeline'
+export type { TimelineProps, TimelineItemType, TimelineMode, TimelineVariant, TimelineSemanticSlot, TimelineClassNames, TimelineStyles } from './Timeline'

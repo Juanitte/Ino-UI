@@ -14,96 +14,80 @@ import { mergeSemanticClassName, mergeSemanticStyle } from '../../utils/semantic
 
 // ─── Types ──────────────────────────────────────────────────────────────────────
 
-export type TooltipPlacement =
+export type PopoverPlacement =
   | 'top' | 'topLeft' | 'topRight'
   | 'bottom' | 'bottomLeft' | 'bottomRight'
   | 'left' | 'leftTop' | 'leftBottom'
   | 'right' | 'rightTop' | 'rightBottom'
 
-/** @deprecated Use TooltipPlacement instead */
-export type TooltipPosition = TooltipPlacement
+export type PopoverTrigger = 'hover' | 'click' | 'focus' | 'contextMenu'
 
-export type TooltipSemanticSlot = 'root' | 'popup' | 'arrow'
-export type TooltipClassNames = SemanticClassNames<TooltipSemanticSlot>
-export type TooltipStyles = SemanticStyles<TooltipSemanticSlot>
+export type PopoverSemanticSlot = 'root' | 'popup' | 'title' | 'content' | 'arrow'
+export type PopoverClassNames = SemanticClassNames<PopoverSemanticSlot>
+export type PopoverStyles = SemanticStyles<PopoverSemanticSlot>
 
-export interface TooltipProps {
-  /** Tooltip content */
-  content: ReactNode
+export interface PopoverProps {
+  /** Title of the popover card */
+  title?: ReactNode | (() => ReactNode)
+  /** Content of the popover card */
+  content?: ReactNode | (() => ReactNode)
   /** Trigger element */
   children: ReactNode
-  /** Placement — 12 positions */
-  placement?: TooltipPlacement
-  /** @deprecated Use placement instead */
-  position?: TooltipPlacement
-  /** Arrow configuration: true (show), false (hide), or { pointAtCenter } */
-  arrow?: boolean | { pointAtCenter: boolean }
-  /** Colorful tooltip — preset name or custom CSS color */
-  color?: string
-  /** Auto-flip when overflowing viewport (default true) */
-  autoAdjustOverflow?: boolean
-  /** Delay before showing (ms) */
-  delay?: number
-  /** Disable tooltip */
+  /** Placement relative to trigger */
+  placement?: PopoverPlacement
+  /** Trigger mode(s) */
+  trigger?: PopoverTrigger | PopoverTrigger[]
+  /** Controlled open state */
+  open?: boolean
+  /** Callback when open state changes */
+  onOpenChange?: (open: boolean) => void
+  /** Show arrow */
+  arrow?: boolean
+  /** Delay before showing on hover (ms) */
+  mouseEnterDelay?: number
+  /** Delay before hiding on mouse leave (ms) */
+  mouseLeaveDelay?: number
+  /** Disable popover */
   disabled?: boolean
-  /** CSS class */
+  /** Root CSS class */
   className?: string
-  /** Inline style */
+  /** Root inline style */
   style?: CSSProperties
   /** Semantic class names */
-  classNames?: TooltipClassNames
+  classNames?: PopoverClassNames
   /** Semantic styles */
-  styles?: TooltipStyles
-}
-
-// ─── Preset Colors ──────────────────────────────────────────────────────────────
-
-const TOOLTIP_PRESET_COLORS: Record<string, string> = {
-  pink:     '#eb2f96',
-  magenta:  '#eb2f96',
-  red:      '#f5222d',
-  volcano:  '#fa541c',
-  orange:   '#fa8c16',
-  gold:     '#faad14',
-  yellow:   '#fadb14',
-  lime:     '#a0d911',
-  green:    '#52c41a',
-  cyan:     '#13c2c2',
-  blue:     '#1677ff',
-  geekblue: '#2f54eb',
-  purple:   '#722ed1',
-}
-
-function resolveColor(color?: string): string | undefined {
-  if (!color) return undefined
-  return TOOLTIP_PRESET_COLORS[color] ?? color
+  styles?: PopoverStyles
 }
 
 // ─── Positioning ────────────────────────────────────────────────────────────────
 
 const GAP = 8
 
-function getCoords(rect: DOMRect, placement: TooltipPlacement): { top: number; left: number } {
+function getCoords(rect: DOMRect, placement: PopoverPlacement): { top: number; left: number } {
   const cx = rect.left + rect.width / 2
   const cy = rect.top + rect.height / 2
 
   switch (placement) {
-    case 'top':         return { top: rect.top - GAP, left: cx }
-    case 'topLeft':     return { top: rect.top - GAP, left: rect.left }
-    case 'topRight':    return { top: rect.top - GAP, left: rect.right }
-    case 'bottom':      return { top: rect.bottom + GAP, left: cx }
-    case 'bottomLeft':  return { top: rect.bottom + GAP, left: rect.left }
-    case 'bottomRight': return { top: rect.bottom + GAP, left: rect.right }
-    case 'left':        return { top: cy, left: rect.left - GAP }
-    case 'leftTop':     return { top: rect.top, left: rect.left - GAP }
-    case 'leftBottom':  return { top: rect.bottom, left: rect.left - GAP }
-    case 'right':       return { top: cy, left: rect.right + GAP }
-    case 'rightTop':    return { top: rect.top, left: rect.right + GAP }
-    case 'rightBottom': return { top: rect.bottom, left: rect.right + GAP }
+    // Top
+    case 'top':        return { top: rect.top - GAP, left: cx }
+    case 'topLeft':    return { top: rect.top - GAP, left: rect.left }
+    case 'topRight':   return { top: rect.top - GAP, left: rect.right }
+    // Bottom
+    case 'bottom':     return { top: rect.bottom + GAP, left: cx }
+    case 'bottomLeft': return { top: rect.bottom + GAP, left: rect.left }
+    case 'bottomRight':return { top: rect.bottom + GAP, left: rect.right }
+    // Left
+    case 'left':       return { top: cy, left: rect.left - GAP }
+    case 'leftTop':    return { top: rect.top, left: rect.left - GAP }
+    case 'leftBottom': return { top: rect.bottom, left: rect.left - GAP }
+    // Right
+    case 'right':      return { top: cy, left: rect.right + GAP }
+    case 'rightTop':   return { top: rect.top, left: rect.right + GAP }
+    case 'rightBottom':return { top: rect.bottom, left: rect.right + GAP }
   }
 }
 
-function getTransform(placement: TooltipPlacement, animating: boolean): string {
+function getTransform(placement: PopoverPlacement, animating: boolean): string {
   const offset = animating ? 0 : 6
 
   switch (placement) {
@@ -122,36 +106,18 @@ function getTransform(placement: TooltipPlacement, animating: boolean): string {
   }
 }
 
-// ─── Arrow Positioning ──────────────────────────────────────────────────────────
-
-/** Map offset placements to their centered counterpart (for pointAtCenter) */
-function toCenteredPlacement(p: TooltipPlacement): TooltipPlacement {
-  switch (p) {
-    case 'topLeft':     case 'topRight':     return 'top'
-    case 'bottomLeft':  case 'bottomRight':  return 'bottom'
-    case 'leftTop':     case 'leftBottom':   return 'left'
-    case 'rightTop':    case 'rightBottom':  return 'right'
-    default: return p
-  }
-}
-
-function getArrowStyle(
-  placement: TooltipPlacement,
-  bgColor: string,
-  borderColor: string,
-  pointAtCenter?: boolean,
-): CSSProperties {
+// Arrow: rotated square positioned per placement
+function getArrowStyle(placement: PopoverPlacement): CSSProperties {
   const base: CSSProperties = {
     position: 'absolute',
     width: '0.5rem',
     height: '0.5rem',
-    backgroundColor: bgColor,
+    backgroundColor: tokens.colorBg,
   }
 
-  const border = borderColor !== 'transparent' ? `1px solid ${borderColor}` : 'none'
-  const p = pointAtCenter ? toCenteredPlacement(placement) : placement
+  const border = `1px solid ${tokens.colorBorder}`
 
-  switch (p) {
+  switch (placement) {
     case 'top':
       return { ...base, bottom: '-0.25rem', left: '50%', transform: 'translateX(-50%) rotate(45deg)', borderRight: border, borderBottom: border }
     case 'topLeft':
@@ -181,7 +147,7 @@ function getArrowStyle(
 
 // ─── Auto-flip ──────────────────────────────────────────────────────────────────
 
-function flipPlacement(p: TooltipPlacement): TooltipPlacement {
+function flipPlacement(p: PopoverPlacement): PopoverPlacement {
   if (p === 'top') return 'bottom'
   if (p === 'topLeft') return 'bottomLeft'
   if (p === 'topRight') return 'bottomRight'
@@ -197,42 +163,56 @@ function flipPlacement(p: TooltipPlacement): TooltipPlacement {
   return p
 }
 
-// ─── Tooltip Component ──────────────────────────────────────────────────────────
+// ─── Popover Component ──────────────────────────────────────────────────────────
 
-export function Tooltip({
+export function Popover({
+  title,
   content,
   children,
-  placement: placementProp,
-  position,
+  placement = 'top',
+  trigger = 'hover',
+  open: controlledOpen,
+  onOpenChange,
   arrow = true,
-  color,
-  autoAdjustOverflow = true,
-  delay = 200,
+  mouseEnterDelay = 100,
+  mouseLeaveDelay = 100,
   disabled = false,
   className,
   style,
   classNames,
   styles,
-}: TooltipProps) {
-  const placement = placementProp ?? position ?? 'top'
-
-  const [visible, setVisible] = useState(false)
+}: PopoverProps) {
+  const [internalOpen, setInternalOpen] = useState(false)
   const [isAnimating, setIsAnimating] = useState(false)
   const [coords, setCoords] = useState({ top: 0, left: 0 })
   const [resolvedPlacement, setResolvedPlacement] = useState(placement)
   const showTimeoutRef = useRef<number | null>(null)
+  const hideTimeoutRef = useRef<number | null>(null)
   const closeTimeoutRef = useRef<number | null>(null)
   const triggerRef = useRef<HTMLDivElement>(null)
   const popupRef = useRef<HTMLDivElement>(null)
   const flipCheckedRef = useRef(false)
   const noTransitionRef = useRef(true)
+
+  const isControlled = controlledOpen !== undefined
+  const visible = isControlled ? controlledOpen : internalOpen
+
+  // Ref to read current visibility inside stable callbacks
   const visibleRef = useRef(visible)
   visibleRef.current = visible
+
+  const triggers = Array.isArray(trigger) ? trigger : [trigger]
 
   // Sync resolvedPlacement when placement prop changes
   useEffect(() => {
     setResolvedPlacement(placement)
   }, [placement])
+
+  const setOpen = useCallback((next: boolean) => {
+    if (disabled || next === visibleRef.current) return
+    if (!isControlled) setInternalOpen(next)
+    onOpenChange?.(next)
+  }, [disabled, isControlled, onOpenChange])
 
   const updateCoords = useCallback(() => {
     if (!triggerRef.current) return
@@ -240,8 +220,13 @@ export function Tooltip({
     setCoords(getCoords(rect, resolvedPlacement))
   }, [resolvedPlacement])
 
-  const showTooltip = useCallback(() => {
-    if (disabled) return
+  // Show with animation
+  const show = useCallback(() => {
+    // Cancel any pending hide / close
+    if (hideTimeoutRef.current) {
+      clearTimeout(hideTimeoutRef.current)
+      hideTimeoutRef.current = null
+    }
     if (closeTimeoutRef.current) {
       clearTimeout(closeTimeoutRef.current)
       closeTimeoutRef.current = null
@@ -250,20 +235,22 @@ export function Tooltip({
       clearTimeout(showTimeoutRef.current)
     }
 
-    // Already visible — just re-animate
+    // Already visible — keep current (possibly flipped) placement, just re-animate in
     if (visibleRef.current) {
       setIsAnimating(true)
       return
     }
 
+    // Opening fresh — reset to original placement, useLayoutEffect will auto-flip
     flipCheckedRef.current = false
     noTransitionRef.current = true
+    const delay = triggers.includes('hover') ? mouseEnterDelay : 0
     showTimeoutRef.current = window.setTimeout(() => {
       setResolvedPlacement(placement)
       if (triggerRef.current) {
         setCoords(getCoords(triggerRef.current.getBoundingClientRect(), placement))
       }
-      setVisible(true)
+      setOpen(true)
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           noTransitionRef.current = false
@@ -271,26 +258,39 @@ export function Tooltip({
         })
       })
     }, delay)
-  }, [disabled, delay, placement])
+  }, [mouseEnterDelay, triggers, placement, setOpen])
 
-  const hideTooltip = useCallback(() => {
+  // Hide with animation
+  const hide = useCallback(() => {
     if (showTimeoutRef.current) {
       clearTimeout(showTimeoutRef.current)
       showTimeoutRef.current = null
     }
-    setIsAnimating(false)
-    closeTimeoutRef.current = window.setTimeout(() => setVisible(false), 150)
-  }, [])
+    if (hideTimeoutRef.current) {
+      clearTimeout(hideTimeoutRef.current)
+    }
+    const delay = triggers.includes('hover') ? mouseLeaveDelay : 0
+    hideTimeoutRef.current = window.setTimeout(() => {
+      setIsAnimating(false)
+      closeTimeoutRef.current = window.setTimeout(() => setOpen(false), 150)
+    }, delay)
+  }, [mouseLeaveDelay, triggers, setOpen])
+
+  const toggle = useCallback(() => {
+    if (visible) hide()
+    else show()
+  }, [visible, show, hide])
 
   // Cleanup timeouts
   useEffect(() => {
     return () => {
       if (showTimeoutRef.current) clearTimeout(showTimeoutRef.current)
+      if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current)
       if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current)
     }
   }, [])
 
-  // Reposition on scroll/resize while visible
+  // Reposition on scroll/resize
   useEffect(() => {
     if (!visible) return
     const handle = () => updateCoords()
@@ -302,9 +302,9 @@ export function Tooltip({
     }
   }, [visible, updateCoords])
 
-  // Auto-flip: measure popup and flip if it overflows viewport (once per show)
+  // Auto-flip: measure popup and flip if it overflows viewport (once per show cycle)
   useLayoutEffect(() => {
-    if (!autoAdjustOverflow || !visible || flipCheckedRef.current || !popupRef.current || !triggerRef.current) return
+    if (!visible || flipCheckedRef.current || !popupRef.current || !triggerRef.current) return
     flipCheckedRef.current = true
 
     const popupRect = popupRef.current.getBoundingClientRect()
@@ -338,47 +338,76 @@ export function Tooltip({
     }
   })
 
-  // ─── Color resolution ─────────────────────────────────────
+  // Click outside (for click trigger)
+  useEffect(() => {
+    if (!visible || !triggers.includes('click')) return
 
-  const resolvedColor = resolveColor(color)
-  const isColorful = !!resolvedColor
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as Node
+      if (
+        triggerRef.current && !triggerRef.current.contains(target) &&
+        popupRef.current && !popupRef.current.contains(target)
+      ) {
+        hide()
+      }
+    }
 
-  const tooltipBg = isColorful ? resolvedColor : tokens.colorBgMuted
-  const tooltipText = isColorful ? '#fff' : tokens.colorText
-  const tooltipBorder = isColorful ? 'transparent' : tokens.colorBorder
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [visible, triggers, hide])
 
-  // ─── Arrow config ─────────────────────────────────────────
+  // ─── Event handlers ─────────────────────────────────────
 
-  const showArrow = arrow !== false
-  const pointAtCenter = typeof arrow === 'object' && arrow.pointAtCenter
+  const handleMouseEnter = useCallback(() => {
+    if (triggers.includes('hover')) show()
+  }, [triggers, show])
 
-  // ─── Styles ───────────────────────────────────────────────
+  const handleMouseLeave = useCallback(() => {
+    if (triggers.includes('hover')) hide()
+  }, [triggers, hide])
 
-  const tooltipStyle: CSSProperties = {
-    position: 'fixed',
-    zIndex: 9999,
-    top: coords.top,
-    left: coords.left,
-    padding: '0.5rem 0.75rem',
-    borderRadius: '0.375rem',
-    backgroundColor: tooltipBg,
-    color: tooltipText,
-    fontSize: '0.8125rem',
-    fontWeight: 500,
-    whiteSpace: 'nowrap',
-    boxShadow: tokens.shadowMd,
-    border: isColorful ? 'none' : `1px solid ${tooltipBorder}`,
-    opacity: isAnimating ? 1 : 0,
-    transform: getTransform(resolvedPlacement, isAnimating),
-    transition: noTransitionRef.current ? 'none' : 'opacity 0.15s ease-out, transform 0.15s ease-out',
-    pointerEvents: 'none',
-    ...styles?.popup,
-  }
+  const handleClick = useCallback(() => {
+    if (triggers.includes('click')) toggle()
+  }, [triggers, toggle])
 
-  const arrowComputedStyle: CSSProperties = {
-    ...getArrowStyle(resolvedPlacement, tooltipBg, tooltipBorder, pointAtCenter),
-    ...styles?.arrow,
-  }
+  const handleFocus = useCallback(() => {
+    if (triggers.includes('focus')) show()
+  }, [triggers, show])
+
+  const handleBlur = useCallback(() => {
+    if (triggers.includes('focus')) hide()
+  }, [triggers, hide])
+
+  const handleContextMenu = useCallback((e: React.MouseEvent) => {
+    if (!triggers.includes('contextMenu')) return
+    e.preventDefault()
+    toggle()
+  }, [triggers, toggle])
+
+  // ─── Popup hover (keep open when hovering popup) ────────
+
+  const handlePopupMouseEnter = useCallback((e: React.MouseEvent) => {
+    // Prevent React portal event bubbling to parent Popover triggers
+    e.stopPropagation()
+    if (triggers.includes('hover')) {
+      if (hideTimeoutRef.current) {
+        clearTimeout(hideTimeoutRef.current)
+        hideTimeoutRef.current = null
+      }
+    }
+  }, [triggers])
+
+  const handlePopupMouseLeave = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (triggers.includes('hover')) hide()
+  }, [triggers, hide])
+
+  // ─── Resolve content ───────────────────────────────────
+
+  const resolvedTitle = typeof title === 'function' ? title() : title
+  const resolvedContent = typeof content === 'function' ? content() : content
+
+  // ─── Styles ────────────────────────────────────────────
 
   const rootStyle = mergeSemanticStyle(
     { display: 'inline-flex' },
@@ -386,13 +415,71 @@ export function Tooltip({
     style,
   )
 
-  // ─── Render ───────────────────────────────────────────────
+  const popupContainerStyle: CSSProperties = {
+    position: 'fixed',
+    zIndex: 9999,
+    top: coords.top,
+    left: coords.left,
+    opacity: isAnimating ? 1 : 0,
+    transform: getTransform(resolvedPlacement, isAnimating),
+    transition: noTransitionRef.current ? 'none' : 'opacity 0.15s ease-out, transform 0.15s ease-out',
+    pointerEvents: isAnimating ? 'auto' : 'none',
+  }
+
+  const cardStyle: CSSProperties = {
+    backgroundColor: tokens.colorBg,
+    border: `1px solid ${tokens.colorBorder}`,
+    borderRadius: '0.5rem',
+    boxShadow: tokens.shadowLg,
+    minWidth: '12rem',
+    maxWidth: '20rem',
+    ...styles?.popup,
+  }
+
+  const titleStyle: CSSProperties = {
+    padding: '0.5rem 0.75rem',
+    fontWeight: 600,
+    fontSize: '0.875rem',
+    color: tokens.colorText,
+    borderBottom: resolvedContent ? `1px solid ${tokens.colorBorder}` : undefined,
+    ...styles?.title,
+  }
+
+  const contentStyle: CSSProperties = {
+    padding: '0.5rem 0.75rem',
+    fontSize: '0.875rem',
+    color: tokens.colorText,
+    ...styles?.content,
+  }
+
+  const arrowComputedStyle: CSSProperties = {
+    ...getArrowStyle(resolvedPlacement),
+    ...styles?.arrow,
+  }
+
+  // ─── Render ────────────────────────────────────────────
 
   const popup = visible && typeof document !== 'undefined'
     ? createPortal(
-        <div ref={popupRef} style={tooltipStyle} className={classNames?.popup} role="tooltip">
-          {content}
-          {showArrow && <div style={arrowComputedStyle} className={classNames?.arrow} />}
+        <div
+          ref={popupRef}
+          style={popupContainerStyle}
+          onMouseEnter={handlePopupMouseEnter}
+          onMouseLeave={handlePopupMouseLeave}
+        >
+          <div style={cardStyle} className={classNames?.popup}>
+            {resolvedTitle != null && (
+              <div style={titleStyle} className={classNames?.title}>
+                {resolvedTitle}
+              </div>
+            )}
+            {resolvedContent != null && (
+              <div style={contentStyle} className={classNames?.content}>
+                {resolvedContent}
+              </div>
+            )}
+          </div>
+          {arrow && <div style={arrowComputedStyle} className={classNames?.arrow} />}
         </div>,
         document.body,
       )
@@ -403,10 +490,12 @@ export function Tooltip({
       ref={triggerRef}
       style={rootStyle}
       className={mergeSemanticClassName(className, classNames?.root)}
-      onMouseEnter={showTooltip}
-      onMouseLeave={hideTooltip}
-      onFocus={showTooltip}
-      onBlur={hideTooltip}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      onClick={handleClick}
+      onFocus={handleFocus}
+      onBlur={handleBlur}
+      onContextMenu={handleContextMenu}
     >
       {children}
       {popup}

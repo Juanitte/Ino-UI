@@ -46,6 +46,8 @@ Una libreria de componentes React moderna y ligera con soporte integrado de tema
   - [Mention](#mention)
   - [NestedSelect](#nestedselect)
   - [Pagination](#pagination)
+  - [Popover](#popover)
+  - [QRCode](#qrcode)
   - [Radio](#radio)
   - [Rate](#rate)
   - [Select](#select)
@@ -53,10 +55,15 @@ Una libreria de componentes React moderna y ligera con soporte integrado de tema
   - [Space](#space)
   - [Splitter](#splitter)
   - [Steps](#steps)
+  - [Statistic](#statistic)
   - [Switch](#switch)
+  - [Table](#table)
   - [Tabs](#tabs)
+  - [Tag](#tag)
   - [Text](#text)
   - [TimePicker](#timepicker)
+  - [Timeline](#timeline)
+  - [Toggle](#toggle)
   - [Transfer](#transfer)
   - [TreeSelect](#treeselect)
   - [Upload](#upload)
@@ -7188,6 +7195,585 @@ const [page, setPage] = useState(1)
 ---
 
 <details>
+<summary><strong>Popover</strong> - Tarjeta flotante con título y contenido</summary>
+
+### Popover
+
+`Popover` muestra una tarjeta flotante con título y contenido junto a un elemento trigger. Soporta 12 posiciones, múltiples modos de activación (hover, click, focus, menú contextual), auto-flip cuando se sale del viewport, delays configurables e indicador de flecha.
+
+#### Importar
+
+```tsx
+import { Popover } from 'j-ui'
+```
+
+#### Props
+
+| Prop | Tipo | Por defecto | Descripción |
+|------|------|-------------|-------------|
+| `title` | `ReactNode \| () => ReactNode` | - | Contenido del título de la tarjeta popover |
+| `content` | `ReactNode \| () => ReactNode` | - | Contenido del cuerpo de la tarjeta popover |
+| `children` | `ReactNode` | - | Elemento trigger (requerido) |
+| `placement` | `PopoverPlacement` | `'top'` | Posición del popover relativa al trigger |
+| `trigger` | `PopoverTrigger \| PopoverTrigger[]` | `'hover'` | Modo(s) de activación para abrir el popover |
+| `open` | `boolean` | - | Estado abierto controlado |
+| `onOpenChange` | `(open: boolean) => void` | - | Callback cuando cambia el estado abierto |
+| `arrow` | `boolean` | `true` | Mostrar flecha apuntando al trigger |
+| `mouseEnterDelay` | `number` | `100` | Delay en ms antes de mostrar al hacer hover |
+| `mouseLeaveDelay` | `number` | `100` | Delay en ms antes de ocultar al salir del mouse |
+| `disabled` | `boolean` | `false` | Deshabilitar el popover |
+| `className` | `string` | - | Nombre de clase del elemento raíz |
+| `style` | `CSSProperties` | - | Estilos inline del elemento raíz |
+| `classNames` | `PopoverClassNames` | - | Nombres de clase semánticos para slots del popover |
+| `styles` | `PopoverStyles` | - | Estilos inline semánticos para slots del popover |
+
+#### PopoverPlacement
+
+```tsx
+type PopoverPlacement =
+  | 'top'    | 'topLeft'    | 'topRight'
+  | 'bottom' | 'bottomLeft' | 'bottomRight'
+  | 'left'   | 'leftTop'    | 'leftBottom'
+  | 'right'  | 'rightTop'   | 'rightBottom'
+```
+
+#### PopoverTrigger
+
+```tsx
+type PopoverTrigger = 'hover' | 'click' | 'focus' | 'contextMenu'
+```
+
+#### DOM Semántico
+
+El componente Popover utiliza nombres de clase y estilos semánticos para personalización:
+
+```tsx
+type PopoverSemanticSlot = 'root' | 'popup' | 'title' | 'content' | 'arrow'
+
+interface PopoverClassNames {
+  root?: string
+  popup?: string
+  title?: string
+  content?: string
+  arrow?: string
+}
+
+interface PopoverStyles {
+  root?: CSSProperties
+  popup?: CSSProperties
+  title?: CSSProperties
+  content?: CSSProperties
+  arrow?: CSSProperties
+}
+```
+
+#### Ejemplos
+
+**Popover básico (hover):**
+
+```tsx
+<Popover title="Título del Popover" content="Este es el contenido del popover.">
+  <Button>Pasa el mouse</Button>
+</Popover>
+```
+
+**Trigger de click:**
+
+```tsx
+<Popover
+  title="Popover con Click"
+  content="Haz click afuera para cerrar."
+  trigger="click"
+>
+  <Button>Haz click</Button>
+</Popover>
+```
+
+**Trigger de focus:**
+
+```tsx
+<Popover
+  title="Popover con Focus"
+  content="Activado al enfocar."
+  trigger="focus"
+>
+  <Input placeholder="Enfócame" />
+</Popover>
+```
+
+**Trigger de menú contextual:**
+
+```tsx
+<Popover
+  title="Menú Contextual"
+  content="Popover activado con click derecho."
+  trigger="contextMenu"
+>
+  <div style={{ padding: '2rem', border: '1px dashed #ccc', textAlign: 'center' }}>
+    Haz click derecho en esta área
+  </div>
+</Popover>
+```
+
+**Múltiples triggers:**
+
+```tsx
+<Popover
+  title="Multi Trigger"
+  content="Se abre con hover o click."
+  trigger={['hover', 'click']}
+>
+  <Button>Hover o Click</Button>
+</Popover>
+```
+
+**Variaciones de posición:**
+
+```tsx
+<Popover title="Abajo" content="Posicionado abajo." placement="bottom">
+  <Button>Abajo</Button>
+</Popover>
+
+<Popover title="Izquierda" content="Posicionado a la izquierda." placement="left">
+  <Button>Izquierda</Button>
+</Popover>
+
+<Popover title="Derecha" content="Posicionado a la derecha." placement="right">
+  <Button>Derecha</Button>
+</Popover>
+
+<Popover title="Arriba Izq" content="Posicionado arriba-izquierda." placement="topLeft">
+  <Button>Arriba Izquierda</Button>
+</Popover>
+```
+
+**Sin flecha:**
+
+```tsx
+<Popover
+  title="Sin Flecha"
+  content="Popover sin indicador de flecha."
+  arrow={false}
+>
+  <Button>Sin Flecha</Button>
+</Popover>
+```
+
+**Solo contenido (sin título):**
+
+```tsx
+<Popover content="Popover tipo tooltip simple sin título.">
+  <Button>Solo Contenido</Button>
+</Popover>
+```
+
+**Solo título (sin contenido):**
+
+```tsx
+<Popover title="Solo un título">
+  <Button>Solo Título</Button>
+</Popover>
+```
+
+**Popover controlado:**
+
+```tsx
+const [open, setOpen] = useState(false)
+
+<div>
+  <Button onClick={() => setOpen(!open)}>Alternar Popover</Button>
+  <Popover
+    title="Controlado"
+    content="Este popover es controlado externamente."
+    open={open}
+    onOpenChange={setOpen}
+    trigger="click"
+  >
+    <Button>Objetivo</Button>
+  </Popover>
+</div>
+```
+
+**Contenido como función (renderizado diferido):**
+
+```tsx
+<Popover
+  title={() => <strong>Título Dinámico</strong>}
+  content={() => (
+    <div>
+      <p>Contenido renderizado de forma diferida como función.</p>
+      <p>Hora actual: {new Date().toLocaleTimeString()}</p>
+    </div>
+  )}
+>
+  <Button>Contenido Diferido</Button>
+</Popover>
+```
+
+**Delays personalizados:**
+
+```tsx
+<Popover
+  title="Popover Lento"
+  content="Aparece después de 500ms, se oculta después de 300ms."
+  mouseEnterDelay={500}
+  mouseLeaveDelay={300}
+>
+  <Button>Hover Lento</Button>
+</Popover>
+```
+
+**Popover deshabilitado:**
+
+```tsx
+<Popover
+  title="Deshabilitado"
+  content="Este popover no se abrirá."
+  disabled
+>
+  <Button>Popover Deshabilitado</Button>
+</Popover>
+```
+
+**Contenido rico con acciones:**
+
+```tsx
+<Popover
+  title="Perfil de Usuario"
+  content={
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+      <p style={{ margin: 0 }}>John Doe - Admin</p>
+      <p style={{ margin: 0, color: '#888' }}>john@example.com</p>
+      <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+        <Button size="sm">Perfil</Button>
+        <Button size="sm" color="error">Cerrar Sesión</Button>
+      </div>
+    </div>
+  }
+  trigger="click"
+>
+  <Avatar>JD</Avatar>
+</Popover>
+```
+
+</details>
+
+---
+
+<details>
+<summary><strong>QRCode</strong> - Componente generador de códigos QR</summary>
+
+### QRCode
+
+Un componente que genera códigos QR a partir de cualquier texto o URL. Admite renderizado en canvas y SVG, logos incrustados, cuatro niveles de corrección de errores y superposiciones de estado (cargando, expirado, escaneado) con soporte completo de tema.
+
+#### Importar
+
+```tsx
+import { QRCode } from 'j-ui'
+```
+
+#### Props
+
+| Prop | Tipo | Por defecto | Descripción |
+|------|------|-------------|-------------|
+| `value` | `string` | — | **Requerido.** Texto o URL a codificar |
+| `type` | `'canvas' \| 'svg'` | `'canvas'` | Método de renderizado |
+| `icon` | `string` | — | URL del logo/imagen a incrustar en el centro |
+| `size` | `number` | `160` | Tamaño del código QR en píxeles |
+| `iconSize` | `number \| { width: number; height: number }` | `40` | Dimensiones del ícono |
+| `color` | `string` | `tokens.colorText` | Color de los módulos (puntos) — admite variables CSS |
+| `bgColor` | `string` | `'transparent'` | Color de fondo |
+| `marginSize` | `number` | `0` | Zona silenciosa en módulos |
+| `bordered` | `boolean` | `true` | Añade relleno, borde y fondo |
+| `errorLevel` | `'L' \| 'M' \| 'Q' \| 'H'` | `'M'` | Nivel de corrección de errores |
+| `status` | `QRCodeStatus` | `'active'` | Estado de visualización actual |
+| `statusRender` | `(info: StatusRenderInfo) => ReactNode` | — | Renderizador personalizado de la superposición de estado |
+| `onRefresh` | `() => void` | — | Se llama al hacer clic en Actualizar (estado expirado) |
+| `className` | `string` | — | Clase CSS raíz |
+| `style` | `CSSProperties` | — | Estilo en línea raíz |
+| `classNames` | `QRCodeClassNames` | — | Nombres de clase semánticos por slot |
+| `styles` | `QRCodeStyles` | — | Estilos en línea semánticos por slot |
+
+#### Definiciones de Tipos
+
+```ts
+type QRCodeType     = 'canvas' | 'svg'
+type QRCodeStatus   = 'active' | 'expired' | 'loading' | 'scanned'
+type QRCodeErrorLevel = 'L' | 'M' | 'Q' | 'H'
+
+interface StatusRenderInfo {
+  status: QRCodeStatus
+  locale: { expired: string; loading: string; scanned: string }
+  onRefresh?: () => void
+}
+
+type QRCodeSemanticSlot = 'root' | 'canvas' | 'mask'
+type QRCodeClassNames   = SemanticClassNames<QRCodeSemanticSlot>
+type QRCodeStyles       = SemanticStyles<QRCodeSemanticSlot>
+```
+
+#### Niveles de Corrección de Errores
+
+| Nivel | Recuperación de datos | Uso típico |
+|-------|-----------------------|------------|
+| `'L'` | ~7% | Entornos limpios y controlados |
+| `'M'` | ~15% | Uso general (por defecto) |
+| `'Q'` | ~25% | Superficies ligeramente dañadas |
+| `'H'` | ~30% | Superposición de logo, alto riesgo de daño |
+
+#### DOM Semántico
+
+| Slot | Elemento | Descripción |
+|------|----------|-------------|
+| `root` | `<div>` | Contenedor externo (borde, relleno cuando `bordered`) |
+| `canvas` | `<canvas>` o `<svg>` | Superficie de renderizado del QR |
+| `mask` | `<div>` | Superposición de estado (cargando / expirado / escaneado) |
+
+#### Ejemplos
+
+**1. URL básica**
+
+```tsx
+<QRCode value="https://ejemplo.com" />
+```
+
+---
+
+**2. Modo de renderizado SVG**
+
+```tsx
+<QRCode value="https://ejemplo.com" type="svg" />
+```
+
+---
+
+**3. Tamaño personalizado**
+
+```tsx
+<QRCode value="https://ejemplo.com" size={200} />
+```
+
+---
+
+**4. Colores personalizados**
+
+```tsx
+<QRCode
+  value="https://ejemplo.com"
+  color="#1677ff"
+  bgColor="#f0f5ff"
+/>
+```
+
+---
+
+**5. Con logo incrustado**
+
+Usa `errorLevel="H"` al incrustar un logo para asegurar que el QR siga siendo legible aunque el centro esté cubierto.
+
+```tsx
+<QRCode
+  value="https://ejemplo.com"
+  icon="/logo.png"
+  iconSize={40}
+  errorLevel="H"
+/>
+```
+
+---
+
+**6. Ícono con dimensiones personalizadas**
+
+```tsx
+<QRCode
+  value="https://ejemplo.com"
+  icon="/logo.png"
+  iconSize={{ width: 60, height: 30 }}
+  errorLevel="H"
+/>
+```
+
+---
+
+**7. Sin borde**
+
+```tsx
+<QRCode value="https://ejemplo.com" bordered={false} />
+```
+
+---
+
+**8. Zona silenciosa (margen)**
+
+```tsx
+<QRCode value="https://ejemplo.com" marginSize={2} />
+```
+
+---
+
+**9. Estado de carga**
+
+```tsx
+<QRCode value="https://ejemplo.com" status="loading" />
+```
+
+---
+
+**10. Estado expirado con actualización**
+
+```tsx
+<QRCode
+  value="https://ejemplo.com"
+  status="expired"
+  onRefresh={() => console.log('actualizando!')}
+/>
+```
+
+---
+
+**11. Estado escaneado**
+
+```tsx
+<QRCode value="https://ejemplo.com" status="scanned" />
+```
+
+---
+
+**12. Superposición de estado personalizada**
+
+```tsx
+<QRCode
+  value="https://ejemplo.com"
+  status="expired"
+  statusRender={({ onRefresh }) => (
+    <div style={{ textAlign: 'center', padding: '1rem' }}>
+      <p style={{ marginBottom: '0.5rem' }}>Sesión expirada</p>
+      <button onClick={onRefresh}>Regenerar</button>
+    </div>
+  )}
+/>
+```
+
+---
+
+**13. Personalización semántica de estilos**
+
+```tsx
+<QRCode
+  value="https://ejemplo.com"
+  styles={{
+    root: { borderRadius: '1rem', padding: '1.5rem' },
+    mask: { borderRadius: '1rem', backgroundColor: 'rgba(0,0,0,0.7)' },
+  }}
+/>
+```
+
+---
+
+**14. Flujo completo de estados en una app**
+
+Este ejemplo muestra cómo conectar los cuatro estados — útil para QR de pago de un solo uso, tokens de sesión o cualquier código con tiempo límite.
+
+```tsx
+import { useState, useEffect, useRef } from 'react'
+import { QRCode } from 'j-ui'
+
+const SEGUNDOS_EXPIRACION = 60       // QR válido por 60 s
+const DURACION_CARGA_MS  = 1500     // Simula el tiempo de respuesta del servidor
+
+function PagoQR() {
+  type Estado = 'active' | 'loading' | 'expired' | 'scanned'
+
+  const [estado, setEstado] = useState<Estado>('active')
+  const [qrValue, setQrValue] = useState(() => generarToken())
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  /** Crea un token firmado nuevo (llama a tu API aquí) */
+  function generarToken() {
+    return `https://pago.ejemplo.com/checkout?token=${crypto.randomUUID()}`
+  }
+
+  /** Inicia la cuenta regresiva de expiración */
+  function iniciarExpiracion() {
+    if (timerRef.current) clearTimeout(timerRef.current)
+    timerRef.current = setTimeout(() => {
+      setEstado('expired')
+    }, SEGUNDOS_EXPIRACION * 1000)
+  }
+
+  /** El usuario hace clic en Actualizar — obtiene un nuevo token */
+  function manejarActualizacion() {
+    setEstado('loading')
+    setTimeout(() => {
+      setQrValue(generarToken())
+      setEstado('active')
+      iniciarExpiracion()
+    }, DURACION_CARGA_MS)
+  }
+
+  /** Simula un webhook / WebSocket que notifica cuando se escanea */
+  useEffect(() => {
+    if (estado !== 'active') return
+
+    // Reemplaza con una llamada WebSocket o polling real:
+    // const ws = new WebSocket('wss://api.ejemplo.com/eventos-qr')
+    // ws.onmessage = (e) => { if (JSON.parse(e.data).evento === 'escaneado') setEstado('scanned') }
+    // return () => ws.close()
+
+    // Demo: marcar como escaneado después de 8 s
+    const demo = setTimeout(() => setEstado('scanned'), 8000)
+    return () => clearTimeout(demo)
+  }, [estado, qrValue])
+
+  /** Inicia la cuenta regresiva al montar y tras cada actualización */
+  useEffect(() => {
+    if (estado === 'active') iniciarExpiracion()
+    return () => { if (timerRef.current) clearTimeout(timerRef.current) }
+  }, [estado, qrValue])
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem' }}>
+      <QRCode
+        value={qrValue}
+        size={200}
+        errorLevel="H"
+        status={estado}
+        onRefresh={manejarActualizacion}
+      />
+      <p style={{ fontSize: '0.875rem', color: '#666' }}>
+        {estado === 'active'  && 'Escanea para pagar — expira en 60 s'}
+        {estado === 'loading' && 'Generando nuevo código…'}
+        {estado === 'expired' && 'Código expirado. Toca Actualizar para obtener uno nuevo.'}
+        {estado === 'scanned' && '¡Pago recibido!'}
+      </p>
+    </div>
+  )
+}
+```
+
+**Diagrama de transición de estados**
+
+```
+         montaje / actualización completada
+               │
+               ▼
+           ┌────────┐   60 s timeout    ┌──────────┐
+           │ active │ ────────────────► │ expired  │
+           └────────┘                   └──────────┘
+               │                              │
+    WebSocket  │ escaneado          Usuario   │ hace clic en Actualizar
+               ▼                              ▼
+           ┌─────────┐              ┌─────────┐
+           │ scanned │              │ loading │ ──► (fetch) ──► active
+           └─────────┘              └─────────┘
+```
+
+</details>
+
+---
+
+<details>
 <summary><strong>Radio</strong> - Selección única de opciones</summary>
 
 ### Radio
@@ -8703,6 +9289,311 @@ const [current, setCurrent] = useState(0)
 ---
 
 <details>
+<summary><strong>Statistic</strong> - Visualización numérica formateada y temporizador de cuenta regresiva</summary>
+
+### Statistic
+
+Un componente de visualización para números formateados, métricas y KPIs. Incluye `Statistic.Countdown` para temporizadores de cuenta regresiva en vivo con una cadena de formato flexible. Ambas variantes comparten los mismos slots semánticos y API de estilos.
+
+#### Importar
+
+```tsx
+import { Statistic } from 'j-ui'
+```
+
+#### Props — `Statistic`
+
+| Prop | Tipo | Por defecto | Descripción |
+|------|------|-------------|-------------|
+| `title` | `ReactNode` | — | Etiqueta renderizada sobre el valor |
+| `value` | `string \| number` | `0` | Valor numérico o de cadena a mostrar |
+| `precision` | `number` | — | Número de decimales |
+| `decimalSeparator` | `string` | `'.'` | Carácter para separar la parte decimal |
+| `groupSeparator` | `string` | `','` | Carácter para agrupar miles |
+| `prefix` | `ReactNode` | — | Contenido renderizado antes del valor |
+| `suffix` | `ReactNode` | — | Contenido renderizado después del valor |
+| `formatter` | `(value: string \| number) => ReactNode` | — | Formateador personalizado — reemplaza el formato numérico incorporado |
+| `loading` | `boolean` | `false` | Muestra un placeholder animado en lugar del valor |
+| `loadingWidth` | `string` | `'7rem'` | Ancho del placeholder de carga |
+| `className` | `string` | — | Clase CSS raíz |
+| `style` | `CSSProperties` | — | Estilo en línea raíz |
+| `classNames` | `StatisticClassNames` | — | Nombres de clase semánticos por slot |
+| `styles` | `StatisticStyles` | — | Estilos en línea semánticos por slot |
+
+#### Props — `Statistic.Countdown`
+
+| Prop | Tipo | Por defecto | Descripción |
+|------|------|-------------|-------------|
+| `value` | `number` | — | **Requerido.** Timestamp objetivo en milisegundos (basado en `Date.now()`) |
+| `title` | `ReactNode` | — | Etiqueta renderizada sobre la cuenta regresiva |
+| `format` | `string` | `'HH:mm:ss'` | Cadena de formato (ver tokens a continuación) |
+| `prefix` | `ReactNode` | — | Contenido renderizado antes de la cuenta regresiva |
+| `suffix` | `ReactNode` | — | Contenido renderizado después de la cuenta regresiva |
+| `onFinish` | `() => void` | — | Se llama una vez cuando la cuenta regresiva llega a cero |
+| `onChange` | `(value: number) => void` | — | Se llama en cada tick con los milisegundos restantes |
+| `className` | `string` | — | Clase CSS raíz |
+| `style` | `CSSProperties` | — | Estilo en línea raíz |
+| `classNames` | `CountdownClassNames` | — | Nombres de clase semánticos por slot |
+| `styles` | `CountdownStyles` | — | Estilos en línea semánticos por slot |
+
+#### Tokens de Formato del Countdown
+
+| Token | Salida | Ejemplo |
+|-------|--------|---------|
+| `D` | Días (sin relleno) | `3` |
+| `DD` | Días (relleno con ceros a 2 dígitos) | `03` |
+| `H` | Horas (sin relleno) | `9` |
+| `HH` | Horas (relleno con ceros a 2 dígitos) | `09` |
+| `m` | Minutos (sin relleno) | `5` |
+| `mm` | Minutos (relleno con ceros a 2 dígitos) | `05` |
+| `s` | Segundos (sin relleno) | `4` |
+| `ss` | Segundos (relleno con ceros a 2 dígitos) | `04` |
+| `SSS` | Milisegundos (3 dígitos) | `347` |
+| `[texto]` | Literal de texto (escapado) | `[días]` → `días` |
+| `[singular\|plural]` | Literal inflectado según el número precedente | `[día\|días]` |
+
+> Cuando `SSS` está incluido en el formato, el temporizador actualiza a ~30 fps (intervalo de 33 ms) en lugar de 1 s para una visualización fluida de milisegundos.
+
+#### Definiciones de Tipos
+
+```ts
+type StatisticSemanticSlot = 'root' | 'title' | 'content' | 'prefix' | 'suffix'
+type StatisticClassNames   = SemanticClassNames<StatisticSemanticSlot>
+type StatisticStyles       = SemanticStyles<StatisticSemanticSlot>
+
+// Countdown comparte los mismos tipos de slot:
+type CountdownSemanticSlot = StatisticSemanticSlot
+type CountdownClassNames   = SemanticClassNames<CountdownSemanticSlot>
+type CountdownStyles       = SemanticStyles<CountdownSemanticSlot>
+```
+
+#### DOM Semántico
+
+| Slot | Elemento | Descripción |
+|------|----------|-------------|
+| `root` | `<div>` | Contenedor externo |
+| `title` | `<div>` | Etiqueta sobre el valor |
+| `content` | `<div>` | Fila que contiene prefijo + valor + sufijo |
+| `prefix` | `<span>` | Contenido antes del valor |
+| `suffix` | `<span>` | Contenido después del valor |
+
+#### Ejemplos
+
+**1. Número simple**
+
+```tsx
+<Statistic title="Descargas" value={93120} />
+```
+
+---
+
+**2. Moneda con prefijo**
+
+```tsx
+<Statistic
+  title="Ingresos"
+  value={9280.5}
+  precision={2}
+  prefix="$"
+/>
+```
+
+---
+
+**3. Separadores personalizados**
+
+```tsx
+<Statistic
+  title="Visitantes"
+  value={1234567}
+  groupSeparator="."
+  decimalSeparator=","
+/>
+```
+
+---
+
+**4. Unidad como sufijo**
+
+```tsx
+<Statistic title="Uso de CPU" value={72.4} precision={1} suffix="%" />
+```
+
+---
+
+**5. Tendencia con sufijo de color**
+
+```tsx
+<Statistic
+  title="Crecimiento semanal"
+  value={12.5}
+  precision={1}
+  suffix={<span style={{ color: tokens.colorSuccess, fontSize: '1rem' }}>▲</span>}
+/>
+```
+
+---
+
+**6. Prefijo con ícono**
+
+```tsx
+import { UserIcon } from 'j-ui/icons'
+
+<Statistic
+  title="Usuarios activos"
+  value={4890}
+  prefix={<UserIcon style={{ fontSize: '1.25rem', color: tokens.colorPrimary }} />}
+/>
+```
+
+---
+
+**7. Formateador personalizado**
+
+```tsx
+<Statistic
+  title="Puntuación"
+  value={0.856}
+  formatter={(v) => `${(Number(v) * 100).toFixed(1)}%`}
+/>
+```
+
+---
+
+**8. Estado de carga**
+
+```tsx
+<Statistic title="Total de pedidos" loading />
+```
+
+---
+
+**9. Carga con ancho de placeholder personalizado**
+
+```tsx
+<Statistic title="Ingresos" loading loadingWidth="10rem" />
+```
+
+---
+
+**10. Cuenta regresiva básica (HH:mm:ss)**
+
+```tsx
+<Statistic.Countdown
+  title="La oferta termina en"
+  value={Date.now() + 2 * 60 * 60 * 1000}  // 2 horas desde ahora
+/>
+```
+
+---
+
+**11. Cuenta regresiva con días**
+
+```tsx
+<Statistic.Countdown
+  title="El evento comienza en"
+  value={Date.now() + 3 * 24 * 60 * 60 * 1000}
+  format="D[d] HH:mm:ss"
+/>
+```
+
+---
+
+**12. Cuenta regresiva con etiqueta de día inflectada**
+
+```tsx
+<Statistic.Countdown
+  title="Tiempo restante"
+  value={Date.now() + 2 * 24 * 60 * 60 * 1000}
+  format="D [día|días] HH:mm:ss"
+/>
+// Renderiza: "2 días 00:00:00" → "1 día 00:00:00"
+```
+
+---
+
+**13. Cuenta regresiva con milisegundos**
+
+```tsx
+<Statistic.Countdown
+  title="Tiempo de reacción"
+  value={Date.now() + 10000}
+  format="ss.SSS"
+/>
+```
+
+---
+
+**14. Callback onFinish**
+
+```tsx
+<Statistic.Countdown
+  title="La sesión expira en"
+  value={Date.now() + 30 * 1000}
+  onFinish={() => alert('¡Sesión expirada!')}
+/>
+```
+
+---
+
+**15. Barra de progreso con onChange**
+
+```tsx
+function CountdownConBarra() {
+  const DURACION = 60 * 1000
+  const objetivo = useRef(Date.now() + DURACION)
+  const [pct, setPct] = useState(100)
+
+  return (
+    <div>
+      <Statistic.Countdown
+        title="Tiempo restante"
+        value={objetivo.current}
+        onChange={(ms) => setPct(Math.round((ms / DURACION) * 100))}
+      />
+      <div style={{ height: 4, background: tokens.colorBgMuted, borderRadius: 2, marginTop: 8 }}>
+        <div style={{ height: '100%', width: `${pct}%`, background: tokens.colorPrimary, borderRadius: 2, transition: 'width 1s linear' }} />
+      </div>
+    </div>
+  )
+}
+```
+
+---
+
+**16. Fila de KPIs en dashboard**
+
+```tsx
+<div style={{ display: 'flex', gap: '2rem' }}>
+  <Statistic title="Usuarios totales"   value={128430} />
+  <Statistic title="Ingresos mensuales" value={54200}  precision={2} prefix="$" />
+  <Statistic title="Conversión"         value={3.7}    precision={1} suffix="%" />
+  <Statistic title="Disponibilidad"     value={99.98}  precision={2} suffix="%" />
+</div>
+```
+
+---
+
+**17. Personalización semántica de estilos**
+
+```tsx
+<Statistic
+  title="Beneficio neto"
+  value={18500}
+  precision={2}
+  prefix="$"
+  styles={{
+    title:   { color: tokens.colorTextSubtle, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' },
+    content: { color: tokens.colorSuccess, fontSize: '2rem' },
+  }}
+/>
+```
+
+</details>
+
+---
+
+<details>
 <summary><strong>Switch</strong> - Interruptor de alternancia para estados on/off con soporte de carga</summary>
 
 ### Switch
@@ -8846,6 +9737,584 @@ El componente Switch es completamente accesible por teclado:
 // Estos son equivalentes a checked/defaultChecked
 <Switch value={isEnabled} onChange={setEnabled} />
 <Switch defaultValue={true} />
+```
+
+</details>
+
+---
+
+<details>
+<summary><strong>Table</strong> - Tabla de datos completa con ordenamiento, filtrado, paginación y más</summary>
+
+### Table
+
+Una tabla de datos rica en funciones para escenarios tanto del lado del cliente como del servidor. Incluye ordenamiento de columnas (simple y multi-columna), menús de filtrado, selección de filas (checkbox y radio), filas expandibles con animación, datos en árbol, encabezado y columnas fijados, paginación, grupos de columnas y personalización completa mediante slots semánticos.
+
+#### Importar
+
+```tsx
+import { Table } from 'j-ui'
+```
+
+#### Props — `TableProps<T>`
+
+| Prop | Tipo | Por defecto | Descripción |
+|------|------|-------------|-------------|
+| `dataSource` | `T[]` | — | Array de registros de datos |
+| `columns` | `ColumnType<T>[]` | — | Definición de columnas |
+| `rowKey` | `string \| ((record: T) => string \| number)` | `'key'` | Identificador único de fila |
+| `bordered` | `boolean` | `false` | Mostrar bordes en las celdas |
+| `size` | `'large' \| 'middle' \| 'small'` | `'large'` | Variante de padding de celda |
+| `showHeader` | `boolean` | `true` | Mostrar el encabezado de la tabla |
+| `loading` | `boolean` | `false` | Superponer un spinner de carga |
+| `pagination` | `TablePaginationConfig \| false` | — | Config de paginación; `false` la deshabilita |
+| `rowSelection` | `TableRowSelection<T>` | — | Config de selección de filas |
+| `scroll` | `{ x?: number \| string; y?: number \| string }` | — | `y` fija la altura del encabezado; `x` define el ancho mínimo para scroll horizontal |
+| `expandable` | `TableExpandable<T>` | — | Config de filas expandibles |
+| `sortDirections` | `SortDirection[]` | — | Ciclo global de direcciones de ordenamiento |
+| `rowHoverable` | `boolean` | `true` | Resaltar filas al pasar el cursor |
+| `title` | `(currentPageData: T[]) => ReactNode` | — | Contenido renderizado sobre el cuerpo de la tabla |
+| `footer` | `(currentPageData: T[]) => ReactNode` | — | Contenido renderizado bajo el cuerpo de la tabla |
+| `childrenColumnName` | `string` | `'children'` | Nombre del campo para datos en árbol |
+| `indentSize` | `number` | `15` | Sangría en px por nivel de árbol |
+| `keepPreviousData` | `boolean` | `false` | Mantener datos anteriores mientras `loading` es true (útil para paginación server-side) |
+| `onChange` | `(pagination, sorter, filters) => void` | — | Se llama cuando cambian la paginación, el ordenamiento o los filtros |
+| `onRow` | `(record: T, index: number) => HTMLAttributes<HTMLTableRowElement>` | — | Atributos HTML personalizados por fila |
+| `tableLayout` | `'auto' \| 'fixed'` | auto-detectado | Propiedad HTML table-layout |
+| `locale` | `{ emptyText?: ReactNode }` | — | Localización — texto del estado vacío |
+| `className` | `string` | — | Clase CSS raíz |
+| `style` | `CSSProperties` | — | Estilo en línea raíz |
+| `classNames` | `TableClassNames` | — | Nombres de clase semánticos por slot |
+| `styles` | `TableStyles` | — | Estilos en línea semánticos por slot |
+
+#### `ColumnType<T>`
+
+| Prop | Tipo | Por defecto | Descripción |
+|------|------|-------------|-------------|
+| `title` | `ReactNode` | — | Contenido del encabezado de columna |
+| `dataIndex` | `string \| string[]` | — | Ruta del campo en el registro; usa `string[]` para acceso anidado |
+| `key` | `string` | — | Clave única de columna (cae en `dataIndex`) |
+| `render` | `(value, record, index) => ReactNode` | — | Renderizador personalizado de celda |
+| `align` | `'left' \| 'right' \| 'center'` | `'left'` | Alineación del texto de la celda |
+| `width` | `string \| number` | — | Ancho de la columna |
+| `ellipsis` | `boolean` | `false` | Truncar texto desbordante con `…` |
+| `sorter` | `fn \| boolean \| { compare: fn; multiple?: number }` | — | Comparador de ordenamiento; `true` = comparación de valor por defecto; `multiple` habilita multi-ordenamiento con prioridad |
+| `sortOrder` | `'ascend' \| 'descend' \| null` | — | Orden controlado |
+| `defaultSortOrder` | `'ascend' \| 'descend' \| null` | — | Orden inicial (no controlado) |
+| `sortDirections` | `SortDirection[]` | — | Ciclo de direcciones para esta columna |
+| `filters` | `ColumnFilterItem[]` | — | Ítems del menú de filtros |
+| `onFilter` | `(value, record) => boolean` | — | Predicado de filtrado |
+| `filterMultiple` | `boolean` | `true` | Permitir múltiples filtros seleccionados |
+| `filteredValue` | `(string \| number \| boolean)[]` | — | Valores de filtro controlados |
+| `defaultFilteredValue` | `(string \| number \| boolean)[]` | — | Valores de filtro iniciales (no controlado) |
+| `filterSearch` | `boolean \| fn` | — | Habilitar búsqueda en el dropdown de filtros |
+| `filterDropdown` | `ReactNode \| ((props: FilterDropdownProps) => ReactNode)` | — | Dropdown de filtro personalizado |
+| `filterIcon` | `ReactNode \| ((filtered: boolean) => ReactNode)` | — | Ícono de filtro personalizado |
+| `filterOnClose` | `boolean` | `true` | Aplicar filtro cuando se cierra el dropdown |
+| `hidden` | `boolean` | `false` | Ocultar esta columna |
+| `className` | `string` | — | Clase CSS extra para todas las celdas de esta columna |
+| `fixed` | `'left' \| 'right' \| boolean` | — | Fijar posición de columna; `true` = `'left'` |
+| `children` | `ColumnType<T>[]` | — | Columnas anidadas para encabezados agrupados |
+| `onCell` | `(record, index) => HTMLAttributes<td>` | — | Atributos personalizados por celda de datos (soporta `colSpan`/`rowSpan`) |
+| `onHeaderCell` | `(column) => HTMLAttributes<th>` | — | Atributos personalizados por celda de encabezado |
+
+#### `TableRowSelection<T>`
+
+| Prop | Tipo | Por defecto | Descripción |
+|------|------|-------------|-------------|
+| `type` | `'checkbox' \| 'radio'` | `'checkbox'` | Tipo de input de selección |
+| `selectedRowKeys` | `(string \| number)[]` | — | Claves seleccionadas (controlado) |
+| `onChange` | `(keys, rows) => void` | — | Se llama cuando cambia la selección |
+| `onSelect` | `(record, selected, selectedRows) => void` | — | Se llama al alternar una fila individual |
+| `getCheckboxProps` | `(record) => Partial<CheckboxProps>` | — | Personalizar props del checkbox/radio por fila (ej. `disabled`) |
+| `columnWidth` | `string \| number` | `'2.5rem'` | Ancho de la columna de selección |
+| `hideSelectAll` | `boolean` | `false` | Ocultar el checkbox de selección total en el encabezado |
+| `preserveSelectedRowKeys` | `boolean` | `false` | Mantener la selección cuando cambia `dataSource` |
+
+#### `TableExpandable<T>`
+
+| Prop | Tipo | Por defecto | Descripción |
+|------|------|-------------|-------------|
+| `expandedRowRender` | `(record, index, indent, expanded) => ReactNode` | — | Renderizar contenido de la fila expandida |
+| `expandedRowKeys` | `(string \| number)[]` | — | Claves expandidas (controlado) |
+| `defaultExpandedRowKeys` | `(string \| number)[]` | `[]` | Claves expandidas iniciales |
+| `defaultExpandAllRows` | `boolean` | `false` | Expandir todas las filas por defecto |
+| `onExpand` | `(expanded, record) => void` | — | Se llama al expandir/contraer una fila |
+| `onExpandedRowsChange` | `(keys) => void` | — | Se llama cuando cambian las claves expandidas |
+| `rowExpandable` | `(record) => boolean` | — | Determinar si una fila puede expandirse |
+| `expandRowByClick` | `boolean` | `false` | Hacer clic en la fila alterna la expansión |
+| `columnWidth` | `string \| number` | `'2.5rem'` | Ancho de la columna del ícono de expansión |
+| `showExpandColumn` | `boolean` | `true` | Mostrar la columna del ícono de expansión |
+
+#### `TablePaginationConfig`
+
+| Prop | Tipo | Por defecto | Descripción |
+|------|------|-------------|-------------|
+| `total` | `number` | — | Total de registros (requerido para paginación server-side) |
+| `current` | `number` | — | Página actual (controlado) |
+| `pageSize` | `number` | — | Tamaño de página (controlado) |
+| `defaultCurrent` | `number` | `1` | Página inicial |
+| `defaultPageSize` | `number` | `10` | Tamaño de página inicial |
+| `size` | `PaginationSize` | — | Tamaño del componente Pagination |
+| `showSizeChanger` | `boolean` | — | Mostrar selector de tamaño de página |
+| `showQuickJumper` | `boolean` | — | Mostrar input de número de página |
+| `showTotal` | `(total, range) => ReactNode` | — | Renderizador del conteo total |
+| `simple` | `boolean` | — | Modo de paginación simple |
+| `hideOnSinglePage` | `boolean` | — | Ocultar cuando hay solo una página |
+| `disabled` | `boolean` | — | Deshabilitar todos los controles de paginación |
+| `position` | `('topLeft' \| 'topCenter' \| 'topRight' \| 'bottomLeft' \| 'bottomCenter' \| 'bottomRight')[]` | `['bottomRight']` | Posición de la paginación |
+| `onChange` | `(page, pageSize) => void` | — | Callback directo de paginación |
+
+#### `FilterDropdownProps`
+
+```ts
+interface FilterDropdownProps {
+  selectedKeys: (string | number | boolean)[]
+  setSelectedKeys: (keys: (string | number | boolean)[]) => void
+  confirm: () => void       // Aplicar + cerrar
+  clearFilters: () => void  // Limpiar + aplicar
+  close: () => void         // Cerrar sin aplicar
+}
+```
+
+#### Configuración de Tamaños
+
+| Tamaño | Padding V | Padding H | Fuente |
+|--------|-----------|-----------|--------|
+| `'large'` | 1 rem | 1 rem | 0.875 rem |
+| `'middle'` | 0.625 rem | 0.75 rem | 0.875 rem |
+| `'small'` | 0.375 rem | 0.5 rem | 0.8125 rem |
+
+#### DOM Semántico
+
+| Slot | Elemento | Descripción |
+|------|----------|-------------|
+| `root` | `<div>` | Contenedor más externo |
+| `header` | `<thead>` | Elemento de encabezado de tabla |
+| `headerRow` | `<tr>` | Fila(s) de encabezado |
+| `headerCell` | `<th>` | Celdas de encabezado |
+| `body` | `<tbody>` | Elemento del cuerpo de tabla |
+| `row` | `<tr>` | Filas de datos |
+| `cell` | `<td>` | Celdas de datos |
+| `expandedRow` | `<tr>` | Fila de contenido expandido |
+| `pagination` | `<div>` | Contenedor de paginación |
+| `empty` | `<td>` | Celda del estado vacío |
+| `loading` | `<div>` | Superposición de carga |
+| `title` | `<div>` | Barra de título de la tabla |
+| `footer` | `<div>` | Barra de pie de la tabla |
+| `filterDropdown` | — | Reservado para estilos de dropdown de filtro personalizados |
+
+#### Ejemplos
+
+**1. Tabla básica**
+
+```tsx
+interface Usuario { key: string; nombre: string; edad: number; email: string }
+
+const datos: Usuario[] = [
+  { key: '1', nombre: 'Alicia', edad: 28, email: 'alicia@ejemplo.com' },
+  { key: '2', nombre: 'Roberto', edad: 34, email: 'roberto@ejemplo.com' },
+  { key: '3', nombre: 'Carolina', edad: 22, email: 'carolina@ejemplo.com' },
+]
+
+const columnas: ColumnType<Usuario>[] = [
+  { title: 'Nombre', dataIndex: 'nombre', key: 'nombre' },
+  { title: 'Edad',   dataIndex: 'edad',   key: 'edad'   },
+  { title: 'Email',  dataIndex: 'email',  key: 'email'  },
+]
+
+<Table dataSource={datos} columns={columnas} />
+```
+
+---
+
+**2. Renderizador personalizado de celda**
+
+```tsx
+const columnas: ColumnType<Usuario>[] = [
+  { title: 'Nombre', dataIndex: 'nombre', key: 'nombre' },
+  { title: 'Edad',   dataIndex: 'edad',   key: 'edad'   },
+  {
+    title: 'Acciones',
+    key: 'acciones',
+    align: 'right',
+    render: (_, record) => (
+      <button onClick={() => console.log('editar', record.key)}>Editar</button>
+    ),
+  },
+]
+```
+
+---
+
+**3. dataIndex anidado**
+
+```tsx
+interface Pedido { key: string; cliente: { nombre: string; ciudad: string }; total: number }
+
+const columnas: ColumnType<Pedido>[] = [
+  { title: 'Cliente', dataIndex: ['cliente', 'nombre'], key: 'nombre' },
+  { title: 'Ciudad',  dataIndex: ['cliente', 'ciudad'], key: 'ciudad' },
+  { title: 'Total',   dataIndex: 'total',               key: 'total'  },
+]
+```
+
+---
+
+**4. Ordenamiento — columna simple**
+
+```tsx
+const columnas: ColumnType<Usuario>[] = [
+  {
+    title: 'Nombre',
+    dataIndex: 'nombre',
+    sorter: (a, b) => a.nombre.localeCompare(b.nombre),
+    defaultSortOrder: 'ascend',
+  },
+  {
+    title: 'Edad',
+    dataIndex: 'edad',
+    sorter: (a, b) => a.edad - b.edad,
+  },
+]
+```
+
+---
+
+**5. Ordenamiento multi-columna**
+
+Usa `sorter.multiple` para asignar prioridad — número menor = mayor prioridad.
+
+```tsx
+const columnas: ColumnType<Usuario>[] = [
+  {
+    title: 'Nombre',
+    dataIndex: 'nombre',
+    sorter: { compare: (a, b) => a.nombre.localeCompare(b.nombre), multiple: 2 },
+  },
+  {
+    title: 'Edad',
+    dataIndex: 'edad',
+    sorter: { compare: (a, b) => a.edad - b.edad, multiple: 1 },
+  },
+]
+```
+
+---
+
+**6. Filtros de columna**
+
+```tsx
+const columnas: ColumnType<Usuario>[] = [
+  {
+    title: 'Nombre',
+    dataIndex: 'nombre',
+    filters: [
+      { text: 'Alicia',   value: 'Alicia'   },
+      { text: 'Roberto',  value: 'Roberto'  },
+    ],
+    onFilter: (value, record) => record.nombre === value,
+  },
+]
+```
+
+---
+
+**7. Filtro con búsqueda**
+
+```tsx
+{
+  title: 'Ciudad',
+  dataIndex: 'ciudad',
+  filterSearch: true,
+  filters: ciudades.map(c => ({ text: c, value: c })),
+  onFilter: (value, record) => record.ciudad === value,
+}
+```
+
+---
+
+**8. Dropdown de filtro personalizado**
+
+```tsx
+{
+  title: 'Edad',
+  dataIndex: 'edad',
+  filterDropdown: ({ selectedKeys, setSelectedKeys, confirm, clearFilters }) => (
+    <div style={{ padding: '0.5rem' }}>
+      <input
+        value={selectedKeys[0] as string ?? ''}
+        onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+        placeholder="Edad mínima"
+        style={{ marginBottom: '0.5rem', display: 'block' }}
+      />
+      <button onClick={() => confirm()}>OK</button>
+      <button onClick={clearFilters}>Resetear</button>
+    </div>
+  ),
+  onFilter: (value, record) => record.edad >= Number(value),
+}
+```
+
+---
+
+**9. Selección de filas con checkbox**
+
+```tsx
+const [selectedRowKeys, setSelectedRowKeys] = useState<(string | number)[]>([])
+
+<Table
+  dataSource={datos}
+  columns={columnas}
+  rowSelection={{
+    selectedRowKeys,
+    onChange: (keys) => setSelectedRowKeys(keys),
+  }}
+/>
+```
+
+---
+
+**10. Selección de filas con radio**
+
+```tsx
+<Table
+  dataSource={datos}
+  columns={columnas}
+  rowSelection={{ type: 'radio', onChange: (keys, rows) => console.log(keys, rows) }}
+/>
+```
+
+---
+
+**11. Deshabilitar selección en filas específicas**
+
+```tsx
+rowSelection={{
+  getCheckboxProps: (record) => ({ disabled: record.edad < 18 }),
+}}
+```
+
+---
+
+**12. Filas expandibles**
+
+```tsx
+<Table
+  dataSource={datos}
+  columns={columnas}
+  expandable={{
+    expandedRowRender: (record) => (
+      <p style={{ margin: 0 }}>Detalles de {record.nombre}: {record.email}</p>
+    ),
+    rowExpandable: (record) => record.edad >= 18,
+  }}
+/>
+```
+
+---
+
+**13. Expandir fila al hacer clic**
+
+```tsx
+expandable={{
+  expandedRowRender: (record) => <p>{record.email}</p>,
+  expandRowByClick: true,
+}}
+```
+
+---
+
+**14. Datos en árbol**
+
+Los datos en árbol se detectan automáticamente cuando los registros tienen un campo `children` con registros anidados. No se requiere configuración extra.
+
+```tsx
+interface Empleado { key: string; nombre: string; rol: string; children?: Empleado[] }
+
+const datosArbol: Empleado[] = [
+  {
+    key: '1', nombre: 'Alicia', rol: 'Gerente',
+    children: [
+      { key: '1-1', nombre: 'Roberto',  rol: 'Ingeniero' },
+      { key: '1-2', nombre: 'Carolina', rol: 'Diseñadora' },
+    ],
+  },
+  { key: '2', nombre: 'David', rol: 'Director' },
+]
+
+<Table dataSource={datosArbol} columns={columnas} rowKey="key" />
+```
+
+---
+
+**15. Encabezado fijo (scroll vertical)**
+
+```tsx
+<Table
+  dataSource={datos}
+  columns={columnas}
+  scroll={{ y: 300 }}
+/>
+```
+
+---
+
+**16. Columnas fijas (scroll horizontal)**
+
+Las columnas fijas requieren `width` explícito en cada columna y un `scroll.x` suficientemente grande para generar scroll.
+
+```tsx
+const columnas: ColumnType<Usuario>[] = [
+  { title: 'Nombre', dataIndex: 'nombre', key: 'nombre', width: 150, fixed: 'left'  },
+  { title: 'Edad',   dataIndex: 'edad',   key: 'edad',   width: 80  },
+  { title: 'Email',  dataIndex: 'email',  key: 'email',  width: 200 },
+  { title: 'Ciudad', dataIndex: 'ciudad', key: 'ciudad', width: 150 },
+  { title: 'Teléfono', dataIndex: 'telefono', key: 'telefono', width: 150 },
+  { title: 'Acción', key: 'accion', width: 100, fixed: 'right',
+    render: () => <button>Editar</button> },
+]
+
+<Table dataSource={datos} columns={columnas} scroll={{ x: 800 }} />
+```
+
+---
+
+**17. Grupos de columnas**
+
+Usa `children` en una columna para agrupar varias sub-columnas bajo un mismo encabezado.
+
+```tsx
+const columnas: ColumnType<any>[] = [
+  { title: 'Nombre', dataIndex: 'nombre', key: 'nombre' },
+  {
+    title: 'Contacto',
+    children: [
+      { title: 'Email',    dataIndex: 'email',    key: 'email'    },
+      { title: 'Teléfono', dataIndex: 'telefono', key: 'telefono' },
+    ],
+  },
+  {
+    title: 'Dirección',
+    children: [
+      { title: 'Ciudad', dataIndex: 'ciudad', key: 'ciudad' },
+      { title: 'País',   dataIndex: 'pais',   key: 'pais'   },
+    ],
+  },
+]
+```
+
+---
+
+**18. Paginación**
+
+```tsx
+<Table
+  dataSource={datos}
+  columns={columnas}
+  pagination={{
+    defaultPageSize: 10,
+    showSizeChanger: true,
+    showTotal: (total, range) => `${range[0]}–${range[1]} de ${total} registros`,
+    position: ['bottomCenter'],
+  }}
+/>
+```
+
+---
+
+**19. Paginación server-side + ordenamiento + filtrado**
+
+Cuando `pagination.total` supera `dataSource.length`, la Table cambia a modo server-side — pasa el estado de paginación actual a `onChange` y omite el corte del lado del cliente.
+
+```tsx
+const [datos, setDatos] = useState<Usuario[]>([])
+const [cargando, setCargando] = useState(false)
+const [total, setTotal] = useState(0)
+
+async function fetchDatos(pagina: number, tamano: number, sorter: SorterResult<Usuario>, filtros: Record<string, any>) {
+  setCargando(true)
+  const res = await api.getUsuarios({ pagina, tamano, sorter, filtros })
+  setDatos(res.filas)
+  setTotal(res.total)
+  setCargando(false)
+}
+
+useEffect(() => { fetchDatos(1, 10, {}, {}) }, [])
+
+<Table
+  dataSource={datos}
+  columns={columnas}
+  loading={cargando}
+  keepPreviousData
+  pagination={{ total, showSizeChanger: true }}
+  onChange={(paginacion, sorter, filtros) => {
+    fetchDatos(paginacion.current, paginacion.pageSize, sorter as SorterResult<Usuario>, filtros)
+  }}
+/>
+```
+
+---
+
+**20. Fusión de celdas con onCell**
+
+Devuelve `colSpan: 0` desde `onCell` en celdas que deben ocultarse cuando una celda hermana las abarca.
+
+```tsx
+const columnas: ColumnType<any>[] = [
+  {
+    title: 'Nombre',
+    dataIndex: 'nombre',
+    onCell: (record) => ({
+      colSpan: record.esEncabezadoGrupo ? 4 : 1,
+    }),
+  },
+  {
+    title: 'Edad',
+    dataIndex: 'edad',
+    onCell: (record) => ({ colSpan: record.esEncabezadoGrupo ? 0 : 1 }),
+  },
+  // ...
+]
+```
+
+---
+
+**21. Clic en fila + atributos personalizados**
+
+```tsx
+<Table
+  dataSource={datos}
+  columns={columnas}
+  onRow={(record) => ({
+    onClick: () => console.log('clic en', record.key),
+    style: { cursor: 'pointer' },
+  })}
+/>
+```
+
+---
+
+**22. Tamaño + bordado**
+
+```tsx
+<Table dataSource={datos} columns={columnas} size="small" bordered />
+```
+
+---
+
+**23. Personalización semántica de estilos**
+
+```tsx
+<Table
+  dataSource={datos}
+  columns={columnas}
+  styles={{
+    headerCell: { backgroundColor: tokens.colorPrimary, color: '#fff' },
+    row: { fontFamily: 'monospace' },
+    cell: { fontSize: '0.75rem' },
+  }}
+/>
 ```
 
 </details>
@@ -9089,6 +10558,335 @@ const [items, setItems] = useState([
     { key: '2', label: 'Pestaña 2', children: <OtroComponente /> },
   ]}
 />
+```
+
+</details>
+
+---
+
+<details>
+<summary><strong>Tag</strong> - Etiqueta compacta con presets de color, variantes, cierre y modo seleccionable</summary>
+
+### Tag
+
+Un componente de etiqueta compacta para categorización, visualización de estado y filtrado. Admite 19 colores predefinidos (6 semánticos + 13 decorativos), 3 variantes (outlined / filled / solid), comportamiento de cierre con animación de salida, ícono prefijo, modo enlace y un sub-componente `Tag.CheckableTag` para chips de filtro tipo toggle.
+
+#### Importar
+
+```tsx
+import { Tag } from 'j-ui'
+```
+
+#### Props — `Tag`
+
+| Prop | Tipo | Por defecto | Descripción |
+|------|------|-------------|-------------|
+| `children` | `ReactNode` | — | Contenido de la etiqueta |
+| `color` | `TagPresetColor \| string` | — | Nombre de preset o cualquier color CSS |
+| `variant` | `'outlined' \| 'filled' \| 'solid'` | `'outlined'` | Variante visual |
+| `closable` | `boolean` | `false` | Mostrar botón de cierre |
+| `closeIcon` | `ReactNode` | — | Ícono de cierre personalizado (reemplaza el × por defecto) |
+| `onClose` | `(e: MouseEvent) => void` | — | Se llama al hacer clic en cerrar; llama `e.preventDefault()` para cancelar el cierre |
+| `icon` | `ReactNode` | — | Ícono al inicio |
+| `bordered` | `boolean` | `true` | Mostrar borde |
+| `href` | `string` | — | Renderiza la etiqueta como enlace `<a>` |
+| `target` | `string` | — | Destino del enlace (ej. `'_blank'`) |
+| `disabled` | `boolean` | `false` | Deshabilita la interacción y reduce la opacidad |
+| `onClick` | `(e: MouseEvent) => void` | — | Manejador de clic |
+| `className` | `string` | — | Clase CSS raíz |
+| `style` | `CSSProperties` | — | Estilo en línea raíz |
+| `classNames` | `TagClassNames` | — | Nombres de clase semánticos por slot |
+| `styles` | `TagStyles` | — | Estilos en línea semánticos por slot |
+
+#### Props — `Tag.CheckableTag`
+
+| Prop | Tipo | Por defecto | Descripción |
+|------|------|-------------|-------------|
+| `children` | `ReactNode` | — | Contenido de la etiqueta |
+| `checked` | `boolean` | `false` | Estado seleccionado (controlado) |
+| `onChange` | `(checked: boolean) => void` | — | Se llama al hacer toggle |
+| `color` | `TagPresetColor \| string` | `'primary'` | Color de fondo cuando está seleccionado |
+| `disabled` | `boolean` | `false` | Deshabilita la interacción |
+| `className` | `string` | — | Clase CSS raíz |
+| `style` | `CSSProperties` | — | Estilo en línea raíz |
+| `classNames` | `CheckableTagClassNames` | — | Nombres de clase semánticos por slot |
+| `styles` | `CheckableTagStyles` | — | Estilos en línea semánticos por slot |
+
+#### Definiciones de Tipos
+
+```ts
+type TagPresetColor =
+  // Semánticos
+  | 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info'
+  // Decorativos
+  | 'pink' | 'red' | 'yellow' | 'orange' | 'cyan' | 'green'
+  | 'blue' | 'purple' | 'geekblue' | 'magenta' | 'volcano' | 'gold' | 'lime'
+
+type TagVariant = 'outlined' | 'filled' | 'solid'
+
+type TagSemanticSlot          = 'root' | 'icon' | 'content' | 'closeIcon'
+type TagClassNames            = SemanticClassNames<TagSemanticSlot>
+type TagStyles                = SemanticStyles<TagSemanticSlot>
+
+type CheckableTagSemanticSlot = 'root' | 'content'
+type CheckableTagClassNames   = SemanticClassNames<CheckableTagSemanticSlot>
+type CheckableTagStyles       = SemanticStyles<CheckableTagSemanticSlot>
+```
+
+#### Matriz Color × Variante
+
+| Variante | Sin color | Semántico (`success` etc.) | Decorativo / personalizado |
+|----------|-----------|---------------------------|---------------------------|
+| `outlined` | borde + texto en `colorBorder`/`colorText` | borde + texto coloreados | borde coloreado (45% opacidad) + texto |
+| `filled` | relleno sutil `colorBgMuted`, sin borde | relleno color-mix 25%, texto coloreado | relleno hex 25%, texto coloreado |
+| `solid` | fondo sólido `colorTextMuted`, texto blanco | color semántico sólido, texto blanco | fondo hex sólido, texto blanco |
+
+#### DOM Semántico
+
+| Slot | Elemento | Descripción |
+|------|----------|-------------|
+| `root` | `<span>` o `<a>` | Contenedor externo (cambia a `<a>` cuando se define `href`) |
+| `icon` | `<span>` | Contenedor del ícono inicial |
+| `content` | `<span>` | Contenedor del texto/children |
+| `closeIcon` | `<span>` | Contenedor del botón de cierre |
+
+#### Ejemplos
+
+**1. Etiqueta básica**
+
+```tsx
+<Tag>Por defecto</Tag>
+```
+
+---
+
+**2. Colores semánticos**
+
+```tsx
+<Tag color="primary">Primary</Tag>
+<Tag color="success">Success</Tag>
+<Tag color="warning">Warning</Tag>
+<Tag color="error">Error</Tag>
+<Tag color="info">Info</Tag>
+<Tag color="secondary">Secondary</Tag>
+```
+
+---
+
+**3. Colores decorativos**
+
+```tsx
+<Tag color="magenta">Magenta</Tag>
+<Tag color="volcano">Volcano</Tag>
+<Tag color="orange">Orange</Tag>
+<Tag color="gold">Gold</Tag>
+<Tag color="lime">Lime</Tag>
+<Tag color="green">Green</Tag>
+<Tag color="cyan">Cyan</Tag>
+<Tag color="blue">Blue</Tag>
+<Tag color="geekblue">Geekblue</Tag>
+<Tag color="purple">Purple</Tag>
+```
+
+---
+
+**4. Color hex / CSS personalizado**
+
+```tsx
+<Tag color="#f50">Custom #f50</Tag>
+<Tag color="hsl(270 60% 50%)">Custom HSL</Tag>
+```
+
+---
+
+**5. Variantes**
+
+```tsx
+<Tag color="primary" variant="outlined">Outlined</Tag>
+<Tag color="primary" variant="filled">Filled</Tag>
+<Tag color="primary" variant="solid">Solid</Tag>
+```
+
+---
+
+**6. Sin borde**
+
+```tsx
+<Tag color="success" bordered={false}>Sin borde</Tag>
+```
+
+---
+
+**7. Etiqueta cerrable**
+
+Hacer clic en × dispara `onClose`. Llama `e.preventDefault()` para mantener la etiqueta visible.
+
+```tsx
+<Tag
+  closable
+  onClose={(e) => {
+    console.log('cerrada')
+    // e.preventDefault() // llamar esto cancela el cierre
+  }}
+>
+  Cerrable
+</Tag>
+```
+
+---
+
+**8. Ícono de cierre personalizado**
+
+```tsx
+<Tag closable closeIcon={<span>✕</span>} color="error">
+  Cierre custom
+</Tag>
+```
+
+---
+
+**9. Con ícono inicial**
+
+```tsx
+import { StarIcon } from 'j-ui/icons'
+
+<Tag icon={<StarIcon />} color="gold">
+  Destacado
+</Tag>
+```
+
+---
+
+**10. Ícono spinner (estado de carga)**
+
+`Tag.SpinnerIcon` se exporta para usar como ícono inicial en escenarios asincrónicos.
+
+```tsx
+<Tag icon={<Tag.SpinnerIcon />} color="primary">
+  Procesando…
+</Tag>
+```
+
+---
+
+**11. Etiqueta enlace**
+
+Se renderiza como `<a>` cuando se define `href`.
+
+```tsx
+<Tag href="https://ejemplo.com" target="_blank" color="blue">
+  Visitar sitio
+</Tag>
+```
+
+---
+
+**12. Deshabilitada**
+
+```tsx
+<Tag color="primary" disabled>Deshabilitada</Tag>
+```
+
+---
+
+**13. Etiqueta clickeable**
+
+```tsx
+<Tag
+  color="info"
+  variant="filled"
+  onClick={() => console.log('etiqueta clickeada')}
+>
+  Clickeable
+</Tag>
+```
+
+---
+
+**14. Lista dinámica de etiquetas con cierre**
+
+```tsx
+function ListaEtiquetas() {
+  const [etiquetas, setEtiquetas] = useState(['React', 'TypeScript', 'Vite'])
+
+  return (
+    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+      {etiquetas.map((etiqueta) => (
+        <Tag
+          key={etiqueta}
+          closable
+          color="primary"
+          variant="filled"
+          onClose={() => setEtiquetas((prev) => prev.filter((t) => t !== etiqueta))}
+        >
+          {etiqueta}
+        </Tag>
+      ))}
+    </div>
+  )
+}
+```
+
+---
+
+**15. Tag.CheckableTag — individual**
+
+```tsx
+const [checked, setChecked] = useState(false)
+
+<Tag.CheckableTag checked={checked} onChange={setChecked} color="primary">
+  Destacado
+</Tag.CheckableTag>
+```
+
+---
+
+**16. CheckableTag — grupo de filtros**
+
+```tsx
+const CATEGORIAS = ['Diseño', 'Ingeniería', 'Marketing', 'Ventas']
+
+function FiltroCategoria() {
+  const [activas, setActivas] = useState<string[]>([])
+
+  const alternar = (cat: string) =>
+    setActivas((prev) =>
+      prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat],
+    )
+
+  return (
+    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+      {CATEGORIAS.map((cat) => (
+        <Tag.CheckableTag
+          key={cat}
+          checked={activas.includes(cat)}
+          onChange={() => alternar(cat)}
+          color="primary"
+        >
+          {cat}
+        </Tag.CheckableTag>
+      ))}
+    </div>
+  )
+}
+```
+
+---
+
+**17. Personalización semántica de estilos**
+
+```tsx
+<Tag
+  color="primary"
+  styles={{
+    root:      { borderRadius: '9999px', padding: '0 0.75rem' },
+    content:   { fontWeight: 700, letterSpacing: '0.05em' },
+    closeIcon: { color: 'red' },
+  }}
+  closable
+>
+  Etiqueta píldora
+</Tag>
 ```
 
 </details>
@@ -9425,6 +11223,668 @@ import { TimePicker } from 'j-ui';
 - `'hh:mm A'` - 12 horas con AM/PM
 - `'HH:mm:ss'` - 24 horas con segundos
 - `'hh:mm:ss A'` - 12 horas con segundos
+
+</details>
+
+---
+
+<details>
+<summary><strong>Timeline</strong> - Secuencia visual de eventos vertical y horizontal</summary>
+
+### Timeline
+
+Un componente para mostrar una secuencia de eventos en orden cronológico. Admite layouts vertical y horizontal, modos de contenido izquierda/derecha/alternado, dos variantes de punto (outlined/solid), nodos de punto personalizados, etiquetas por ítem, un ítem pendiente con spinner y orden inverso.
+
+#### Importar
+
+```tsx
+import { Timeline } from 'j-ui'
+```
+
+#### Props — `TimelineProps`
+
+| Prop | Tipo | Por defecto | Descripción |
+|------|------|-------------|-------------|
+| `items` | `TimelineItemType[]` | `[]` | Array de eventos de la línea de tiempo |
+| `mode` | `'left' \| 'right' \| 'alternate'` | `'left'` | Posición del contenido respecto al eje |
+| `variant` | `'outlined' \| 'solid'` | `'outlined'` | Estilo del punto — anillo con fondo o círculo relleno |
+| `horizontal` | `boolean` | `false` | Renderiza la línea de tiempo horizontalmente |
+| `titleSpan` | `number` | — | Ancho de la columna de etiqueta como fracción de 24 columnas (ej. `6` = 25%). Solo aplica en modo `alternate`/etiqueta |
+| `pending` | `boolean \| ReactNode` | — | Agrega un ítem pendiente con spinner; pasa `ReactNode` para texto personalizado |
+| `pendingDot` | `ReactNode` | — | Punto personalizado para el ítem pendiente (reemplaza el spinner por defecto) |
+| `reverse` | `boolean` | `false` | Invierte el orden de los ítems |
+| `className` | `string` | — | Clase CSS raíz |
+| `style` | `CSSProperties` | — | Estilo en línea raíz |
+| `classNames` | `TimelineClassNames` | — | Nombres de clase semánticos por slot |
+| `styles` | `TimelineStyles` | — | Estilos en línea semánticos por slot |
+
+#### `TimelineItemType`
+
+| Prop | Tipo | Descripción |
+|------|------|-------------|
+| `children` | `ReactNode` | Contenido del evento |
+| `color` | `string` | Color del punto — nombre de preset o cualquier color CSS |
+| `dot` | `ReactNode` | Nodo de punto personalizado (reemplaza el círculo por defecto) |
+| `label` | `ReactNode` | Etiqueta secundaria en el lado opuesto del eje |
+| `position` | `'left' \| 'right'` | Sobreescribe `mode` para este ítem específico |
+
+#### Colores de Punto Predefinidos
+
+| Nombre | Resuelve a |
+|--------|-----------|
+| `'blue'` / `'primary'` | `tokens.colorPrimary` |
+| `'green'` / `'success'` | `tokens.colorSuccess` |
+| `'red'` / `'error'` | `tokens.colorError` |
+| `'gray'` | `tokens.colorTextMuted` |
+| `'secondary'` | `tokens.colorSecondary` |
+| `'warning'` | `tokens.colorWarning` |
+| `'info'` | `tokens.colorInfo` |
+| Cualquier otro string | Se usa tal cual (hex, rgb, hsl…) |
+
+#### Detalles de Layout
+
+| Modo | Disposición | ¿Grid de tres columnas? |
+|------|-------------|------------------------|
+| `'left'` (por defecto) | Contenido a la derecha del eje | No |
+| `'right'` | Contenido a la izquierda del eje | No |
+| `'alternate'` | Ítems pares a la derecha, impares a la izquierda | Sí |
+| Cualquier modo + `label` presente | Etiqueta opuesta al contenido | Sí |
+| `horizontal: true` | Ítems uno al lado del otro con riel horizontal | — |
+
+En modo de tres columnas, `titleSpan` controla el ancho de la columna de etiqueta como fracción de 24 unidades.
+
+#### DOM Semántico
+
+| Slot | Elemento | Descripción |
+|------|----------|-------------|
+| `root` | `<div>` | Contenedor flex externo |
+| `item` | `<div>` | Contenedor por evento |
+| `dot` | `<div>` | Punto o nodo personalizado |
+| `tail` | `<div>` | Segmento de línea conectora entre puntos |
+| `content` | `<div>` | Contenido principal del evento |
+| `label` | `<div>` | Etiqueta secundaria (lado opuesto) |
+
+#### Ejemplos
+
+**1. Vertical básico (modo left)**
+
+```tsx
+<Timeline
+  items={[
+    { children: 'Crear cuenta' },
+    { children: 'Verificar email' },
+    { children: 'Completar perfil' },
+    { children: 'Comenzar a usar la app' },
+  ]}
+/>
+```
+
+---
+
+**2. Colores semánticos de punto**
+
+```tsx
+<Timeline
+  items={[
+    { children: 'Desplegado a producción', color: 'success' },
+    { children: 'Test de humo fallido',    color: 'error'   },
+    { children: 'Esperando revisión',      color: 'warning' },
+    { children: 'PR abierto',             color: 'primary' },
+  ]}
+/>
+```
+
+---
+
+**3. Color hex personalizado**
+
+```tsx
+<Timeline
+  items={[
+    { children: 'Entrega de diseño', color: '#722ed1' },
+    { children: 'Inicio de sprint',  color: '#13c2c2' },
+    { children: 'Retrospectiva',     color: '#fa8c16' },
+  ]}
+/>
+```
+
+---
+
+**4. Variante solid**
+
+```tsx
+<Timeline
+  variant="solid"
+  items={[
+    { children: 'Pedido realizado',     color: 'primary' },
+    { children: 'Pago confirmado',      color: 'success' },
+    { children: 'Enviado',              color: 'info'    },
+  ]}
+/>
+```
+
+---
+
+**5. Nodo de punto personalizado**
+
+```tsx
+import { ClockIcon, CheckIcon } from 'j-ui/icons'
+
+<Timeline
+  items={[
+    { children: 'Programado',    dot: <ClockIcon style={{ color: tokens.colorWarning }} /> },
+    { children: 'Completado',    dot: <CheckIcon style={{ color: tokens.colorSuccess }} /> },
+    { children: 'En progreso' },
+  ]}
+/>
+```
+
+---
+
+**6. Modo right**
+
+El contenido aparece a la izquierda del eje.
+
+```tsx
+<Timeline
+  mode="right"
+  items={[
+    { children: 'Paso uno' },
+    { children: 'Paso dos' },
+    { children: 'Paso tres' },
+  ]}
+/>
+```
+
+---
+
+**7. Modo alternate**
+
+```tsx
+<Timeline
+  mode="alternate"
+  items={[
+    { children: 'Evento A — 9:00 h' },
+    { children: 'Evento B — 10:30 h' },
+    { children: 'Evento C — 12:00 h' },
+    { children: 'Evento D — 14:00 h' },
+  ]}
+/>
+```
+
+---
+
+**8. Etiquetas (timestamp opuesto al contenido)**
+
+```tsx
+<Timeline
+  items={[
+    { label: '09:00', children: 'Reunión de pie' },
+    { label: '11:30', children: 'Revisión de diseño' },
+    { label: '14:00', children: 'Planificación de sprint' },
+    { label: '16:30', children: 'Revisión de código' },
+  ]}
+/>
+```
+
+---
+
+**9. Etiquetas con `titleSpan`**
+
+`titleSpan` acepta un valor de 1–24. `6` da a la columna de etiqueta el 25% del ancho.
+
+```tsx
+<Timeline
+  titleSpan={6}
+  items={[
+    { label: 'Ene 2023', children: 'Fundamos la empresa' },
+    { label: 'Jun 2023', children: 'Ronda semilla cerrada' },
+    { label: 'Dic 2023', children: 'Lanzamiento v1.0' },
+    { label: 'Mar 2024', children: 'Alcanzamos 10 k usuarios' },
+  ]}
+/>
+```
+
+---
+
+**10. Posición por ítem**
+
+```tsx
+<Timeline
+  mode="alternate"
+  items={[
+    { children: 'Alternado normal (derecha)' },
+    { children: 'Alternado normal (izquierda)' },
+    { children: 'Forzado a derecha', position: 'right' },
+    { children: 'Alternado normal (izquierda)' },
+  ]}
+/>
+```
+
+---
+
+**11. Ítem pendiente**
+
+```tsx
+<Timeline
+  pending="Esperando aprobación…"
+  items={[
+    { children: 'Solicitud enviada',    color: 'success' },
+    { children: 'Gerente notificado',   color: 'success' },
+  ]}
+/>
+```
+
+---
+
+**12. Pendiente con punto personalizado**
+
+```tsx
+import { HourglassIcon } from 'j-ui/icons'
+
+<Timeline
+  pending="Procesando…"
+  pendingDot={<HourglassIcon style={{ color: tokens.colorWarning }} />}
+  items={[
+    { children: 'Pago recibido' },
+    { children: 'Pedido en cola' },
+  ]}
+/>
+```
+
+---
+
+**13. Orden inverso**
+
+```tsx
+<Timeline
+  reverse
+  items={[
+    { children: 'Evento más antiguo', color: 'gray' },
+    { children: 'Evento intermedio' },
+    { children: 'Evento más reciente', color: 'success' },
+  ]}
+/>
+```
+
+---
+
+**14. Layout horizontal**
+
+```tsx
+<Timeline
+  horizontal
+  items={[
+    { children: 'Pedido realizado',    label: 'Día 1', color: 'primary' },
+    { children: 'Enviado',             label: 'Día 2', color: 'info'    },
+    { children: 'En camino',           label: 'Día 3', color: 'warning' },
+    { children: 'Entregado',           label: 'Día 4', color: 'success' },
+  ]}
+/>
+```
+
+---
+
+**15. Contenido enriquecido por ítem**
+
+```tsx
+<Timeline
+  items={[
+    {
+      color: 'primary',
+      children: (
+        <div>
+          <strong>Pull request mergeado</strong>
+          <p style={{ margin: '0.25rem 0 0', color: tokens.colorTextMuted }}>
+            feat: agregar componente Timeline — por @alicia
+          </p>
+        </div>
+      ),
+    },
+    {
+      color: 'success',
+      children: (
+        <div>
+          <strong>CI aprobado</strong>
+          <p style={{ margin: '0.25rem 0 0', color: tokens.colorTextMuted }}>
+            142 tests en verde en 38 s
+          </p>
+        </div>
+      ),
+    },
+    {
+      color: 'info',
+      children: (
+        <div>
+          <strong>Desplegado a producción</strong>
+          <p style={{ margin: '0.25rem 0 0', color: tokens.colorTextMuted }}>
+            v2.4.0 — hace 3 minutos
+          </p>
+        </div>
+      ),
+    },
+  ]}
+/>
+```
+
+---
+
+**16. Personalización semántica de estilos**
+
+```tsx
+<Timeline
+  items={[
+    { children: 'Alpha', color: 'primary' },
+    { children: 'Beta',  color: 'success' },
+    { children: 'GA',    color: 'info'    },
+  ]}
+  styles={{
+    tail:    { width: 3, backgroundColor: tokens.colorBorderHover },
+    content: { fontWeight: 500 },
+    label:   { fontStyle: 'italic' },
+  }}
+/>
+```
+
+</details>
+
+---
+
+<details>
+<summary><strong>Toggle</strong> - Control segmentado para selección exclusiva de opciones</summary>
+
+### Toggle
+
+Un control segmentado (también conocido como botón segmentado o barra de pestañas) que permite al usuario elegir una opción de un conjunto. El segmento seleccionado se indica mediante un pulgar deslizante animado con suavidad. Admite íconos, ítems deshabilitados, layout vertical, modo block y navegación completa por teclado.
+
+#### Importar
+
+```tsx
+import { Toggle } from 'j-ui'
+```
+
+#### Props
+
+| Prop | Tipo | Por defecto | Descripción |
+|------|------|-------------|-------------|
+| `options` | `(string \| number \| ToggleItemType)[]` | — | **Requerido.** Array de segmentos |
+| `value` | `string \| number` | — | Valor seleccionado (controlado) |
+| `defaultValue` | `string \| number` | primera opción | Valor inicial (no controlado) |
+| `onChange` | `(value: string \| number) => void` | — | Se llama al cambiar la selección |
+| `disabled` | `boolean` | `false` | Deshabilita todos los segmentos |
+| `block` | `boolean` | `false` | Expande al ancho completo del contenedor |
+| `vertical` | `boolean` | `false` | Apila los segmentos verticalmente |
+| `size` | `'large' \| 'middle' \| 'small'` | `'middle'` | Variante de tamaño |
+| `name` | `string` | — | Nombre del grupo radio HTML — habilita semántica radio nativa y navegación por flechas |
+| `className` | `string` | — | Clase CSS raíz |
+| `style` | `CSSProperties` | — | Estilo en línea raíz |
+| `classNames` | `ToggleClassNames` | — | Nombres de clase semánticos por slot |
+| `styles` | `ToggleStyles` | — | Estilos en línea semánticos por slot |
+
+#### Definiciones de Tipos
+
+```ts
+type ToggleSize = 'large' | 'middle' | 'small'
+
+interface ToggleItemType {
+  value: string | number
+  label?: ReactNode       // Por defecto: String(value) si no hay ícono
+  icon?: ReactNode        // Ícono opcional al inicio
+  disabled?: boolean      // Deshabilita este segmento individualmente
+  className?: string      // Clase CSS por ítem
+}
+
+type ToggleSemanticSlot = 'root' | 'item' | 'thumb'
+type ToggleClassNames   = SemanticClassNames<ToggleSemanticSlot>
+type ToggleStyles       = SemanticStyles<ToggleSemanticSlot>
+```
+
+#### Configuración de Tamaños
+
+| Tamaño | Altura | Fuente | Padding H |
+|--------|--------|--------|-----------|
+| `'small'` | 1.5 rem | 0.75 rem | 0.4375 rem |
+| `'middle'` | 2 rem | 0.875 rem | 0.6875 rem |
+| `'large'` | 2.5 rem | 1 rem | 0.75 rem |
+
+#### Navegación por Teclado
+
+| Tecla | Acción |
+|-------|--------|
+| `←` / `↑` | Mover al segmento habilitado anterior |
+| `→` / `↓` | Mover al siguiente segmento habilitado |
+| `Enter` / `Espacio` | Seleccionar el segmento enfocado |
+
+La dirección de las flechas se adapta a la prop `vertical`: `↑`/`↓` para vertical, `←`/`→` para horizontal.
+
+#### DOM Semántico
+
+| Slot | Elemento | Descripción |
+|------|----------|-------------|
+| `root` | `<div>` | Fondo del track y contenedor externo |
+| `item` | `<div>` | Cada segmento individual |
+| `thumb` | `<div>` | Indicador deslizante animado detrás del segmento seleccionado |
+
+#### Ejemplos
+
+**1. Atajos de string**
+
+```tsx
+<Toggle options={['Día', 'Semana', 'Mes']} />
+```
+
+---
+
+**2. Opciones numéricas**
+
+```tsx
+<Toggle options={[1, 7, 30]} defaultValue={7} />
+```
+
+---
+
+**3. Modo controlado**
+
+```tsx
+const [periodo, setPeriodo] = useState<string>('Semana')
+
+<Toggle
+  options={['Día', 'Semana', 'Mes']}
+  value={periodo}
+  onChange={(v) => setPeriodo(String(v))}
+/>
+```
+
+---
+
+**4. Objetos ToggleItemType**
+
+```tsx
+<Toggle
+  options={[
+    { value: 'dia',    label: 'Día' },
+    { value: 'semana', label: 'Semana' },
+    { value: 'mes',    label: 'Mes' },
+  ]}
+  defaultValue="semana"
+/>
+```
+
+---
+
+**5. Con íconos**
+
+```tsx
+import { ListIcon, GridIcon, MapIcon } from 'j-ui/icons'
+
+<Toggle
+  options={[
+    { value: 'lista', icon: <ListIcon />, label: 'Lista' },
+    { value: 'grilla', icon: <GridIcon />, label: 'Grilla' },
+    { value: 'mapa',  icon: <MapIcon />,  label: 'Mapa'   },
+  ]}
+  defaultValue="lista"
+/>
+```
+
+---
+
+**6. Solo íconos**
+
+Omite `label` para renderizar botones solo con ícono.
+
+```tsx
+<Toggle
+  options={[
+    { value: 'lista',  icon: <ListIcon /> },
+    { value: 'grilla', icon: <GridIcon /> },
+    { value: 'mapa',   icon: <MapIcon />  },
+  ]}
+  defaultValue="lista"
+/>
+```
+
+---
+
+**7. Variantes de tamaño**
+
+```tsx
+<Toggle options={['A', 'B', 'C']} size="small"  />
+<Toggle options={['A', 'B', 'C']} size="middle" />
+<Toggle options={['A', 'B', 'C']} size="large"  />
+```
+
+---
+
+**8. Block (ancho completo)**
+
+```tsx
+<Toggle
+  options={['Izquierda', 'Centro', 'Derecha']}
+  block
+  defaultValue="Centro"
+/>
+```
+
+---
+
+**9. Layout vertical**
+
+```tsx
+<Toggle
+  options={['Superior', 'Medio', 'Inferior']}
+  vertical
+  defaultValue="Medio"
+/>
+```
+
+---
+
+**10. Deshabilitado — todos los segmentos**
+
+```tsx
+<Toggle options={['A', 'B', 'C']} disabled defaultValue="A" />
+```
+
+---
+
+**11. Deshabilitado — segmentos individuales**
+
+```tsx
+<Toggle
+  options={[
+    { value: 'gratis',     label: 'Gratis' },
+    { value: 'pro',        label: 'Pro' },
+    { value: 'enterprise', label: 'Enterprise', disabled: true },
+  ]}
+  defaultValue="gratis"
+/>
+```
+
+---
+
+**12. Formulario nativo con `name`**
+
+`name` conecta un `<input type="radio">` oculto por segmento, haciendo el Toggle envíable dentro de un `<form>`.
+
+```tsx
+<form onSubmit={(e) => { e.preventDefault(); console.log(new FormData(e.currentTarget).get('vista')) }}>
+  <Toggle
+    options={['Grilla', 'Lista', 'Tarjeta']}
+    name="vista"
+    defaultValue="Grilla"
+  />
+  <button type="submit">Enviar</button>
+</form>
+```
+
+---
+
+**13. Personalización semántica de estilos**
+
+```tsx
+<Toggle
+  options={['Mensual', 'Anual']}
+  defaultValue="Anual"
+  styles={{
+    root:  { backgroundColor: '#f0f5ff', borderRadius: '2rem' },
+    item:  { fontWeight: 500 },
+    thumb: { backgroundColor: '#1677ff', borderRadius: '2rem' },
+  }}
+/>
+```
+
+---
+
+**14. className por ítem**
+
+```tsx
+<Toggle
+  options={[
+    { value: 'a', label: 'Alfa',  className: 'segmento-alfa'  },
+    { value: 'b', label: 'Beta',  className: 'segmento-beta'  },
+    { value: 'c', label: 'Gamma', className: 'segmento-gamma' },
+  ]}
+  defaultValue="a"
+/>
+```
+
+---
+
+**15. Selector de vista — ejemplo completo**
+
+```tsx
+import { useState } from 'react'
+import { Toggle } from 'j-ui'
+
+type Vista = 'grilla' | 'lista' | 'mapa'
+
+const OPCIONES_VISTA = [
+  { value: 'grilla', label: 'Grilla' },
+  { value: 'lista',  label: 'Lista'  },
+  { value: 'mapa',   label: 'Mapa'   },
+]
+
+function CatalogoProductos() {
+  const [vista, setVista] = useState<Vista>('grilla')
+
+  return (
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
+        <Toggle
+          options={OPCIONES_VISTA}
+          value={vista}
+          onChange={(v) => setVista(v as Vista)}
+        />
+      </div>
+
+      {vista === 'grilla' && <VistaGrilla />}
+      {vista === 'lista'  && <VistaLista />}
+      {vista === 'mapa'   && <VistaMapa />}
+    </div>
+  )
+}
+```
 
 </details>
 
@@ -10556,11 +13016,11 @@ El layout waterfall usa un algoritmo de "columna más corta primero":
 ---
 
 <details>
-<summary><strong>Tooltip</strong> - Tooltips ligeros al pasar el cursor</summary>
+<summary><strong>Tooltip</strong> - Tooltips ligeros con 12 posiciones y presets de color</summary>
 
 ### Tooltip
 
-Un componente ligero de tooltip para mostrar informacion adicional al pasar el cursor.
+Un componente ligero de tooltip para mostrar información adicional al pasar el cursor o al enfocar. Se renderiza en un portal (`document.body`), admite 12 posiciones, auto-flip al desbordarse del viewport, una flecha opcional con modo `pointAtCenter` y presets de color.
 
 #### Importar
 
@@ -10570,82 +13030,239 @@ import { Tooltip } from 'j-ui'
 
 #### Props
 
-| Prop | Tipo | Por Defecto | Descripcion |
+| Prop | Tipo | Por defecto | Descripción |
 |------|------|-------------|-------------|
-| `content` | `ReactNode` | — | Contenido del tooltip |
-| `children` | `ReactNode` | — | Elemento disparador |
-| `position` | `'top' \| 'bottom' \| 'left' \| 'right'` | `'top'` | Posicion del tooltip |
+| `content` | `ReactNode` | — | **Requerido.** Contenido del tooltip |
+| `children` | `ReactNode` | — | **Requerido.** Elemento disparador |
+| `placement` | `TooltipPlacement` | `'top'` | Posición preferida — 12 opciones |
+| `position` | `TooltipPlacement` | — | **Obsoleto.** Usa `placement` en su lugar |
+| `arrow` | `boolean \| { pointAtCenter: boolean }` | `true` | Mostrar flecha; pasa `{ pointAtCenter: true }` para centrarla en posiciones de esquina |
+| `color` | `string` | — | Nombre de preset o cualquier color CSS — coloriza el fondo del tooltip |
+| `autoAdjustOverflow` | `boolean` | `true` | Voltear al lado opuesto cuando el tooltip desborda el viewport |
 | `delay` | `number` | `200` | Retraso antes de mostrar (ms) |
 | `disabled` | `boolean` | `false` | Deshabilita el tooltip |
+| `className` | `string` | — | Clase CSS raíz |
+| `style` | `CSSProperties` | — | Estilo en línea raíz |
+| `classNames` | `TooltipClassNames` | — | Nombres de clase semánticos por slot |
+| `styles` | `TooltipStyles` | — | Estilos en línea semánticos por slot |
+
+#### Definiciones de Tipos
+
+```ts
+type TooltipPlacement =
+  | 'top' | 'topLeft' | 'topRight'
+  | 'bottom' | 'bottomLeft' | 'bottomRight'
+  | 'left' | 'leftTop' | 'leftBottom'
+  | 'right' | 'rightTop' | 'rightBottom'
+
+type TooltipSemanticSlot = 'root' | 'popup' | 'arrow'
+type TooltipClassNames   = SemanticClassNames<TooltipSemanticSlot>
+type TooltipStyles       = SemanticStyles<TooltipSemanticSlot>
+```
 
 #### Posiciones
 
-| Posicion | Descripcion |
-|----------|-------------|
-| `top` | Encima del elemento disparador |
-| `bottom` | Debajo del elemento disparador |
-| `left` | A la izquierda del elemento disparador |
-| `right` | A la derecha del elemento disparador |
+Las 12 posiciones relativas al elemento disparador:
+
+```
+         topLeft   top   topRight
+  leftTop  ┌─────────────────┐  rightTop
+  left     │    trigger      │  right
+  leftBottom └─────────────────┘  rightBottom
+       bottomLeft  bottom  bottomRight
+```
+
+#### Colores Predefinidos
+
+| Nombre | Hex |
+|--------|-----|
+| `'blue'` | `#1677ff` |
+| `'geekblue'` | `#2f54eb` |
+| `'purple'` | `#722ed1` |
+| `'cyan'` | `#13c2c2` |
+| `'green'` | `#52c41a` |
+| `'lime'` | `#a0d911` |
+| `'yellow'` | `#fadb14` |
+| `'gold'` | `#faad14` |
+| `'orange'` | `#fa8c16` |
+| `'volcano'` | `#fa541c` |
+| `'red'` | `#f5222d` |
+| `'pink'` / `'magenta'` | `#eb2f96` |
+
+Cualquier otro string se usa tal cual (hex, rgb, hsl…).
 
 #### DOM Semántico
 
-| Slot | Descripción |
-|------|-------------|
-| `root` | Contenedor alrededor del elemento trigger |
-| `popup` | Contenedor popup del tooltip |
-| `arrow` | Elemento de la flecha del tooltip |
+| Slot | Elemento | Descripción |
+|------|----------|-------------|
+| `root` | `<div>` | Contenedor en línea alrededor del elemento disparador |
+| `popup` | `<div>` | Popup del tooltip — portalizado a `document.body` |
+| `arrow` | `<div>` | Flecha que apunta al disparador |
 
 #### Ejemplos
 
+**1. Básico**
+
 ```tsx
-// Basico
-<Tooltip content="Hola!">
+<Tooltip content="Este es un tooltip">
   <Button>Pasa el cursor</Button>
 </Tooltip>
+```
 
-// Posiciones
-<Tooltip content="Tooltip arriba" position="top">
-  <Button>Arriba</Button>
+---
+
+**2. Las 12 posiciones**
+
+```tsx
+<Tooltip content="Top centro"       placement="top">          <Button>top</Button>          </Tooltip>
+<Tooltip content="Top izquierda"    placement="topLeft">      <Button>topLeft</Button>      </Tooltip>
+<Tooltip content="Top derecha"      placement="topRight">     <Button>topRight</Button>     </Tooltip>
+<Tooltip content="Bottom centro"    placement="bottom">       <Button>bottom</Button>       </Tooltip>
+<Tooltip content="Bottom izquierda" placement="bottomLeft">   <Button>bottomLeft</Button>   </Tooltip>
+<Tooltip content="Bottom derecha"   placement="bottomRight">  <Button>bottomRight</Button>  </Tooltip>
+<Tooltip content="Left centro"      placement="left">         <Button>left</Button>         </Tooltip>
+<Tooltip content="Left arriba"      placement="leftTop">      <Button>leftTop</Button>      </Tooltip>
+<Tooltip content="Left abajo"       placement="leftBottom">   <Button>leftBottom</Button>   </Tooltip>
+<Tooltip content="Right centro"     placement="right">        <Button>right</Button>        </Tooltip>
+<Tooltip content="Right arriba"     placement="rightTop">     <Button>rightTop</Button>     </Tooltip>
+<Tooltip content="Right abajo"      placement="rightBottom">  <Button>rightBottom</Button>  </Tooltip>
+```
+
+---
+
+**3. Sin flecha**
+
+```tsx
+<Tooltip content="Sin flecha" arrow={false}>
+  <Button>Hover</Button>
+</Tooltip>
+```
+
+---
+
+**4. Flecha centrada (posiciones de esquina)**
+
+```tsx
+<Tooltip content="Flecha centrada" placement="topLeft" arrow={{ pointAtCenter: true }}>
+  <Button>topLeft + pointAtCenter</Button>
+</Tooltip>
+```
+
+---
+
+**5. Color predefinido**
+
+```tsx
+<Tooltip content="Acción exitosa" color="green">
+  <Button>Verde</Button>
 </Tooltip>
 
-<Tooltip content="Tooltip abajo" position="bottom">
-  <Button>Abajo</Button>
+<Tooltip content="Zona de peligro" color="red">
+  <Button>Rojo</Button>
 </Tooltip>
 
-<Tooltip content="Tooltip izquierda" position="left">
-  <Button>Izquierda</Button>
+<Tooltip content="Información" color="blue">
+  <Button>Azul</Button>
 </Tooltip>
+```
 
-<Tooltip content="Tooltip derecha" position="right">
-  <Button>Derecha</Button>
+---
+
+**6. Color CSS personalizado**
+
+```tsx
+<Tooltip content="Tooltip de marca" color="#722ed1">
+  <Button>Púrpura personalizado</Button>
 </Tooltip>
+```
 
-// Retraso personalizado
-<Tooltip content="Rapido!" delay={0}>
+---
+
+**7. Deshabilitar auto-flip**
+
+```tsx
+<Tooltip content="Siempre arriba" placement="top" autoAdjustOverflow={false}>
+  <Button>Sin flip</Button>
+</Tooltip>
+```
+
+---
+
+**8. Retraso personalizado**
+
+```tsx
+<Tooltip content="Instantáneo" delay={0}>
   <Button>Sin retraso</Button>
 </Tooltip>
 
-<Tooltip content="Paciente..." delay={1000}>
-  <Button>1 segundo de retraso</Button>
+<Tooltip content="Aparición lenta" delay={800}>
+  <Button>800 ms de retraso</Button>
 </Tooltip>
+```
 
-// Deshabilitado
-<Tooltip content="No se mostrara" disabled>
+---
+
+**9. Deshabilitado**
+
+```tsx
+<Tooltip content="No se mostrará" disabled>
   <Button>Tooltip deshabilitado</Button>
 </Tooltip>
+```
 
-// Con contenido complejo
-<Tooltip content={<span>Contenido <strong>estilizado</strong></span>}>
-  <Button>Contenido rico</Button>
+---
+
+**10. Contenido enriquecido**
+
+```tsx
+<Tooltip
+  content={
+    <div>
+      <strong>Atajo de teclado</strong>
+      <p style={{ margin: '0.25rem 0 0', opacity: 0.85 }}>⌘ + K para abrir la paleta de comandos</p>
+    </div>
+  }
+  placement="bottom"
+>
+  <Button>Hover para ver atajo</Button>
+</Tooltip>
+```
+
+---
+
+**11. Personalización semántica de estilos**
+
+```tsx
+<Tooltip
+  content="Tooltip estilizado"
+  styles={{
+    popup: { borderRadius: '0.75rem', fontSize: '0.75rem', padding: '0.375rem 0.625rem' },
+  }}
+>
+  <Button>Estilo personalizado</Button>
+</Tooltip>
+```
+
+---
+
+**12. Envolviendo un elemento deshabilitado**
+
+Los elementos deshabilitados no disparan eventos de ratón. Envuélvelos en un `<span>` para que el disparador del Tooltip reciba los eventos correctamente.
+
+```tsx
+<Tooltip content="El botón está deshabilitado">
+  <span style={{ display: 'inline-flex' }}>
+    <Button disabled>Enviar</Button>
+  </span>
 </Tooltip>
 ```
 
 #### Accesibilidad
 
-El tooltip soporta navegacion por teclado:
-- Se muestra con focus
-- Se oculta con blur
-- Funciona con lectores de pantalla
+- Se muestra con `mouseenter` y `focus`
+- Se oculta con `mouseleave` y `blur`
+- El popup tiene `role="tooltip"`
+- Se reposiciona al hacer scroll y al redimensionar la ventana mientras está visible
 
 </details>
 
