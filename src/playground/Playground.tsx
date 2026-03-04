@@ -3,6 +3,7 @@ import { Text, ThemeProvider, useTheme, tokens } from '../index'
 import { NavItem } from './sections/shared'
 import { ButtonSection } from './sections/ButtonSection'
 import { TooltipSection } from './sections/TooltipSection'
+import { PopoverSection } from './sections/PopoverSection'
 import { BadgeSection } from './sections/BadgeSection'
 import { BubbleSection } from './sections/BubbleSection'
 import { TextSection } from './sections/TextSection'
@@ -30,6 +31,9 @@ import { CarouselSection } from './sections/CarouselSection'
 import { CollapseSection } from './sections/CollapseSection'
 import { EmptySection } from './sections/EmptySection'
 import { ImageSection } from './sections/ImageSection'
+import { QRCodeSection } from './sections/QRCodeSection'
+import { StatisticSection } from './sections/StatisticSection'
+import { TableSection } from './sections/TableSection'
 import { DataDisplaySection } from './sections/DataDisplaySection'
 import { DatePickerSection } from './sections/DatePickerSection'
 import { FormSection } from './sections/FormSection'
@@ -40,12 +44,27 @@ import { RadioSection } from './sections/RadioSection'
 import { RateSection } from './sections/RateSection'
 import { SelectSection } from './sections/SelectSection'
 import { SliderSection } from './sections/SliderSection'
+import { SpinnerSection } from './sections/SpinnerSection'
 import { SwitchSection } from './sections/SwitchSection'
 import { TimePickerSection } from './sections/TimePickerSection'
+import { ToggleSection } from './sections/ToggleSection'
 import { TransferSection } from './sections/TransferSection'
 import { TreeSelectSection } from './sections/TreeSelectSection'
+import { TreeSection } from './sections/TreeSection'
 import { UploadSection } from './sections/UploadSection'
 import { AvatarSection } from './sections/AvatarSection'
+import { TagSection } from './sections/TagSection'
+import { TimelineSection } from './sections/TimelineSection'
+import { TourSection } from './sections/TourSection'
+import { AlertSection } from './sections/AlertSection'
+import { DrawerSection } from './sections/DrawerSection'
+import { ModalSection } from './sections/ModalSection'
+import { PopAlertSection } from './sections/PopAlertSection'
+import { PopConfirmSection } from './sections/PopConfirmSection'
+import { PlaceholderSection } from './sections/PlaceholderSection'
+import { ProgressSection } from './sections/ProgressSection'
+import { ResultSection } from './sections/ResultSection'
+import { WatermarkSection } from './sections/WatermarkSection'
 import { ThemeSection } from './sections/ThemeSection'
 
 export function Playground() {
@@ -135,6 +154,11 @@ function PlaygroundContent() {
               label="Tooltip"
               active={activeSection === 'tooltip'}
               onClick={() => handleNavClick('tooltip')}
+            />
+            <NavItem
+              label="Popover"
+              active={activeSection === 'popover'}
+              onClick={() => handleNavClick('popover')}
             />
             <NavItem
               label="Badge"
@@ -277,6 +301,21 @@ function PlaygroundContent() {
               onClick={() => handleNavClick('image')}
             />
             <NavItem
+              label="QRCode"
+              active={activeSection === 'qrcode'}
+              onClick={() => handleNavClick('qrcode')}
+            />
+            <NavItem
+              label="Statistic"
+              active={activeSection === 'statistic'}
+              onClick={() => handleNavClick('statistic')}
+            />
+            <NavItem
+              label="Table"
+              active={activeSection === 'table'}
+              onClick={() => handleNavClick('table')}
+            />
+            <NavItem
               label="DatePicker"
               active={activeSection === 'datepicker'}
               onClick={() => handleNavClick('datepicker')}
@@ -322,6 +361,11 @@ function PlaygroundContent() {
               onClick={() => handleNavClick('slider')}
             />
             <NavItem
+              label="Spinner"
+              active={activeSection === 'spinner'}
+              onClick={() => handleNavClick('spinner')}
+            />
+            <NavItem
               label="Switch"
               active={activeSection === 'switch'}
               onClick={() => handleNavClick('switch')}
@@ -332,9 +376,19 @@ function PlaygroundContent() {
               onClick={() => handleNavClick('timepicker')}
             />
             <NavItem
+              label="Toggle"
+              active={activeSection === 'toggle'}
+              onClick={() => handleNavClick('toggle')}
+            />
+            <NavItem
               label="Transfer"
               active={activeSection === 'transfer'}
               onClick={() => handleNavClick('transfer')}
+            />
+            <NavItem
+              label="Tree"
+              active={activeSection === 'tree'}
+              onClick={() => handleNavClick('tree')}
             />
             <NavItem
               label="TreeSelect"
@@ -345,6 +399,66 @@ function PlaygroundContent() {
               label="Upload"
               active={activeSection === 'upload'}
               onClick={() => handleNavClick('upload')}
+            />
+            <NavItem
+              label="Tag"
+              active={activeSection === 'tag'}
+              onClick={() => handleNavClick('tag')}
+            />
+            <NavItem
+              label="Timeline"
+              active={activeSection === 'timeline'}
+              onClick={() => handleNavClick('timeline')}
+            />
+            <NavItem
+              label="Tour"
+              active={activeSection === 'tour'}
+              onClick={() => handleNavClick('tour')}
+            />
+            <NavItem
+              label="Alert"
+              active={activeSection === 'alert'}
+              onClick={() => handleNavClick('alert')}
+            />
+            <NavItem
+              label="Drawer"
+              active={activeSection === 'drawer'}
+              onClick={() => handleNavClick('drawer')}
+            />
+            <NavItem
+              label="Modal"
+              active={activeSection === 'modal'}
+              onClick={() => handleNavClick('modal')}
+            />
+            <NavItem
+              label="PopAlert"
+              active={activeSection === 'popalert'}
+              onClick={() => handleNavClick('popalert')}
+            />
+            <NavItem
+              label="PopConfirm"
+              active={activeSection === 'popconfirm'}
+              onClick={() => handleNavClick('popconfirm')}
+            />
+            <NavItem
+              label="Placeholder"
+              active={activeSection === 'placeholder'}
+              onClick={() => handleNavClick('placeholder')}
+            />
+            <NavItem
+              label="Progress"
+              active={activeSection === 'progress'}
+              onClick={() => handleNavClick('progress')}
+            />
+            <NavItem
+              label="Result"
+              active={activeSection === 'result'}
+              onClick={() => handleNavClick('result')}
+            />
+            <NavItem
+              label="Watermark"
+              active={activeSection === 'watermark'}
+              onClick={() => handleNavClick('watermark')}
             />
             <NavItem
               label="Avatar"
@@ -444,6 +558,7 @@ function PlaygroundContent() {
       <main style={{ flex: 1, padding: isMobile ? '64px 16px 16px' : 32, minWidth: 0, marginLeft: isMobile ? 0 : 240 }}>
         {activeSection === 'button' && <ButtonSection />}
         {activeSection === 'tooltip' && <TooltipSection />}
+        {activeSection === 'popover' && <PopoverSection />}
         {activeSection === 'badge' && <BadgeSection />}
         {activeSection === 'bubble' && <BubbleSection />}
         {activeSection === 'text' && <TextSection />}
@@ -472,6 +587,9 @@ function PlaygroundContent() {
         {activeSection === 'datadisplay' && <DataDisplaySection />}
         {activeSection === 'empty' && <EmptySection />}
         {activeSection === 'image' && <ImageSection />}
+        {activeSection === 'qrcode' && <QRCodeSection />}
+        {activeSection === 'statistic' && <StatisticSection />}
+        {activeSection === 'table' && <TableSection />}
         {activeSection === 'datepicker' && <DatePickerSection />}
         {activeSection === 'form' && <FormSection />}
         {activeSection === 'input' && <InputSection />}
@@ -481,11 +599,26 @@ function PlaygroundContent() {
         {activeSection === 'rate' && <RateSection />}
         {activeSection === 'select' && <SelectSection />}
         {activeSection === 'slider' && <SliderSection />}
+        {activeSection === 'spinner' && <SpinnerSection />}
         {activeSection === 'switch' && <SwitchSection />}
         {activeSection === 'timepicker' && <TimePickerSection />}
+        {activeSection === 'toggle' && <ToggleSection />}
         {activeSection === 'transfer' && <TransferSection />}
+        {activeSection === 'tree' && <TreeSection />}
         {activeSection === 'treeselect' && <TreeSelectSection />}
         {activeSection === 'upload' && <UploadSection />}
+        {activeSection === 'tag' && <TagSection />}
+        {activeSection === 'timeline' && <TimelineSection />}
+        {activeSection === 'tour' && <TourSection />}
+        {activeSection === 'alert' && <AlertSection />}
+        {activeSection === 'drawer' && <DrawerSection />}
+        {activeSection === 'modal' && <ModalSection />}
+        {activeSection === 'popalert' && <PopAlertSection />}
+        {activeSection === 'popconfirm' && <PopConfirmSection />}
+        {activeSection === 'placeholder' && <PlaceholderSection />}
+        {activeSection === 'progress' && <ProgressSection />}
+        {activeSection === 'result' && <ResultSection />}
+        {activeSection === 'watermark' && <WatermarkSection />}
         {activeSection === 'avatar' && <AvatarSection />}
         {activeSection === 'theme' && <ThemeSection />}
       </main>

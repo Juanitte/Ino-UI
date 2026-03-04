@@ -8,7 +8,11 @@ export type { ButtonProps, ButtonAnimation, ButtonSemanticSlot, ButtonClassNames
 
 // Tooltip
 export { Tooltip } from './Tooltip'
-export type { TooltipProps, TooltipPosition, TooltipSemanticSlot, TooltipClassNames, TooltipStyles } from './Tooltip'
+export type { TooltipProps, TooltipPlacement, TooltipPosition, TooltipSemanticSlot, TooltipClassNames, TooltipStyles } from './Tooltip'
+
+// Popover
+export { Popover } from './Popover'
+export type { PopoverProps, PopoverPlacement, PopoverTrigger, PopoverSemanticSlot, PopoverClassNames, PopoverStyles } from './Popover'
 
 // Badge
 export { Badge } from './Badge'
@@ -160,9 +164,17 @@ export type { SelectProps, SelectOption, SelectOptionGroup, SelectMode, SelectSi
 export { Slider } from './Slider'
 export type { SliderProps, SliderRef, SliderRangeConfig, SliderSemanticSlot, SliderClassNames, SliderStyles, SliderMarks, SliderMarkLabel, SliderTooltipConfig } from './Slider'
 
+// Spinner
+export { Spinner } from './Spinner'
+export type { SpinnerProps, SpinnerType, SpinnerSize, SpinnerSemanticSlot, SpinnerClassNames, SpinnerStyles } from './Spinner'
+
 // Switch
 export { Switch } from './Switch'
 export type { SwitchProps, SwitchRef, SwitchSize, SwitchSemanticSlot, SwitchClassNames, SwitchStyles } from './Switch'
+
+// Toggle
+export { Toggle } from './Toggle'
+export type { ToggleProps, ToggleItemType, ToggleSize, ToggleSemanticSlot, ToggleClassNames, ToggleStyles } from './Toggle'
 
 // TimePicker
 export { TimePicker } from './TimePicker'
@@ -176,6 +188,10 @@ export type { TransferProps, TransferItem, TransferDirection, TransferStatus, Tr
 export { TreeSelect } from './TreeSelect'
 export type { TreeSelectProps, TreeSelectTreeData, TreeSelectSize, TreeSelectVariant, TreeSelectStatus, TreeSelectPlacement, TreeSelectShowCheckedStrategy, TreeSelectFieldNames, TreeSelectTagRenderProps, TreeSelectSemanticSlot, TreeSelectClassNames, TreeSelectStyles } from './TreeSelect'
 
+// Tree
+export { Tree } from './Tree'
+export type { TreeProps, DirectoryTreeProps, TreeData, TreeFieldNames, TreeCheckedKeys, TreeSelectInfo, TreeCheckInfo, TreeExpandInfo, TreeDragInfo, TreeDropInfo, TreeRightClickInfo, TreeSemanticSlot, TreeClassNames, TreeStyles } from './Tree'
+
 // Upload
 export { Upload } from './Upload'
 export type { UploadProps, UploadDraggerProps, UploadFile, UploadFileStatus, UploadListType, UploadRequestOption, UploadChangeParam, ShowUploadListConfig, UploadProgressConfig, UploadRef, UploadSemanticSlot, UploadClassNames, UploadStyles } from './Upload'
@@ -183,3 +199,63 @@ export type { UploadProps, UploadDraggerProps, UploadFile, UploadFileStatus, Upl
 // Avatar
 export { Avatar } from './Avatar'
 export type { AvatarProps, AvatarGroupProps, AvatarShape, AvatarBreakpoint, AvatarResponsiveSize, AvatarSize, AvatarSemanticSlot, AvatarClassNames, AvatarStyles } from './Avatar'
+
+// QRCode
+export { QRCode } from './QRCode'
+export type { QRCodeProps, QRCodeType, QRCodeErrorLevel, QRCodeStatus, QRCodeSemanticSlot, QRCodeClassNames, QRCodeStyles, StatusRenderInfo } from './QRCode'
+
+// Statistic
+export { Statistic } from './Statistic'
+export type { StatisticProps, StatisticCountdownProps, StatisticSemanticSlot, StatisticClassNames, StatisticStyles, CountdownSemanticSlot, CountdownClassNames, CountdownStyles } from './Statistic'
+
+// Table
+export { Table } from './Table'
+export type { TableProps, ColumnType, ColumnFilterItem, FilterDropdownProps, TableRowSelection, TableExpandable, TablePaginationConfig, SorterResult, TableSize, SortOrder, SortDirection, TableSemanticSlot, TableClassNames, TableStyles } from './Table'
+
+// Tag
+export { Tag } from './Tag'
+export type { TagProps, CheckableTagProps, TagPresetColor, TagVariant, TagSemanticSlot, TagClassNames, TagStyles, CheckableTagSemanticSlot, CheckableTagClassNames, CheckableTagStyles } from './Tag'
+
+// Timeline
+export { Timeline } from './Timeline'
+export type { TimelineProps, TimelineItemType, TimelineMode, TimelineVariant, TimelineSemanticSlot, TimelineClassNames, TimelineStyles } from './Timeline'
+
+// Tour
+export { Tour } from './Tour'
+export type { TourProps, TourStepConfig, TourPlacement, TourType, TourSemanticSlot, TourClassNames, TourStyles } from './Tour'
+
+// Alert
+export { Alert } from './Alert'
+export type { AlertProps, AlertType, AlertClosable, AlertSemanticSlot, AlertClassNames, AlertStyles } from './Alert'
+
+// Drawer
+export { Drawer } from './Drawer'
+export type { DrawerProps, DrawerPlacement, DrawerSize, DrawerSemanticSlot, DrawerClassNames, DrawerStyles } from './Drawer'
+
+// Modal
+export { Modal, useModal } from './Modal'
+export type { ModalProps, ModalMaskConfig, ModalSemanticSlot, ModalClassNames, ModalStyles, ModalConfirmType, ModalConfirmConfig, ModalInstance, ModalHookApi } from './Modal'
+
+// PopAlert
+export { usePopAlert } from './PopAlert'
+export type { PopAlertType, PopAlertPlacement, PopAlertSize, PopAlertConfig, PopAlertApi, PopAlertHookConfig, PopAlertSemanticSlot, PopAlertClassNames, PopAlertStyles } from './PopAlert'
+
+// PopConfirm
+export { PopConfirm } from './PopConfirm'
+export type { PopConfirmProps, PopConfirmSemanticSlot, PopConfirmClassNames, PopConfirmStyles } from './PopConfirm'
+
+// Placeholder
+export { Placeholder } from './Placeholder'
+export type { PlaceholderProps, PlaceholderSize, PlaceholderAvatarProps, PlaceholderTitleProps, PlaceholderParagraphProps, PlaceholderButtonProps, PlaceholderAvatarComponentProps, PlaceholderInputProps, PlaceholderImageProps, PlaceholderNodeProps, PlaceholderSemanticSlot, PlaceholderClassNames, PlaceholderStyles } from './Placeholder'
+
+// Progress
+export { Progress } from './Progress'
+export type { ProgressProps, ProgressType, ProgressStatus, ProgressSize, ProgressLinecap, ProgressGapPosition, ProgressStrokeColor, ProgressSuccessConfig, ProgressPercentPosition, ProgressSemanticSlot, ProgressClassNames, ProgressStyles } from './Progress'
+
+// Result
+export { Result } from './Result'
+export type { ResultProps, ResultStatus, ResultSemanticSlot, ResultClassNames, ResultStyles } from './Result'
+
+// Watermark
+export { Watermark } from './Watermark'
+export type { WatermarkProps, WatermarkFont, WatermarkSemanticSlot, WatermarkClassNames, WatermarkStyles } from './Watermark'

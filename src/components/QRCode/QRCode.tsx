@@ -1,0 +1,366 @@
+import {
+  useMemo,
+  useRef,
+  useEffect,
+  type ReactNode,
+  type CSSProperties,
+} from 'react'
+import { tokens } from '../../theme/tokens'
+import { useThemeMode } from '../../theme'
+import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
+import { mergeSemanticClassName, mergeSemanticStyle } from '../../utils/semanticDom'
+import { generateQRMatrix, type ErrorCorrectionLevel } from './qr-encoder'
+
+// ─── Types ──────────────────────────────────────────────────────────────────────
+
+export type QRCodeType = 'canvas' | 'svg'
+export type QRCodeErrorLevel = ErrorCorrectionLevel
+export type QRCodeStatus = 'active' | 'expired' | 'loading' | 'scanned'
+
+export type QRCodeSemanticSlot = 'root' | 'canvas' | 'mask'
+export type QRCodeClassNames = SemanticClassNames<QRCodeSemanticSlot>
+export type QRCodeStyles = SemanticStyles<QRCodeSemanticSlot>
+
+export interface StatusRenderInfo {
+  status: QRCodeStatus
+  locale: { expired: string; loading: string; scanned: string }
+  onRefresh?: () => void
+}
+
+export interface QRCodeProps {
+  /** Text/URL to encode */
+  value: string
+  /** Render method */
+  type?: QRCodeType
+  /** Image URL for embedded logo */
+  icon?: string
+  /** QR code size in pixels */
+  size?: number
+  /** Icon size */
+  iconSize?: number | { width: number; height: number }
+  /** QR code module color */
+  color?: string
+  /** Background color */
+  bgColor?: string
+  /** Quiet zone in modules */
+  marginSize?: number
+  /** Show border */
+  bordered?: boolean
+  /** Error correction level */
+  errorLevel?: QRCodeErrorLevel
+  /** Current status */
+  status?: QRCodeStatus
+  /** Custom status display */
+  statusRender?: (info: StatusRenderInfo) => ReactNode
+  /** Callback when refresh is clicked */
+  onRefresh?: () => void
+  /** Root CSS class */
+  className?: string
+  /** Root inline style */
+  style?: CSSProperties
+  /** Semantic class names */
+  classNames?: QRCodeClassNames
+  /** Semantic styles */
+  styles?: QRCodeStyles
+}
+
+// ─── Icons ──────────────────────────────────────────────────────────────────────
+
+function RefreshIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="23 4 23 10 17 10" />
+      <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+    </svg>
+  )
+}
+
+function SpinnerIcon() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={tokens.colorPrimary} strokeWidth="2.5" strokeLinecap="round" style={{ animation: 'j-qrcode-spin 0.8s linear infinite' }}>
+      <path d="M12 2a10 10 0 0 1 10 10" />
+    </svg>
+  )
+}
+
+function CheckIcon() {
+  return (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={tokens.colorSuccess} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+      <polyline points="22 4 12 14.01 9 11.01" />
+    </svg>
+  )
+}
+
+// ─── Helpers ────────────────────────────────────────────────────────────────────
+
+function resolveIconSize(iconSize: number | { width: number; height: number }): { iw: number; ih: number } {
+  if (typeof iconSize === 'number') return { iw: iconSize, ih: iconSize }
+  return { iw: iconSize.width, ih: iconSize.height }
+}
+
+/** Resolve CSS variable to computed color for canvas (canvas API can't use var()) */
+function resolveColor(value: string, el: HTMLElement): string {
+  if (!value.startsWith('var(')) return value
+  const prev = el.style.color
+  el.style.color = value
+  const resolved = getComputedStyle(el).color
+  el.style.color = prev
+  return resolved
+}
+
+// ─── QRCode Component ──────────────────────────────────────────────────────────
+
+export function QRCode({
+  value,
+  type = 'canvas',
+  icon,
+  size = 160,
+  iconSize = 40,
+  color = tokens.colorText,
+  bgColor = 'transparent',
+  marginSize = 0,
+  bordered = true,
+  errorLevel = 'M',
+  status = 'active',
+  statusRender,
+  onRefresh,
+  className,
+  style,
+  classNames,
+  styles,
+}: QRCodeProps) {
+  const matrix = useMemo(() => generateQRMatrix(value, errorLevel), [value, errorLevel])
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const themeMode = useThemeMode()
+
+  // ─── Canvas rendering ─────────────────────────────────────
+
+  useEffect(() => {
+    if (type !== 'canvas' || !canvasRef.current) return
+
+    const canvas = canvasRef.current
+    const ctx = canvas.getContext('2d')!
+    const dpr = window.devicePixelRatio || 1
+
+    const moduleCount = matrix.length
+    const totalModules = moduleCount + marginSize * 2
+    const moduleSize = size / totalModules
+
+    canvas.width = size * dpr
+    canvas.height = size * dpr
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+
+    // Resolve CSS variables for canvas
+    const resolvedColor = resolveColor(color, canvas)
+    const resolvedBg = bgColor !== 'transparent' ? resolveColor(bgColor, canvas) : 'transparent'
+    const resolvedIconBg = resolvedBg !== 'transparent' ? resolvedBg : resolveColor(tokens.colorBg, canvas)
+
+    // Background
+    ctx.clearRect(0, 0, size, size)
+    if (resolvedBg !== 'transparent') {
+      ctx.fillStyle = resolvedBg
+      ctx.fillRect(0, 0, size, size)
+    }
+
+    // Modules — snap to pixel grid to avoid sub-pixel gaps
+    ctx.fillStyle = resolvedColor
+    for (let r = 0; r < moduleCount; r++) {
+      for (let c = 0; c < moduleCount; c++) {
+        if (matrix[r][c]) {
+          const x = Math.floor((c + marginSize) * moduleSize)
+          const y = Math.floor((r + marginSize) * moduleSize)
+          const w = Math.floor((c + marginSize + 1) * moduleSize) - x
+          const h = Math.floor((r + marginSize + 1) * moduleSize) - y
+          ctx.fillRect(x, y, w, h)
+        }
+      }
+    }
+
+    // Icon
+    if (icon) {
+      let aborted = false
+      const img = new Image()
+      img.crossOrigin = 'anonymous'
+      img.onload = () => {
+        if (aborted) return
+        const { iw, ih } = resolveIconSize(iconSize)
+        const ix = (size - iw) / 2
+        const iy = (size - ih) / 2
+        ctx.fillStyle = resolvedIconBg
+        ctx.fillRect(ix - 2, iy - 2, iw + 4, ih + 4)
+        ctx.drawImage(img, ix, iy, iw, ih)
+      }
+      img.src = icon
+      return () => { aborted = true }
+    }
+  }, [matrix, size, color, bgColor, marginSize, icon, iconSize, type, themeMode])
+
+  // ─── SVG content ──────────────────────────────────────────
+
+  const svgContent = useMemo(() => {
+    if (type !== 'svg') return null
+
+    const moduleCount = matrix.length
+    const totalModules = moduleCount + marginSize * 2
+    const moduleSize = size / totalModules
+
+    const { iw, ih } = resolveIconSize(iconSize)
+    const ix = (size - iw) / 2
+    const iy = (size - ih) / 2
+
+    const rects: ReactNode[] = []
+    for (let r = 0; r < moduleCount; r++) {
+      for (let c = 0; c < moduleCount; c++) {
+        if (matrix[r][c]) {
+          const x = Math.floor((c + marginSize) * moduleSize)
+          const y = Math.floor((r + marginSize) * moduleSize)
+          const w = Math.floor((c + marginSize + 1) * moduleSize) - x
+          const h = Math.floor((r + marginSize + 1) * moduleSize) - y
+          rects.push(
+            <rect
+              key={`${r}-${c}`}
+              x={x}
+              y={y}
+              width={w}
+              height={h}
+              fill={color}
+            />,
+          )
+        }
+      }
+    }
+
+    return (
+      <svg
+        className={classNames?.canvas}
+        style={mergeSemanticStyle({ display: 'block' }, styles?.canvas)}
+        width={size}
+        height={size}
+        viewBox={`0 0 ${size} ${size}`}
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        {bgColor !== 'transparent' && (
+          <rect x={0} y={0} width={size} height={size} fill={bgColor} />
+        )}
+        {rects}
+        {icon && (
+          <>
+            <rect x={ix - 2} y={iy - 2} width={iw + 4} height={ih + 4} fill={bgColor !== 'transparent' ? bgColor : tokens.colorBg} />
+            <image href={icon} x={ix} y={iy} width={iw} height={ih} />
+          </>
+        )}
+      </svg>
+    )
+  }, [matrix, size, color, bgColor, marginSize, icon, iconSize, type, classNames?.canvas, styles?.canvas])
+
+  // ─── Status overlay ───────────────────────────────────────
+
+  const locale = { expired: 'QR code expired', loading: 'Loading...', scanned: 'Scanned' }
+
+  const maskBaseStyle: CSSProperties = {
+    position: 'absolute',
+    inset: 0,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.96)',
+    borderRadius: '0.25rem',
+  }
+
+  let statusOverlay: ReactNode = null
+  if (status !== 'active') {
+    if (statusRender) {
+      statusOverlay = (
+        <div className={classNames?.mask} style={mergeSemanticStyle(maskBaseStyle, styles?.mask)}>
+          {statusRender({ status, locale, onRefresh })}
+        </div>
+      )
+    } else if (status === 'loading') {
+      statusOverlay = (
+        <div className={classNames?.mask} style={mergeSemanticStyle(maskBaseStyle, styles?.mask)}>
+          <SpinnerIcon />
+        </div>
+      )
+    } else if (status === 'expired') {
+      statusOverlay = (
+        <div className={classNames?.mask} style={mergeSemanticStyle(maskBaseStyle, styles?.mask)}>
+          <span style={{ color: tokens.colorTextMuted, fontSize: '0.875rem', marginBottom: '0.5rem' }}>
+            {locale.expired}
+          </span>
+          <button
+            onClick={onRefresh}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.25rem',
+              padding: '0.25rem 0.75rem',
+              border: 'none',
+              borderRadius: '0.25rem',
+              backgroundColor: tokens.colorPrimary,
+              color: '#fff',
+              fontSize: '0.875rem',
+              cursor: 'pointer',
+              fontFamily: 'inherit',
+            }}
+          >
+            <RefreshIcon /> Refresh
+          </button>
+        </div>
+      )
+    } else if (status === 'scanned') {
+      statusOverlay = (
+        <div className={classNames?.mask} style={mergeSemanticStyle(maskBaseStyle, styles?.mask)}>
+          <CheckIcon />
+          <span style={{ color: tokens.colorSuccess, fontSize: '0.875rem', marginTop: '0.5rem' }}>
+            {locale.scanned}
+          </span>
+        </div>
+      )
+    }
+  }
+
+  // ─── Styles ───────────────────────────────────────────────
+
+  const rootBaseStyle: CSSProperties = {
+    position: 'relative',
+    display: 'inline-block',
+    lineHeight: 0,
+    ...(bordered
+      ? {
+          padding: '0.75rem',
+          border: `1px solid ${tokens.colorBorder}`,
+          borderRadius: '0.5rem',
+          backgroundColor: tokens.colorBg,
+        }
+      : {}),
+  }
+
+  const rootStyle = mergeSemanticStyle(rootBaseStyle, styles?.root, style)
+
+  // ─── Render ───────────────────────────────────────────────
+
+  return (
+    <div className={mergeSemanticClassName(className, classNames?.root)} style={rootStyle}>
+      <style>{`@keyframes j-qrcode-spin { to { transform: rotate(360deg); } }`}</style>
+
+      <div style={{ position: 'relative', width: size, height: size }}>
+        {type === 'canvas' ? (
+          <canvas
+            ref={canvasRef}
+            className={classNames?.canvas}
+            style={mergeSemanticStyle(
+              { display: 'block', width: size, height: size },
+              styles?.canvas,
+            )}
+          />
+        ) : (
+          svgContent
+        )}
+
+        {statusOverlay}
+      </div>
+    </div>
+  )
+}
