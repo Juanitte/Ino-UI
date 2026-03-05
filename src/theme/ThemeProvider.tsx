@@ -92,7 +92,7 @@ export function ThemeProvider({ children, config = {} }: ThemeProviderProps) {
   const [mode, setMode] = useState<ThemeMode>(() => {
     if (config.defaultMode) return config.defaultMode
     if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('j-ui-theme')
+      const stored = localStorage.getItem('ino-ui-theme')
       if (stored === 'light' || stored === 'dark') return stored
       if (window.matchMedia('(prefers-color-scheme: dark)').matches) return 'dark'
     }
@@ -103,13 +103,13 @@ export function ThemeProvider({ children, config = {} }: ThemeProviderProps) {
 
   // Persistir preferencia
   useEffect(() => {
-    localStorage.setItem('j-ui-theme', mode)
+    localStorage.setItem('ino-ui-theme', mode)
   }, [mode])
 
   // Inyectar CSS variables (useLayoutEffect to update before child useEffects read them)
   useLayoutEffect(() => {
     const css = generateCssVariables(config, mode)
-    const styleId = 'j-ui-theme-vars'
+    const styleId = 'ino-ui-theme-vars'
     let style = document.getElementById(styleId) as HTMLStyleElement | null
 
     if (!style) {

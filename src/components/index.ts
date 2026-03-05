@@ -1,6 +1,14 @@
-// Semantic DOM utilities
-export type { SemanticClassNames, SemanticStyles } from '../utils/semanticDom'
-export { mergeSemanticClassName, mergeSemanticStyle } from '../utils/semanticDom'
+// Affix
+export { Affix } from './Affix'
+export type { AffixProps, AffixSemanticSlot, AffixClassNames, AffixStyles } from './Affix'
+
+// App
+export { App, useApp } from './App'
+export type { AppProps, AppContextValue } from './App'
+
+// ConfigProvider
+export { ConfigProvider, useConfig, defaultConfig, en_US, es_ES } from './ConfigProvider'
+export type { ConfigProviderProps, ConfigContextValue, ConfigSize, Locale, DatePickerLocale, PaginationLocale, FormLocale } from './ConfigProvider'
 
 // Button
 export { Button } from './Button'
@@ -36,7 +44,7 @@ export type { FlexProps, FlexJustify, FlexAlign, FlexWrap, FlexGap } from './Fle
 
 // Grid
 export { Grid, Row, Col } from './Grid'
-export type { RowProps, ColProps, RowAlign, RowJustify, Breakpoint, ColBreakpointValue } from './Grid'
+export type { RowProps, ColProps, RowAlign, RowJustify, ColBreakpointValue } from './Grid'
 
 // Layout
 export { Layout, Header, Footer, Content, Sider, useSider } from './Layout'

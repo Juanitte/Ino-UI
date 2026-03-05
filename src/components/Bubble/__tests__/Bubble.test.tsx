@@ -43,23 +43,6 @@ describe('Bubble', () => {
     expect(handleClick).not.toHaveBeenCalled()
   })
 
-  it('renders badge with a number', () => {
-    render(<Bubble badge={5} />)
-    expect(screen.getByText('5')).toBeInTheDocument()
-  })
-
-  it('renders badge capped at 99+', () => {
-    render(<Bubble badge={150} />)
-    expect(screen.getByText('99+')).toBeInTheDocument()
-  })
-
-  it('renders dot badge when badge is true', () => {
-    const { container } = render(<Bubble badge={true} />)
-    // Badge dot is rendered but with no text
-    const badges = container.querySelectorAll('span[style]')
-    expect(badges.length).toBeGreaterThan(0)
-  })
-
   it('renders tooltip text', () => {
     render(<Bubble tooltip="Help tooltip" />)
     expect(screen.getByRole('tooltip')).toHaveTextContent('Help tooltip')

@@ -180,7 +180,7 @@ function LoopBannerDemo() {
         title={
           <div style={{ overflow: 'hidden' }}>
             <span style={marqueeStyle}>
-              Breaking news: J-UI Alert now supports loop banners with smooth marquee animation.
+              Breaking news: Ino-UI Alert now supports loop banners with smooth marquee animation.
             </span>
           </div>
         }

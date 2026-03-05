@@ -86,7 +86,8 @@ describe('Text', () => {
 
   it('renders copy button when copyable=true', () => {
     render(<Text copyable>Copyable text</Text>)
-    const button = screen.getByTitle('Copiar')
+    // The copy button is the only button rendered by Text
+    const button = screen.getByRole('button')
     expect(button).toBeInTheDocument()
   })
 

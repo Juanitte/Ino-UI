@@ -12,6 +12,7 @@ import {
 import { tokens } from '../../theme/tokens'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
 import { mergeSemanticClassName, mergeSemanticStyle } from '../../utils/semanticDom'
+import { useConfig } from '../ConfigProvider'
 
 // ============================================================================
 // Types
@@ -327,12 +328,12 @@ function SelectComponent({
   labelInValue = false,
   placeholder = 'Select...',
   showSearch,
-  size = 'middle',
+  size: sizeProp,
   variant = 'outlined',
   status,
   placement = 'bottomLeft',
   allowClear = false,
-  disabled = false,
+  disabled: disabledProp,
   loading = false,
   autoFocus = false,
   virtual = true,
@@ -369,6 +370,10 @@ function SelectComponent({
   classNames,
   styles,
 }: SelectProps) {
+  const { componentSize, componentDisabled } = useConfig()
+  const size = sizeProp ?? componentSize ?? 'middle'
+  const disabled = disabledProp ?? componentDisabled ?? false
+
   const fn: Required<SelectFieldNames> = {
     label: rawFieldNames?.label ?? 'label',
     value: rawFieldNames?.value ?? 'value',

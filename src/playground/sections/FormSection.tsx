@@ -6,7 +6,7 @@ import { Section } from './shared'
 const { useForm, useWatch } = Form
 
 // ============================================================================
-// Shared input style (no Input component in J-UI yet)
+// Shared input style (no Input component in Ino-UI yet)
 // ============================================================================
 
 const inputStyle = (status?: 'error' | 'warning'): React.CSSProperties => ({
@@ -550,10 +550,10 @@ function NestedFieldsDemo() {
 }
 
 // ============================================================================
-// Demo: With J-UI Components
+// Demo: With Ino-UI Components
 // ============================================================================
 
-function JUIComponentsDemo() {
+function InoUIComponentsDemo() {
   return (
     <Form
       layout="vertical"
@@ -967,8 +967,8 @@ export function FormSection() {
         <NestedFieldsDemo />
       </Section>
 
-      <Section title="With J-UI components" align="start">
-        <JUIComponentsDemo />
+      <Section title="With Ino-UI components" align="start">
+        <InoUIComponentsDemo />
       </Section>
 
       <Section title="Dynamic fields (Form.List)" align="start">

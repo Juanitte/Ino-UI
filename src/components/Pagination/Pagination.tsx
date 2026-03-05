@@ -10,6 +10,7 @@ import { tokens } from '../../theme/tokens'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
 import { mergeSemanticClassName, mergeSemanticStyle } from '../../utils/semanticDom'
 import { Tooltip } from '../Tooltip'
+import { useConfig } from '../ConfigProvider'
 
 // ============================================================================
 // Types
@@ -266,12 +267,14 @@ function SizeChanger({
   disabled,
   size,
   onChange,
+  itemsPerPage = '/ page',
 }: {
   value: number
   options: number[]
   disabled: boolean
   size: PaginationSize
   onChange: (value: number) => void
+  itemsPerPage?: string
 }) {
   const [open, setOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -347,7 +350,7 @@ function SizeChanger({
           ;(e.currentTarget as HTMLElement).style.borderColor = tokens.colorBorder
         }}
       >
-        <span>{value} / page</span>
+        <span>{value} {itemsPerPage}</span>
         <svg
           width={10}
           height={10}
@@ -389,7 +392,7 @@ function SizeChanger({
                 ;(e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'
               }}
             >
-              {opt} / page
+              {opt} {itemsPerPage}
             </div>
           ))}
         </div>
@@ -426,6 +429,9 @@ export function Pagination({
   classNames,
   styles,
 }: PaginationProps) {
+  const { locale } = useConfig()
+  const pgLocale = locale.Pagination
+
   // ── Controlled / uncontrolled state ──────────────────────────────────
 
   const [internalCurrent, setInternalCurrent] = useState(defaultCurrent)
@@ -716,12 +722,13 @@ export function Pagination({
               disabled={disabled}
               size={size}
               onChange={handlePageSizeChange}
+              itemsPerPage={pgLocale?.itemsPerPage}
             />
           )}
 
           {showQuickJumper && (
             <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', color: tokens.colorText, fontSize }}>
-              Go to
+              {pgLocale?.jumpTo ?? 'Go to'}
               <input
                 type="text"
                 value={jumperValue}

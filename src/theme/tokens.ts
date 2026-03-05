@@ -1,6 +1,6 @@
 /**
  * Tokens del tema - referencias tipadas a las CSS variables
- * Uso: import { tokens } from 'j-ui'
+ * Uso: import { tokens } from 'ino-ui'
  *
  * Ejemplo:
  * <div style={{ backgroundColor: tokens.colorPrimaryBg, color: tokens.colorPrimary }}>

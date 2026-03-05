@@ -17,6 +17,7 @@ import {
 import { tokens } from '../../theme/tokens'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
 import { mergeSemanticClassName, mergeSemanticStyle } from '../../utils/semanticDom'
+import { useConfig } from '../ConfigProvider'
 
 // ============================================================================
 // Types
@@ -281,14 +282,14 @@ const InputComponent = forwardRef<InputRef, InputProps>(function InputInner(prop
     defaultValue = '',
     placeholder,
     type = 'text',
-    disabled = false,
+    disabled: disabledProp,
     readOnly = false,
     id,
     autoFocus = false,
     name,
     autoComplete,
     tabIndex,
-    size = 'middle',
+    size: sizeProp,
     variant = 'outlined',
     status,
     prefix: prefixNode,
@@ -309,6 +310,10 @@ const InputComponent = forwardRef<InputRef, InputProps>(function InputInner(prop
     classNames,
     styles,
   } = props
+
+  const { componentSize, componentDisabled } = useConfig()
+  const size = sizeProp ?? componentSize ?? 'middle'
+  const disabled = disabledProp ?? componentDisabled ?? false
 
   // ---- Controlled / uncontrolled ----
   const isControlled = controlledValue !== undefined
@@ -707,14 +712,14 @@ const TextAreaComponent = forwardRef<InputRef, TextAreaProps>(function TextAreaI
     value: controlledValue,
     defaultValue = '',
     placeholder,
-    disabled = false,
+    disabled: disabledProp,
     readOnly = false,
     id,
     autoFocus = false,
     name,
     tabIndex,
     rows,
-    size = 'middle',
+    size: sizeProp,
     variant = 'outlined',
     status,
     autoSize = false,
@@ -732,6 +737,10 @@ const TextAreaComponent = forwardRef<InputRef, TextAreaProps>(function TextAreaI
     classNames,
     styles,
   } = props
+
+  const { componentSize, componentDisabled } = useConfig()
+  const size = sizeProp ?? componentSize ?? 'middle'
+  const disabled = disabledProp ?? componentDisabled ?? false
 
   const isControlled = controlledValue !== undefined
   const [internalValue, setInternalValue] = useState(defaultValue)
@@ -1207,8 +1216,8 @@ const OTPComponent = forwardRef<InputRef, OTPProps>(function OTPInner(props, ref
     defaultValue = '',
     onChange,
     length = 6,
-    disabled = false,
-    size = 'middle',
+    disabled: disabledProp,
+    size: sizeProp,
     variant = 'outlined',
     status,
     formatter,
@@ -1217,6 +1226,10 @@ const OTPComponent = forwardRef<InputRef, OTPProps>(function OTPInner(props, ref
     className,
     style,
   } = props
+
+  const { componentSize, componentDisabled } = useConfig()
+  const size = sizeProp ?? componentSize ?? 'middle'
+  const disabled = disabledProp ?? componentDisabled ?? false
 
   const isControlled = controlledValue !== undefined
   const [internalValue, setInternalValue] = useState(defaultValue)

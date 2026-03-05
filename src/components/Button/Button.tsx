@@ -2,6 +2,7 @@ import { type ButtonHTMLAttributes, type ReactNode, useRef } from 'react'
 import { tokens } from '../../theme/tokens'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
 import { mergeSemanticClassName, mergeSemanticStyle } from '../../utils/semanticDom'
+import { useConfig } from '../ConfigProvider'
 
 export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'dashed' | 'ghost' | 'link'
 export type ButtonSize = 'sm' | 'md' | 'lg'
@@ -133,9 +134,11 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children?: ReactNode
 }
 
+const CONFIG_SIZE_MAP = { small: 'sm', middle: 'md', large: 'lg' } as const
+
 export function Button({
   variant = 'primary',
-  size = 'md',
+  size: sizeProp,
   color = 'primary',
   loading = false,
   shadow = false,
@@ -148,7 +151,7 @@ export function Button({
   gradientAngle = 135,
   gradientCss,
   block = false,
-  disabled,
+  disabled: disabledProp,
   children,
   className,
   style,
@@ -159,6 +162,9 @@ export function Button({
   onClick,
   ...props
 }: ButtonProps) {
+  const { componentSize, componentDisabled } = useConfig()
+  const size: ButtonSize = sizeProp ?? (componentSize ? CONFIG_SIZE_MAP[componentSize] : undefined) ?? 'md'
+  const disabled = disabledProp ?? componentDisabled
   const buttonRef = useRef<HTMLButtonElement>(null)
   const isDisabled = disabled || loading
 

@@ -6,6 +6,8 @@ import {
 import { tokens } from '../../theme/tokens'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
 import { mergeSemanticStyle, mergeSemanticClassName } from '../../utils/semanticDom'
+import { useConfig } from '../ConfigProvider'
+import type { FormLocale } from '../ConfigProvider'
 
 // ============================================================================
 // Types
@@ -288,6 +290,7 @@ class FormStore {
   private rules: Map<string, FormRule[]> = new Map()
   private onValuesChange?: (changedValues: Record<string, any>, allValues: Record<string, any>) => void
   private onFieldsChange?: (changedFields: FieldData[], allFields: FieldData[]) => void
+  localeMessages?: Partial<FormLocale>
 
   // ---- Static path utilities ----
 
@@ -562,7 +565,7 @@ class FormStore {
             testValue === undefined || testValue === null || testValue === '' ||
             (Array.isArray(testValue) && testValue.length === 0)
           ) {
-            throw new Error(typeof rule.message === 'string' ? rule.message : `This field is required`)
+            throw new Error(typeof rule.message === 'string' ? rule.message : (this.localeMessages?.defaultRequiredMessage ?? 'This field is required'))
           }
         }
 
@@ -632,7 +635,7 @@ class FormStore {
 
         // pattern
         if (rule.pattern && !rule.pattern.test(String(testValue))) {
-          throw new Error(typeof rule.message === 'string' ? rule.message : 'Does not match the required pattern')
+          throw new Error(typeof rule.message === 'string' ? rule.message : (this.localeMessages?.defaultPatternMessage ?? 'Does not match the required pattern'))
         }
 
         // whitespace
@@ -877,7 +880,7 @@ function FormComponent({
   name,
   layout = 'horizontal',
   variant = 'outlined',
-  size = 'middle',
+  size: sizeProp,
   initialValues,
   onFinish,
   onFinishFailed,
@@ -889,7 +892,7 @@ function FormComponent({
   labelAlign = 'left',
   labelWrap = false,
   requiredMark = true,
-  disabled = false,
+  disabled: disabledProp,
   scrollToFirstError = false,
   children,
   className,
@@ -897,9 +900,16 @@ function FormComponent({
   classNames,
   styles,
 }: FormProps) {
+  const { componentSize, componentDisabled, locale } = useConfig()
+  const size = sizeProp ?? componentSize ?? 'middle'
+  const disabled = disabledProp ?? componentDisabled ?? false
+
   const [formInstance] = useForm(externalForm)
   const store = formInstance._getStore()
   const providerCtx = useContext(FormProviderContext)
+
+  // Sync locale messages to the store so validation uses current locale
+  store.localeMessages = locale.Form
 
   // Initialize values on first mount
   const mountedRef = useRef(false)
@@ -1124,7 +1134,7 @@ function FormItemComponent({
           fieldTouched ? 'success' : ''
   )
 
-  // Map to J-UI status prop
+  // Map to Ino-UI status prop
   const childStatus: 'error' | 'warning' | undefined =
     computedStatus === 'error' ? 'error' :
       computedStatus === 'warning' ? 'warning' :
