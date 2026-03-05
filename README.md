@@ -1,8 +1,8 @@
-# J-UI
+# Ino-UI
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-> **🇪🇸 [Leer en Español](./README.es.md)**
+> **🇪🇸 [Leer en Español](./LEAME.md)**
 
 A modern, lightweight React component library with built-in theming support.
 
@@ -16,11 +16,18 @@ A modern, lightweight React component library with built-in theming support.
   - [useTheme Hook](#usetheme-hook)
   - [Color System](#color-system)
   - [Theme Tokens](#theme-tokens)
+- [Utils](#utils)
+  - [DOM Utilities](#dom-utilities)
+  - [Object Utilities](#object-utilities)
+  - [Breakpoint Utilities](#breakpoint-utilities)
+  - [Hooks](#hooks-1)
 - [Components](#components)
+  - [Affix](#affix)
   - [Alert](#alert)
   - [AutoComplete](#autocomplete)
   - [Avatar](#avatar)
   - [Anchor](#anchor)
+  - [App](#app)
   - [Badge](#badge)
   - [Breadcrumb](#breadcrumb)
   - [Bubble](#bubble)
@@ -31,6 +38,7 @@ A modern, lightweight React component library with built-in theming support.
   - [Checkbox](#checkbox)
   - [ColorPicker](#colorpicker)
   - [Collapse](#collapse)
+  - [ConfigProvider](#configprovider)
   - [DataDisplay](#datadisplay)
   - [DatePicker](#datepicker)
   - [Divider](#divider)
@@ -94,13 +102,13 @@ A modern, lightweight React component library with built-in theming support.
 
 ```bash
 # npm
-npm install j-ui
+npm install inoui
 
 # yarn
-yarn add j-ui
+yarn add inoui
 
 # pnpm
-pnpm add j-ui
+pnpm add inoui
 ```
 
 ## Quick Start
@@ -108,13 +116,13 @@ pnpm add j-ui
 Wrap your application with `ThemeProvider` and start using components:
 
 ```tsx
-import { ThemeProvider, Button, Tooltip } from 'j-ui'
+import { ThemeProvider, Button, Tooltip } from 'inoui'
 
 function App() {
   return (
     <ThemeProvider>
       <Tooltip content="Click me!">
-        <Button>Hello J-UI</Button>
+        <Button>Hello Ino-UI</Button>
       </Tooltip>
     </ThemeProvider>
   )
@@ -125,7 +133,7 @@ function App() {
 
 ## Theme System
 
-J-UI includes a powerful theming system that automatically generates color palettes and handles light/dark mode switching.
+Ino-UI includes a powerful theming system that automatically generates color palettes and handles light/dark mode switching.
 
 ### ThemeProvider
 
@@ -197,7 +205,7 @@ const { mode, setMode, toggleMode } = useTheme()
 #### Example
 
 ```tsx
-import { useTheme, Button } from 'j-ui'
+import { useTheme, Button } from 'inoui'
 
 function ThemeToggle() {
   const { mode, toggleMode } = useTheme()
@@ -212,7 +220,7 @@ function ThemeToggle() {
 
 ### Color System
 
-J-UI automatically generates 10 shades (50-900) for each semantic color. These are available as CSS variables:
+Ino-UI automatically generates 10 shades (50-900) for each semantic color. These are available as CSS variables:
 
 ```css
 /* Base color */
@@ -258,12 +266,12 @@ These automatically adapt based on the current theme mode:
 
 ### Theme Tokens
 
-J-UI provides a `tokens` object with typed references to all CSS variables. This enables autocomplete in your IDE and type-safe styling in JavaScript/TypeScript.
+Ino-UI provides a `tokens` object with typed references to all CSS variables. This enables autocomplete in your IDE and type-safe styling in JavaScript/TypeScript.
 
 #### Import
 
 ```tsx
-import { tokens } from 'j-ui'
+import { tokens } from 'inoui'
 ```
 
 #### Usage
@@ -323,7 +331,7 @@ const StyledCard = styled.div`
 
 ## Semantic DOM Styling
 
-Most J-UI components expose `classNames` and `styles` props that allow you to style their internal parts (semantic slots) without needing to override CSS or inspect the DOM structure.
+Most Ino-UI components expose `classNames` and `styles` props that allow you to style their internal parts (semantic slots) without needing to override CSS or inspect the DOM structure.
 
 ### How it works
 
@@ -367,6 +375,7 @@ For `className`, the component-level `className` prop and `classNames.root` are 
 
 | Component | Slots |
 |-----------|-------|
+| Affix | `root`, `affix` |
 | AutoComplete | `root`, `input`, `dropdown`, `option` |
 | Anchor | `root`, `track`, `indicator`, `link` |
 | Badge | `root`, `indicator` |
@@ -397,7 +406,341 @@ For `className`, the component-level `className` prop and `classNames.root` are 
 
 ---
 
+## Utils
+
+Ino-UI exports a set of utility functions and hooks that can be used independently in your application.
+
+```tsx
+import {
+  getScrollBarSize, scrollTo, canUseDom,
+  omit, classNames,
+  BREAKPOINT_VALUES, BREAKPOINT_ORDER, getResponsiveValue,
+  useEvent, useMergedState, useWindowWidth, useBreakpoint,
+} from 'inoui'
+import type {
+  ScrollToOptions, ClassValue,
+  Breakpoint, ResponsiveValue,
+  UseMergedStateOptions,
+} from 'inoui'
+```
+
+---
+
+### DOM Utilities
+
+#### `getScrollBarSize(fresh?)`
+
+Returns the browser's native scrollbar width in pixels. The result is cached after the first call.
+
+```tsx
+import { getScrollBarSize } from 'inoui'
+
+const width = getScrollBarSize()      // e.g. 17 (cached)
+const fresh = getScrollBarSize(true)  // re-measures even if cached
+```
+
+Returns `0` in SSR / non-DOM environments.
+
+#### `scrollTo(top, options?)`
+
+Smoothly scrolls a container to a target vertical position using an easeInOutCubic easing curve.
+
+```tsx
+import { scrollTo } from 'inoui'
+import type { ScrollToOptions } from 'inoui'
+
+scrollTo(500)                        // scroll window to y=500
+scrollTo(0, {
+  container: myRef.current,         // scroll a custom element
+  duration: 600,                    // animation duration in ms (default: 450)
+  callback: () => console.log('done'),
+})
+```
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `container` | `HTMLElement \| Window` | `window` | Scroll target |
+| `duration` | `number` | `450` | Animation duration in ms |
+| `callback` | `() => void` | — | Called when animation completes |
+
+#### `canUseDom()`
+
+Returns `true` when running in a real browser environment (DOM is available). SSR-safe alternative to checking `typeof window !== 'undefined'`.
+
+```tsx
+import { canUseDom } from 'inoui'
+
+if (canUseDom()) {
+  // safe to access document, window, etc.
+}
+```
+
+---
+
+### Object Utilities
+
+#### `omit(obj, keys)`
+
+Returns a shallow copy of `obj` with the specified keys removed. Fully typed.
+
+```tsx
+import { omit } from 'inoui'
+
+const clean = omit(props, ['className', 'style'])
+// clean is typed as Omit<typeof props, 'className' | 'style'>
+```
+
+#### `classNames(...args)`
+
+Builds a class name string from any mix of strings, numbers, objects, and arrays — falsy values are automatically ignored.
+
+```tsx
+import { classNames } from 'inoui'
+import type { ClassValue } from 'inoui'
+
+classNames('foo', undefined, 'bar')           // 'foo bar'
+classNames({ active: true, disabled: false }) // 'active'
+classNames(['a', ['b', 'c']], 'z')            // 'a b c z'
+```
+
+---
+
+### Breakpoint Utilities
+
+These utilities implement a shared responsive breakpoint system used by [Avatar](#avatar), [DataDisplay](#datadisplay), [Grid](#grid), and [Waterfall](#waterfall).
+
+```tsx
+import { BREAKPOINT_VALUES, BREAKPOINT_ORDER, getResponsiveValue } from 'inoui'
+import type { Breakpoint, ResponsiveValue } from 'inoui'
+```
+
+#### `Breakpoint` type
+
+```typescript
+type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl'
+```
+
+#### `BREAKPOINT_VALUES`
+
+```typescript
+const BREAKPOINT_VALUES: Record<Breakpoint, number> = {
+  xs: 0,
+  sm: 576,
+  md: 768,
+  lg: 992,
+  xl: 1200,
+  xxl: 1600,
+}
+```
+
+#### `BREAKPOINT_ORDER`
+
+Breakpoints sorted from largest to smallest, used when resolving `ResponsiveValue`:
+
+```typescript
+const BREAKPOINT_ORDER: Breakpoint[] = ['xxl', 'xl', 'lg', 'md', 'sm', 'xs']
+```
+
+#### `ResponsiveValue<T>`
+
+A value that can either be a scalar or a per-breakpoint map:
+
+```typescript
+type ResponsiveValue<T> = T | Partial<Record<Breakpoint, T>>
+```
+
+#### `getResponsiveValue(value, windowWidth)`
+
+Resolves a `ResponsiveValue<T>` to a concrete value given the current window width. If `value` is a scalar it is returned as-is; if it is an object, the largest active breakpoint wins.
+
+```tsx
+import { getResponsiveValue } from 'inoui'
+
+getResponsiveValue(3, 1024)                        // 3
+getResponsiveValue({ xs: 1, md: 2, xl: 4 }, 1024) // 2  (lg ≥ md, xl not yet active)
+```
+
+---
+
+### Hooks
+
+#### `useEvent(fn)`
+
+Returns a stable function reference that always calls the latest version of `fn`. The returned reference never changes between renders, so it is safe to pass to memoized children without causing re-renders.
+
+```tsx
+import { useEvent } from 'inoui'
+
+const handleClick = useEvent((e: MouseEvent) => {
+  console.log(count) // always reads the latest `count`
+})
+```
+
+#### `useMergedState(defaultValue, options?)`
+
+Merges controlled and uncontrolled state into a single interface. Behaves like `useState` but also accepts an optional `value` / `onChange` pair for controlled use.
+
+```tsx
+import { useMergedState } from 'inoui'
+import type { UseMergedStateOptions } from 'inoui'
+
+// Uncontrolled
+const [value, setValue] = useMergedState('hello')
+
+// Controlled
+const [value, setValue] = useMergedState('hello', {
+  value: controlledValue,
+  onChange: (next, prev) => setControlledValue(next),
+  postState: (v) => v.trim(), // optional transform before returning
+})
+```
+
+| Option | Type | Description |
+|--------|------|-------------|
+| `value` | `T \| undefined` | External controlled value. When defined, the hook is in controlled mode. |
+| `onChange` | `(next: T, prev: T) => void` | Called on every state change (controlled and uncontrolled). |
+| `postState` | `(value: T) => T` | Optional transform applied before the value is returned. |
+
+#### `useWindowWidth()`
+
+Returns the current `window.innerWidth`, updating on every resize event. SSR-safe — returns `1200` on the server.
+
+```tsx
+import { useWindowWidth } from 'inoui'
+
+function MyComponent() {
+  const width = useWindowWidth()
+  return <p>Window is {width}px wide</p>
+}
+```
+
+#### `useBreakpoint()`
+
+Returns a map of active breakpoints based on the current window width.
+
+```tsx
+import { useBreakpoint } from 'inoui'
+
+function MyComponent() {
+  const screens = useBreakpoint()
+  // { xs: true, sm: true, md: true, lg: false, xl: false, xxl: false } at 800px
+  return <p>{screens.md ? 'Medium or larger' : 'Smaller than md'}</p>
+}
+```
+
+Returns `Record<Breakpoint, boolean>` where each key is `true` if the window width meets or exceeds that breakpoint's minimum width.
+
+---
+
 ## Components
+
+<details>
+<summary><strong>Affix</strong> - Stick an element to the viewport edge while scrolling</summary>
+
+### Affix
+
+`Affix` keeps its children pinned to the top or bottom of the viewport (or a custom scroll container) once the user scrolls past a defined threshold. A placeholder `div` of equal size replaces the content in the normal flow so the page layout does not jump when the element becomes fixed.
+
+```tsx
+import { Affix } from 'inoui'
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `offsetTop` | `number` | `0`* | Distance in px from the top of the container at which to pin the element. *Defaults to `0` when neither `offsetTop` nor `offsetBottom` is set |
+| `offsetBottom` | `number` | — | Distance in px from the bottom of the container at which to pin the element. `offsetTop` takes priority if both are set |
+| `target` | `() => HTMLElement \| Window` | `window` | Returns the scrollable container to observe. Defaults to `window` |
+| `onChange` | `(affixed: boolean) => void` | — | Called when the affixed state changes |
+| `children` | `ReactNode` | — | Content to affix |
+| `className` | `string` | — | CSS class on the root placeholder |
+| `style` | `CSSProperties` | — | Inline style on the root placeholder |
+| `classNames` | `AffixClassNames` | — | Semantic class names per slot |
+| `styles` | `AffixStyles` | — | Semantic inline styles per slot |
+
+#### Types
+
+```ts
+type AffixSemanticSlot = 'root' | 'affix'
+type AffixClassNames   = SemanticClassNames<AffixSemanticSlot>
+type AffixStyles       = SemanticStyles<AffixSemanticSlot>
+```
+
+#### Behaviour
+
+- **Two divs:** `root` is a normal-flow placeholder that holds the reserved height when affixed; `affix` is the inner element that switches to `position: fixed`.
+- **Affixed styles:** `position: fixed; top | bottom: <computed>; left: <measured>; width: <measured>; z-index: 10`.
+- **Scroll listeners:** passive listener on the target container + `window` resize. When `target` is a custom element, an additional passive `window` scroll listener keeps the affixed element tracking the container as it moves within the page.
+- **onChange:** fires with `true` on the first tick that triggers pinning, and `false` on the first tick that releases it.
+
+#### Examples
+
+**1. Stick to top of window**
+```tsx
+<Affix>
+  <Button>Fixed at top</Button>
+</Affix>
+```
+
+**2. Offset from top**
+```tsx
+<Affix offsetTop={64}>
+  <nav>Site navigation</nav>
+</Affix>
+```
+
+**3. Stick to bottom**
+```tsx
+<Affix offsetBottom={24}>
+  <div>Footer actions</div>
+</Affix>
+```
+
+**4. onChange callback**
+```tsx
+<Affix offsetTop={0} onChange={(affixed) => console.log('affixed:', affixed)}>
+  <Button>Track me</Button>
+</Affix>
+```
+
+**5. Custom scroll container**
+```tsx
+const containerRef = useRef<HTMLDivElement>(null)
+
+<div ref={containerRef} style={{ height: 400, overflowY: 'auto' }}>
+  <Affix offsetTop={8} target={() => containerRef.current!}>
+    <Button>Sticky inside scroll area</Button>
+  </Affix>
+  <div style={{ height: 1200 }}>Long content…</div>
+</div>
+```
+
+**6. Sticky toolbar**
+```tsx
+<Affix offsetTop={0}>
+  <div style={{ background: tokens.colorBg, padding: '0.5rem 1rem', borderBottom: `1px solid ${tokens.colorBorder}` }}>
+    <Button>Save</Button>
+    <Button variant="ghost">Cancel</Button>
+  </div>
+</Affix>
+```
+
+**7. Semantic styles**
+```tsx
+<Affix
+  offsetTop={0}
+  styles={{
+    affix: { boxShadow: '0 2px 8px rgba(0,0,0,0.15)', background: tokens.colorBg },
+  }}
+>
+  <nav>Navigation</nav>
+</Affix>
+```
+
+</details>
+
+---
 
 <details>
 <summary><strong>Alert</strong> - Feedback banner with type, icon, close, auto-dismiss, and error boundary</summary>
@@ -407,7 +750,7 @@ For `className`, the component-level `className` prop and `classNames.root` are 
 `Alert` is a feedback component that displays contextual messages to the user. It supports four severity types (`success`, `info`, `warning`, `error`) with automatic color theming (light/dark aware via `color-mix`), an optional icon, a close button with slide-out animation, a custom action slot, and a full-width `banner` mode. The compound `Alert.ErrorBoundary` wraps children and renders an error alert when a React error is caught.
 
 ```tsx
-import { Alert } from 'j-ui'
+import { Alert } from 'inoui'
 ```
 
 #### Props
@@ -557,7 +900,7 @@ When the alert is dismissed via the close button, the component:
 
 **13. Error boundary**
 ```tsx
-import { Alert } from 'j-ui'
+import { Alert } from 'inoui'
 
 function RiskyWidget() {
   // This might throw during render
@@ -587,7 +930,7 @@ function RiskyWidget() {
 **15. Multiple stacked alerts**
 ```tsx
 import { useState } from 'react'
-import { Alert, Button } from 'j-ui'
+import { Alert, Button } from 'inoui'
 
 function Notifications() {
   const [alerts, setAlerts] = useState([
@@ -628,7 +971,7 @@ An input component with auto-complete suggestions. Supports filtering, grouped o
 #### Import
 
 ```tsx
-import { AutoComplete } from 'j-ui'
+import { AutoComplete } from 'inoui'
 ```
 
 #### Props
@@ -870,7 +1213,7 @@ const [options, setOptions] = useState([])
 
 **Import:**
 ```tsx
-import { Avatar } from 'j-ui';
+import { Avatar } from 'inoui';
 ```
 
 #### Avatar Props
@@ -908,13 +1251,15 @@ import { Avatar } from 'j-ui';
 
 #### AvatarResponsiveSize Type
 
-```typescript
-type AvatarResponsiveSize = Partial<Record<AvatarBreakpoint, number>>;
-type AvatarBreakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
+`AvatarResponsiveSize` is an alias for `ResponsiveValue<number>` from the shared [Utils](#utils) breakpoint system:
 
-// Breakpoint values:
-// xs: 0px, sm: 576px, md: 768px, lg: 992px, xl: 1200px, xxl: 1600px
+```typescript
+// Equivalent to:
+type AvatarResponsiveSize = Partial<Record<Breakpoint, number>>
+// where Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl'
 ```
+
+See [Breakpoint Utilities](#breakpoint-utilities) for the full type definitions and breakpoint values.
 
 #### Size Configuration
 
@@ -939,7 +1284,7 @@ type AvatarBreakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
 
 **Basic usage with image:**
 ```tsx
-import { Avatar } from 'j-ui';
+import { Avatar } from 'inoui';
 
 <Avatar src="https://i.pravatar.cc/150?img=1" alt="User" />
 ```
@@ -1067,7 +1412,7 @@ A navigation component that renders a list of anchor links and highlights the cu
 #### Import
 
 ```tsx
-import { Anchor } from 'j-ui'
+import { Anchor } from 'inoui'
 ```
 
 #### Props
@@ -1187,6 +1532,141 @@ interface AnchorLinkItemProps {
 ---
 
 <details>
+<summary><strong>App</strong> - Root provider that wires Modal and PopAlert APIs into context</summary>
+
+### App
+
+`App` is a thin root-level provider that internally calls `useModal()` and `usePopAlert()`, mounts their `contextHolder` nodes, and exposes both APIs through React context. Any descendant component can call `App.useApp()` to access `modal` and `notification` without managing hooks or `contextHolder` placement itself.
+
+```tsx
+import { App } from 'inoui'
+```
+
+#### Setup
+
+```tsx
+// main.tsx (or your app entry point)
+import { App } from 'inoui'
+
+createRoot(document.getElementById('root')!).render(
+  <App>
+    <MyApp />
+  </App>
+)
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `notification` | `PopAlertHookConfig` | — | Configuration forwarded to the internal `usePopAlert()` call (placement, size, duration, maxCount, offset) |
+| `children` | `ReactNode` | — | Application content |
+| `className` | `string` | — | CSS class on the root `<div>` |
+| `style` | `CSSProperties` | — | Inline style on the root `<div>` |
+
+#### App.useApp()
+
+```ts
+const { modal, notification } = App.useApp()
+```
+
+Returns the `AppContextValue` from the nearest `<App>` ancestor. Throws if called outside an `<App>`.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `modal` | `ModalHookApi` | Programmatic modal API — same as the `modal` returned by `useModal()` |
+| `notification` | `PopAlertApi` | Toast notification API — same as the `api` returned by `usePopAlert()` |
+
+See [Modal](#modal) → `useModal hook` and [PopAlert](#popalert) → `PopAlertApi` for the full method reference.
+
+#### Context value types
+
+```ts
+interface AppContextValue {
+  modal:        ModalHookApi  // confirm, info, success, warning, error, destroyAll
+  notification: PopAlertApi   // open, success, error, info, warning, loading, destroy
+}
+```
+
+#### Examples
+
+**1. Basic setup**
+```tsx
+import { App } from 'inoui'
+
+createRoot(document.getElementById('root')!).render(
+  <App>
+    <MyApp />
+  </App>
+)
+```
+
+**2. With notification defaults**
+```tsx
+<App notification={{ placement: 'topRight', duration: 4, maxCount: 5 }}>
+  <MyApp />
+</App>
+```
+
+**3. Using App.useApp() in a child component**
+```tsx
+import { App, Button } from 'inoui'
+
+function DeleteButton({ id }: { id: number }) {
+  const { modal, notification } = App.useApp()
+
+  const handleClick = () => {
+    modal.confirm({
+      title: 'Delete this item?',
+      content: 'This action cannot be undone.',
+      onOk: async () => {
+        await deleteItem(id)
+        notification.success('Item deleted.')
+      },
+    })
+  }
+
+  return <Button variant="danger" onClick={handleClick}>Delete</Button>
+}
+```
+
+**4. Notifications from anywhere in the tree**
+```tsx
+function SaveButton() {
+  const { notification } = App.useApp()
+
+  return (
+    <Button onClick={async () => {
+      await save()
+      notification.success('Saved!')
+    }}>
+      Save
+    </Button>
+  )
+}
+```
+
+**5. Programmatic confirm dialog**
+```tsx
+function LogoutButton() {
+  const { modal } = App.useApp()
+
+  return (
+    <Button onClick={() => modal.confirm({
+      title: 'Log out?',
+      onOk: logout,
+    })}>
+      Log out
+    </Button>
+  )
+}
+```
+
+</details>
+
+---
+
+<details>
 <summary><strong>Badge</strong> - Numeric indicator and status dot</summary>
 
 ### Badge
@@ -1196,7 +1676,7 @@ A small numerical value or status indicator for UI elements. Wraps any content w
 #### Import
 
 ```tsx
-import { Badge } from 'j-ui'
+import { Badge } from 'inoui'
 ```
 
 #### Badge Props
@@ -1332,7 +1812,7 @@ A navigation component that displays the current location within a hierarchical 
 #### Import
 
 ```tsx
-import { Breadcrumb } from 'j-ui'
+import { Breadcrumb } from 'inoui'
 ```
 
 #### Props
@@ -1509,7 +1989,7 @@ A floating action button (FAB) component for quick actions, with support for bad
 #### Import
 
 ```tsx
-import { Bubble, BackToTopIcon, ChatIcon, BellIcon, CloseIcon } from 'j-ui'
+import { Bubble, BackToTopIcon, ChatIcon, BellIcon, CloseIcon } from 'inoui'
 ```
 
 #### Props
@@ -1546,7 +2026,7 @@ Also accepts all standard `<button>` HTML attributes.
 
 #### Built-in Icons
 
-J-UI provides utility icons for common FAB use cases:
+Ino-UI provides utility icons for common FAB use cases:
 
 | Icon | Description |
 |------|-------------|
@@ -1794,7 +2274,7 @@ A versatile button component with multiple variants, sizes, and states.
 #### Import
 
 ```tsx
-import { Button } from 'j-ui'
+import { Button } from 'inoui'
 ```
 
 #### Props
@@ -1957,7 +2437,7 @@ Also accepts all standard `<button>` HTML attributes.
 #### Import
 
 ```tsx
-import { Card } from 'j-ui'
+import { Card } from 'inoui'
 ```
 
 #### Props
@@ -2166,7 +2646,7 @@ interface CardStyles {
 **Card.Meta with avatar:**
 
 ```tsx
-import { Card, Avatar } from 'j-ui'
+import { Card, Avatar } from 'inoui'
 
 <Card>
   <Card.Meta
@@ -2245,7 +2725,7 @@ const [activeTab, setActiveTab] = useState('photos')
 
 **Import:**
 ```tsx
-import { Calendar } from 'j-ui';
+import { Calendar } from 'inoui';
 ```
 
 #### Props
@@ -2335,7 +2815,7 @@ Use `CalendarAdapterProvider` to set adapter for all calendars in a subtree.
 
 **Basic usage:**
 ```tsx
-import { Calendar } from 'j-ui';
+import { Calendar } from 'inoui';
 
 <Calendar
   onChange={(date) => console.log('Selected:', date)}
@@ -2482,8 +2962,8 @@ const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
 
 **With Day.js adapter:**
 ```tsx
-import { Calendar, CalendarAdapterProvider } from 'j-ui';
-import { DayJSAdapter } from 'j-ui/adapters';
+import { Calendar, CalendarAdapterProvider } from 'inoui';
+import { DayJSAdapter } from 'inoui/adapters';
 import dayjs from 'dayjs';
 
 const adapter = new DayJSAdapter();
@@ -2522,7 +3002,7 @@ const adapter = new DayJSAdapter();
 #### Import
 
 ```tsx
-import { Carousel } from 'j-ui'
+import { Carousel } from 'inoui'
 ```
 
 #### Props
@@ -2778,7 +3258,7 @@ A checkbox component for toggling boolean values with support for indeterminate 
 #### Import
 
 ```tsx
-import { Checkbox } from 'j-ui'
+import { Checkbox } from 'inoui'
 ```
 
 #### Checkbox Props
@@ -2953,7 +3433,7 @@ A full-featured color picker with saturation-brightness panel, hue and alpha sli
 #### Import
 
 ```tsx
-import { ColorPicker } from 'j-ui'
+import { ColorPicker } from 'inoui'
 ```
 
 #### Props
@@ -3143,7 +3623,7 @@ const [color, setColor] = useState('#ff6b6b')
 #### Import
 
 ```tsx
-import { Collapse } from 'j-ui'
+import { Collapse } from 'inoui'
 ```
 
 #### Props
@@ -3529,6 +4009,174 @@ const [activeKeys, setActiveKeys] = useState<string[]>(['1'])
 ---
 
 <details>
+<summary><strong>ConfigProvider</strong> - Global component size, disabled state, and locale</summary>
+
+### ConfigProvider
+
+`ConfigProvider` is a context provider that configures global defaults for all descendant Ino-UI components. It can be nested — each level inherits from its parent and only overrides the keys it supplies. `ConfigProvider.useConfig()` reads the nearest provider's value and never throws; outside any provider it returns the `en_US` defaults.
+
+```tsx
+import { ConfigProvider } from 'inoui'
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `componentSize` | `ConfigSize` | — | Sets the default `size` for all size-aware components (`'small'`, `'middle'`, `'large'`) |
+| `componentDisabled` | `boolean` | — | Globally disables all interactive components |
+| `locale` | `Locale` | `en_US` | Localization strings for built-in component text |
+| `children` | `ReactNode` | — | **Required.** Subtree to configure |
+
+#### ConfigProvider.useConfig()
+
+```ts
+const { componentSize, componentDisabled, locale } = ConfigProvider.useConfig()
+```
+
+Returns the resolved `ConfigContextValue` from the nearest `<ConfigProvider>`. Outside any provider returns the `en_US` defaults. Never throws.
+
+#### Types
+
+```ts
+type ConfigSize = 'small' | 'middle' | 'large'
+
+interface ConfigContextValue {
+  componentSize?:    ConfigSize
+  componentDisabled?: boolean
+  locale:            Locale
+}
+
+interface Locale {
+  locale:      string                      // BCP 47 code, e.g. 'en_US'
+  DatePicker?: Partial<DatePickerLocale>
+  Pagination?: Partial<PaginationLocale>
+  Form?:       Partial<FormLocale>
+}
+
+interface DatePickerLocale {
+  placeholder:               string  // 'Select date'
+  yearPlaceholder:           string  // 'Select year'
+  quarterPlaceholder:        string  // 'Select quarter'
+  monthPlaceholder:          string  // 'Select month'
+  weekPlaceholder:           string  // 'Select week'
+  dateTimePlaceholder:       string  // 'Select date and time'
+  rangeStartPlaceholder:     string  // 'Start date'
+  rangeEndPlaceholder:       string  // 'End date'
+  rangeStartTimePlaceholder: string  // 'Start date time'
+  rangeEndTimePlaceholder:   string  // 'End date time'
+  today:                     string  // 'Today'
+  now:                       string  // 'Now'
+  ok:                        string  // 'OK'
+}
+
+interface PaginationLocale {
+  itemsPerPage: string  // '/ page'  — suffix after page size, e.g. "10 / page"
+  jumpTo:       string  // 'Go to'   — prefix for quick-jumper input
+}
+
+interface FormLocale {
+  defaultRequiredMessage: string  // 'This field is required'
+  defaultPatternMessage:  string  // 'Does not match the required pattern'
+}
+```
+
+#### Built-in locales
+
+```ts
+import { en_US, es_ES } from 'inoui'
+```
+
+| Export | locale | Coverage |
+|--------|--------|----------|
+| `en_US` | `'en_US'` | DatePicker, Pagination, Form |
+| `es_ES` | `'es_ES'` | DatePicker, Pagination, Form |
+
+#### Affected components
+
+| Setting | Affected components |
+|---------|---------------------|
+| `componentSize` | All components that accept a `size` prop (Button, Input, Select, DatePicker, Pagination, Rate, Slider, …) |
+| `componentDisabled` | All interactive components (Button, Input, Select, Checkbox, Radio, Switch, DatePicker, …) |
+| `locale.DatePicker` | [DatePicker](#datepicker) — placeholders and button labels |
+| `locale.Pagination` | [Pagination](#pagination) — page-size suffix and jump-to prefix |
+| `locale.Form` | [Form](#form) — default required and pattern validation messages |
+
+#### Examples
+
+**1. Global locale**
+```tsx
+import { ConfigProvider, es_ES } from 'inoui'
+
+<ConfigProvider locale={es_ES}>
+  <App />
+</ConfigProvider>
+```
+
+**2. Global size**
+```tsx
+<ConfigProvider componentSize="small">
+  <App />
+</ConfigProvider>
+```
+
+**3. Global disabled state**
+```tsx
+<ConfigProvider componentDisabled>
+  <form>
+    <Input />
+    <Select options={[]} />
+    <Button>Submit</Button>
+  </form>
+</ConfigProvider>
+```
+
+**4. Nested providers — override in a sub-section**
+```tsx
+<ConfigProvider locale={en_US} componentSize="middle">
+  <App>
+    {/* Only this sub-tree uses small size */}
+    <ConfigProvider componentSize="small">
+      <CompactToolbar />
+    </ConfigProvider>
+  </App>
+</ConfigProvider>
+```
+
+**5. Custom locale (partial override)**
+```tsx
+import { en_US } from 'inoui'
+
+const myLocale = {
+  ...en_US,
+  Pagination: { itemsPerPage: 'rows', jumpTo: 'Jump to' },
+}
+
+<ConfigProvider locale={myLocale}>
+  <App />
+</ConfigProvider>
+```
+
+**6. Reading config in a custom component**
+```tsx
+import { ConfigProvider } from 'inoui'
+
+function MyField() {
+  const { componentSize, componentDisabled } = ConfigProvider.useConfig()
+  return (
+    <input
+      disabled={componentDisabled}
+      style={{ fontSize: componentSize === 'small' ? 12 : 14 }}
+    />
+  )
+}
+```
+
+</details>
+
+---
+
+<details>
 <summary><strong>DataDisplay</strong> - Structured data presentation table</summary>
 
 ### DataDisplay
@@ -3538,7 +4186,7 @@ const [activeKeys, setActiveKeys] = useState<string[]>(['1'])
 #### Import
 
 ```tsx
-import { DataDisplay } from 'j-ui'
+import { DataDisplay } from 'inoui'
 ```
 
 #### Props
@@ -3589,10 +4237,10 @@ interface DataDisplayItemProps {
 
 #### Responsive Breakpoints
 
-```tsx
-type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl'
+`DataDisplay` uses the shared `Breakpoint` type from [Utils](#utils). See [Breakpoint Utilities](#breakpoint-utilities) for the full type definitions.
 
-// Breakpoint values:
+```tsx
+// Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl'
 // xs: 0px, sm: 576px, md: 768px, lg: 992px, xl: 1200px, xxl: 1600px
 
 // Usage example:
@@ -3850,10 +4498,12 @@ interface DataDisplayStyles {
 
 A comprehensive date picker with calendar panel, multiple picker modes (date, week, month, quarter, year), time selection, range picking with dual panels, mask input, multiple date selection, presets, disabled dates/times, custom cell rendering, pluggable date adapter system, and auto-flip positioning. Includes `DatePicker.RangePicker` for selecting date ranges.
 
+> **Locale:** placeholder texts and button labels (`Today`, `Now`, `OK`) come from [`ConfigProvider`](#configprovider) `locale.DatePicker`. Wrap your app in `<ConfigProvider locale={es_ES}>` to localise them.
+
 #### Import
 
 ```tsx
-import { DatePicker } from 'j-ui'
+import { DatePicker } from 'inoui'
 ```
 
 #### DatePicker Props
@@ -4153,7 +4803,7 @@ const [range, setRange] = useState<[Date, Date] | null>(null)
 />
 
 // Pluggable adapter (e.g., dayjs, date-fns)
-import { DayjsAdapter } from 'j-ui/adapters/dayjs'
+import { DayjsAdapter } from 'inoui/adapters/dayjs'
 <DatePicker adapter={new DayjsAdapter()} />
 ```
 
@@ -4171,7 +4821,7 @@ A separator component for dividing content sections, with optional text and mult
 #### Import
 
 ```tsx
-import { Divider } from 'j-ui'
+import { Divider } from 'inoui'
 ```
 
 #### Props
@@ -4276,7 +4926,7 @@ import { Divider } from 'j-ui'
 `Drawer` is a slide-in panel that overlays the page from any edge. It renders into a portal on `document.body`, locks body scroll while open, and slides in/out with a 300 ms CSS transition. The panel supports a header with title and extra actions, a scrollable body with an optional loading skeleton, a footer slot, ESC key dismissal, mask click to close, two preset sizes, and a `destroyOnClose` option to unmount content when closed.
 
 ```tsx
-import { Drawer } from 'j-ui'
+import { Drawer } from 'inoui'
 ```
 
 #### Props
@@ -4330,7 +4980,7 @@ type DrawerStyles       = SemanticStyles<DrawerSemanticSlot>
 **1. Basic right drawer**
 ```tsx
 import { useState } from 'react'
-import { Drawer, Button } from 'j-ui'
+import { Drawer, Button } from 'inoui'
 
 function App() {
   const [open, setOpen] = useState(false)
@@ -4508,7 +5158,7 @@ const [loading, setLoading] = useState(true)
 **19. Full-featured example**
 ```tsx
 import { useState } from 'react'
-import { Drawer, Button } from 'j-ui'
+import { Drawer, Button } from 'inoui'
 
 function SettingsPanel() {
   const [open, setOpen]       = useState(false)
@@ -4569,7 +5219,7 @@ A contextual menu component triggered by hover, click, or right-click. Supports 
 #### Import
 
 ```tsx
-import { Dropdown } from 'j-ui'
+import { Dropdown } from 'inoui'
 ```
 
 #### Props
@@ -4892,7 +5542,7 @@ const [open, setOpen] = useState(false)
 #### Import
 
 ```tsx
-import { Empty } from 'j-ui'
+import { Empty } from 'inoui'
 ```
 
 #### Props
@@ -5067,10 +5717,12 @@ interface EmptyStyles {
 
 A comprehensive form component with field-level validation (required, type, min/max, pattern, custom async validators), three layouts (horizontal, vertical, inline), `FormInstance` API for programmatic control, `Form.Item` for automatic value binding and error display, `Form.List` for dynamic field arrays, `Form.ErrorList`, `Form.Provider` for cross-form communication, and hooks (`useForm`, `useWatch`, `useFormInstance`).
 
+> **Locale:** default validation messages ("This field is required", "Does not match the required pattern") come from [`ConfigProvider`](#configprovider) `locale.Form`. Override them globally with a custom locale or per-field via the `rules` prop.
+
 #### Import
 
 ```tsx
-import { Form } from 'j-ui'
+import { Form } from 'inoui'
 ```
 
 #### Form Props
@@ -5462,7 +6114,7 @@ A comprehensive input component with support for text input, text areas, search,
 #### Import
 
 ```tsx
-import { Input } from 'j-ui'
+import { Input } from 'inoui'
 ```
 
 #### Input Props
@@ -5709,7 +6361,7 @@ const inputRef = useRef<InputRef>(null)
 #### Import
 
 ```tsx
-import { Image } from 'j-ui'
+import { Image } from 'inoui'
 ```
 
 #### Props
@@ -6008,7 +6660,7 @@ A numeric input component with increment/decrement controls, keyboard navigation
 #### Import
 
 ```tsx
-import { InputNumber } from 'j-ui'
+import { InputNumber } from 'inoui'
 ```
 
 #### Props
@@ -6221,7 +6873,7 @@ A flexible box layout component for arranging elements with CSS Flexbox.
 #### Import
 
 ```tsx
-import { Flex } from 'j-ui'
+import { Flex } from 'inoui'
 ```
 
 #### Props
@@ -6340,9 +6992,9 @@ A responsive grid system based on 24 columns with Row and Col components.
 #### Import
 
 ```tsx
-import { Grid, Row, Col } from 'j-ui'
+import { Grid, Row, Col } from 'inoui'
 // or
-import { Grid } from 'j-ui'
+import { Grid } from 'inoui'
 // Use as Grid.Row and Grid.Col
 ```
 
@@ -6375,6 +7027,8 @@ import { Grid } from 'j-ui'
 | `xxl` | `number \| ColSpanProps` | — | ≥1600px |
 
 #### Breakpoints
+
+`Grid` uses the shared `Breakpoint` type from [Utils](#utils). See [Breakpoint Utilities](#breakpoint-utilities) for type definitions and importable constants.
 
 | Breakpoint | Min Width |
 |------------|-----------|
@@ -6481,11 +7135,11 @@ A complete page layout system with Header, Footer, Sider, and Content components
 #### Import
 
 ```tsx
-import { Layout } from 'j-ui'
+import { Layout } from 'inoui'
 // Use as Layout, Layout.Header, Layout.Sider, Layout.Content, Layout.Footer
 
 // Or import individually
-import { Layout, Header, Footer, Content, Sider } from 'j-ui'
+import { Layout, Header, Footer, Content, Sider } from 'inoui'
 ```
 
 #### Layout Props
@@ -6679,7 +7333,7 @@ function MyLayout() {
 Access sider context from child components:
 
 ```tsx
-import { useSider } from 'j-ui'
+import { useSider } from 'inoui'
 
 function MenuComponent() {
   const { siderCollapsed } = useSider()
@@ -6706,7 +7360,7 @@ A versatile navigation menu component supporting vertical, horizontal, and inlin
 #### Import
 
 ```tsx
-import { Menu } from 'j-ui'
+import { Menu } from 'inoui'
 ```
 
 #### Props
@@ -7031,7 +7685,7 @@ A textarea component with mention detection and autocomplete dropdown. Detects m
 #### Import
 
 ```tsx
-import { Mention } from 'j-ui'
+import { Mention } from 'inoui'
 ```
 
 #### Props
@@ -7276,7 +7930,7 @@ const [options, setOptions] = useState([])
 `Modal` is a dialog component that renders in a portal on `document.body`. It supports a header with title, a scrollable body, a flexible footer (default Cancel + OK buttons, custom `ReactNode`, render function, or `null` to hide), ESC key dismissal, mask click to close, optional mask blur, `centered` vertical alignment, async `onOk` with `confirmLoading` spinner, a body loading skeleton, `modalRender` for custom wrappers (e.g. draggable), and `destroyOnClose`. The `useModal()` hook provides programmatic confirm/info/success/warning/error dialogs with `destroy` and `update` control.
 
 ```tsx
-import { Modal, useModal } from 'j-ui'
+import { Modal, useModal } from 'inoui'
 ```
 
 #### Props
@@ -7353,6 +8007,8 @@ const [modal, contextHolder] = useModal()
 
 Place `contextHolder` in your JSX tree. Then call methods on `modal`:
 
+> **Tip:** If you use [`<App>`](#app) as your root provider you never need to call `useModal()` or place `contextHolder` manually — call `App.useApp()` instead to get the same `modal` API from context.
+
 | Method | Returns | Description |
 |--------|---------|-------------|
 | `modal.confirm(config)` | `ModalInstance` | Two-button confirm dialog |
@@ -7395,7 +8051,7 @@ Each method returns a `ModalInstance`:
 **1. Basic modal**
 ```tsx
 import { useState } from 'react'
-import { Modal, Button } from 'j-ui'
+import { Modal, Button } from 'inoui'
 
 function App() {
   const [open, setOpen] = useState(false)
@@ -7590,7 +8246,7 @@ import Draggable from 'react-draggable'
 
 **18. useModal — confirm dialog**
 ```tsx
-import { useModal, Button } from 'j-ui'
+import { useModal, Button } from 'inoui'
 
 function App() {
   const [modal, contextHolder] = useModal()
@@ -7646,7 +8302,7 @@ modal.destroyAll()
 **21. Full form modal**
 ```tsx
 import { useState } from 'react'
-import { Modal, Button } from 'j-ui'
+import { Modal, Button } from 'inoui'
 
 interface UserForm { name: string; email: string }
 
@@ -7705,7 +8361,7 @@ A cascading selection component for hierarchical data (e.g., province/city/distr
 #### Import
 
 ```tsx
-import { NestedSelect } from 'j-ui'
+import { NestedSelect } from 'inoui'
 ```
 
 #### Props
@@ -7999,10 +8655,12 @@ const [options, setOptions] = useState(initialOptions)
 
 A navigation component for splitting content across multiple pages. Supports controlled/uncontrolled state, page size selection, quick page jumper, simple mode, custom item rendering, and two sizes.
 
+> **Locale:** the page-size suffix (e.g. `"/ page"`) and jump-to prefix (e.g. `"Go to"`) come from [`ConfigProvider`](#configprovider) `locale.Pagination`.
+
 #### Import
 
 ```tsx
-import { Pagination } from 'j-ui'
+import { Pagination } from 'inoui'
 ```
 
 #### Props
@@ -8150,10 +8808,12 @@ const [page, setPage] = useState(1)
 `PopAlert` is a hook-based toast notification system. Call `usePopAlert()` to get an `api` object and a `contextHolder` node. Place `contextHolder` anywhere in your JSX to mount the portal, then call `api.success()`, `api.error()`, etc. from anywhere in the component tree. Notifications appear as floating pill cards at any of 8 screen positions, animate in/out, auto-dismiss after a configurable duration, pause on hover, support a shrinking progress bar, optional secondary description text, and allow update-in-place via a stable `key`.
 
 ```tsx
-import { usePopAlert } from 'j-ui'
+import { usePopAlert } from 'inoui'
 ```
 
 #### usePopAlert(config?)
+
+> **Tip:** If you use [`<App>`](#app) as your root provider you never need to call `usePopAlert()` or place `contextHolder` manually — call `App.useApp()` instead to get the same `notification` API from context.
 
 ```ts
 const [api, contextHolder] = usePopAlert(hookConfig?: PopAlertHookConfig)
@@ -8222,7 +8882,7 @@ type PopAlertStyles       = SemanticStyles<PopAlertSemanticSlot>
 
 **1. Basic usage**
 ```tsx
-import { usePopAlert } from 'j-ui'
+import { usePopAlert } from 'inoui'
 
 function App() {
   const [api, contextHolder] = usePopAlert()
@@ -8358,7 +9018,7 @@ api.open({
 **15. Full workflow example**
 ```tsx
 import { useState } from 'react'
-import { usePopAlert, Button } from 'j-ui'
+import { usePopAlert, Button } from 'inoui'
 
 export function UploadButton() {
   const [api, contextHolder] = usePopAlert({
@@ -8425,7 +9085,7 @@ function fakeUpload() {
 `PopConfirm` displays a lightweight confirmation popover next to a trigger element. It renders a warning icon, a required title, an optional description, and OK / Cancel action buttons. If `onConfirm` returns a Promise the OK button shows a loading spinner until the promise settles. Built on top of `Popover` — all placement, trigger, and delay options from `Popover` are available.
 
 ```tsx
-import { PopConfirm } from 'j-ui'
+import { PopConfirm } from 'inoui'
 ```
 
 #### Props
@@ -8479,7 +9139,7 @@ type PopoverTrigger   = 'hover' | 'click' | 'focus' | 'contextMenu'
 
 **1. Basic delete confirmation**
 ```tsx
-import { PopConfirm, Button } from 'j-ui'
+import { PopConfirm, Button } from 'inoui'
 
 <PopConfirm
   title="Delete this record?"
@@ -8605,7 +9265,7 @@ const [open, setOpen] = useState(false)
 #### Import
 
 ```tsx
-import { Popover } from 'j-ui'
+import { Popover } from 'inoui'
 ```
 
 #### Props
@@ -8869,7 +9529,7 @@ const [open, setOpen] = useState(false)
 `Progress` visualises completion as a line bar, a circular ring, or a dashboard (open-bottom arc). All three variants support gradient stroke colors, a secondary success segment, segmented (steps) mode, custom text formatting, and the full semantic-DOM slot system.
 
 ```tsx
-import { Progress } from 'j-ui'
+import { Progress } from 'inoui'
 ```
 
 #### Props
@@ -9082,7 +9742,7 @@ A component that generates QR codes from any text or URL. Supports canvas and SV
 #### Import
 
 ```tsx
-import { QRCode } from 'j-ui'
+import { QRCode } from 'inoui'
 ```
 
 #### Props
@@ -9289,7 +9949,7 @@ This example shows how to wire all four statuses together — useful for one-tim
 
 ```tsx
 import { useState, useEffect, useRef } from 'react'
-import { QRCode } from 'j-ui'
+import { QRCode } from 'inoui'
 
 const EXPIRY_SECONDS = 60          // QR valid for 60 s
 const LOADING_DURATION_MS = 1500   // Simulate server round-trip
@@ -9395,7 +10055,7 @@ A radio button component for single selection. Includes Radio.Group for managing
 #### Import
 
 ```tsx
-import { Radio } from 'j-ui'
+import { Radio } from 'inoui'
 ```
 
 #### Radio Props
@@ -9618,7 +10278,7 @@ A star rating component for collecting user feedback. Supports customizable star
 #### Import
 
 ```tsx
-import { Rate } from 'j-ui'
+import { Rate } from 'inoui'
 ```
 
 #### Props
@@ -9756,7 +10416,7 @@ const [value, setValue] = useState(4)
 `Result` displays a centred feedback screen for operation outcomes. It supports four semantic statuses (`success`, `error`, `warning`, `info`) with matching SVG icons, three HTTP-error statuses (`403`, `404`, `500`) with illustrated scenes, an optional title, subtitle, action area, and extra content panel.
 
 ```tsx
-import { Result } from 'j-ui'
+import { Result } from 'inoui'
 ```
 
 #### Props
@@ -9926,7 +10586,7 @@ A powerful dropdown select component supporting single selection, multiple selec
 #### Import
 
 ```tsx
-import { Select } from 'j-ui'
+import { Select } from 'inoui'
 ```
 
 #### Props
@@ -10222,7 +10882,7 @@ A versatile range slider component supporting single values, multi-handle ranges
 #### Import
 
 ```tsx
-import { Slider } from 'j-ui'
+import { Slider } from 'inoui'
 ```
 
 #### Props
@@ -10489,7 +11149,7 @@ A component for setting spacing between inline elements. Supports horizontal/ver
 #### Import
 
 ```tsx
-import { Space } from 'j-ui'
+import { Space } from 'inoui'
 ```
 
 #### Props
@@ -10636,7 +11296,7 @@ interface CompactItemContextValue {
 `Spinner` is a flexible loading indicator with seven animation variants, three sizes, optional tip text, delay support, progress mode, fullscreen overlay, and content-wrapping mode. It operates in three rendering modes depending on whether children and `fullscreen` are provided.
 
 ```tsx
-import { Spinner } from 'j-ui'
+import { Spinner } from 'inoui'
 ```
 
 #### Props
@@ -10786,7 +11446,7 @@ A component for creating resizable split panels. Supports horizontal/vertical or
 #### Import
 
 ```tsx
-import { Splitter } from 'j-ui'
+import { Splitter } from 'inoui'
 ```
 
 #### Props
@@ -10978,7 +11638,7 @@ A navigation component that guides users through a multi-step workflow. Supports
 #### Import
 
 ```tsx
-import { Steps } from 'j-ui'
+import { Steps } from 'inoui'
 ```
 
 #### Props
@@ -11226,7 +11886,7 @@ A display component for formatted numbers, metrics, and KPIs. Includes `Statisti
 #### Import
 
 ```tsx
-import { Statistic } from 'j-ui'
+import { Statistic } from 'inoui'
 ```
 
 #### Props — `Statistic`
@@ -11365,7 +12025,7 @@ type CountdownStyles       = SemanticStyles<CountdownSemanticSlot>
 **6. Icon prefix**
 
 ```tsx
-import { UserIcon } from 'j-ui/icons'
+import { UserIcon } from 'inoui/icons'
 
 <Statistic
   title="Active Users"
@@ -11531,7 +12191,7 @@ A toggle switch component for binary on/off states. Supports two sizes, loading 
 #### Import
 
 ```tsx
-import { Switch } from 'j-ui'
+import { Switch } from 'inoui'
 ```
 
 #### Props
@@ -11681,7 +12341,7 @@ A feature-rich data table supporting client-side and server-side scenarios. Incl
 #### Import
 
 ```tsx
-import { Table } from 'j-ui'
+import { Table } from 'inoui'
 ```
 
 #### Props — `TableProps<T>`
@@ -12259,7 +12919,7 @@ A tabbed navigation component for switching between content panels. Supports lin
 #### Import
 
 ```tsx
-import { Tabs } from 'j-ui'
+import { Tabs } from 'inoui'
 ```
 
 #### Props
@@ -12502,7 +13162,7 @@ A compact label component for categorization, status display, and filtering. Sup
 #### Import
 
 ```tsx
-import { Tag } from 'j-ui'
+import { Tag } from 'inoui'
 ```
 
 #### Props — `Tag`
@@ -12676,7 +13336,7 @@ Clicking × triggers `onClose`. Call `e.preventDefault()` to keep the tag visibl
 **9. With leading icon**
 
 ```tsx
-import { StarIcon } from 'j-ui/icons'
+import { StarIcon } from 'inoui/icons'
 
 <Tag icon={<StarIcon />} color="gold">
   Featured
@@ -12831,7 +13491,7 @@ A typography component for displaying text with various styles, formatting optio
 #### Import
 
 ```tsx
-import { Text } from 'j-ui'
+import { Text } from 'inoui'
 ```
 
 #### Props
@@ -12991,7 +13651,7 @@ A time selection component with digital columns or analog clock view. Supports 1
 #### Import
 
 ```tsx
-import { TimePicker } from 'j-ui'
+import { TimePicker } from 'inoui'
 ```
 
 #### TimePicker Props
@@ -13217,7 +13877,7 @@ A component for displaying a sequence of events in chronological order. Supports
 #### Import
 
 ```tsx
-import { Timeline } from 'j-ui'
+import { Timeline } from 'inoui'
 ```
 
 #### Props — `TimelineProps`
@@ -13347,7 +14007,7 @@ In three-column mode, `titleSpan` controls the label column width as a fraction 
 **5. Custom dot node**
 
 ```tsx
-import { ClockIcon, CheckIcon } from 'j-ui/icons'
+import { ClockIcon, CheckIcon } from 'inoui/icons'
 
 <Timeline
   items={[
@@ -13459,7 +14119,7 @@ Content appears on the left of the axis.
 **12. Pending with custom dot**
 
 ```tsx
-import { HourglassIcon } from 'j-ui/icons'
+import { HourglassIcon } from 'inoui/icons'
 
 <Timeline
   pending="Processing…"
@@ -13579,7 +14239,7 @@ A segmented control (also known as a segmented button or tab bar) that lets user
 #### Import
 
 ```tsx
-import { Toggle } from 'j-ui'
+import { Toggle } from 'inoui'
 ```
 
 #### Props
@@ -13694,7 +14354,7 @@ const [period, setPeriod] = useState<string>('Week')
 **5. With icons**
 
 ```tsx
-import { ListIcon, GridIcon, MapIcon } from 'j-ui/icons'
+import { ListIcon, GridIcon, MapIcon } from 'inoui/icons'
 
 <Toggle
   options={[
@@ -13834,7 +14494,7 @@ Omit `label` (and provide no fallback icon) to render icon-only buttons.
 
 ```tsx
 import { useState } from 'react'
-import { Toggle } from 'j-ui'
+import { Toggle } from 'inoui'
 
 type View = 'grid' | 'list' | 'map'
 
@@ -13877,7 +14537,7 @@ function ProductCatalog() {
 `Tour` is a guided walkthrough component that highlights UI elements one by one using an SVG spotlight mask. It is ideal for onboarding flows, feature discovery, and interactive product demos. The popup card follows the highlighted element with 13 placement options, supports two visual themes, and offers full control over step navigation, indicators, and action buttons.
 
 ```tsx
-import { Tour } from 'j-ui'
+import { Tour } from 'inoui'
 ```
 
 #### Props
@@ -13957,7 +14617,7 @@ type TourStyles     = SemanticStyles<TourSemanticSlot>
 **1. Basic guided tour**
 ```tsx
 import { useRef, useState } from 'react'
-import { Tour } from 'j-ui'
+import { Tour } from 'inoui'
 
 function App() {
   const btnRef  = useRef<HTMLButtonElement>(null)
@@ -14167,7 +14827,7 @@ const [current, setCurrent] = useState(0)
 **15. Full onboarding walkthrough**
 ```tsx
 import { useRef, useState } from 'react'
-import { Tour, Button } from 'j-ui'
+import { Tour, Button } from 'inoui'
 
 export function OnboardingTour() {
   const navRef     = useRef<HTMLElement>(null)
@@ -14247,7 +14907,7 @@ export function OnboardingTour() {
 
 **Import:**
 ```tsx
-import { Transfer } from 'j-ui';
+import { Transfer } from 'inoui';
 ```
 
 #### Props
@@ -14318,7 +14978,7 @@ type TransferDirection = 'left' | 'right';
 
 **Basic usage:**
 ```tsx
-import { Transfer } from 'j-ui';
+import { Transfer } from 'inoui';
 
 const [targetKeys, setTargetKeys] = useState<string[]>([]);
 
@@ -14472,7 +15132,7 @@ const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
 `Tree` is a hierarchical tree component for displaying and interacting with nested data. It supports node selection, checkbox checking with cascade propagation, expand/collapse with animations, `showLine` guides, custom icons, async data loading, drag-and-drop reordering, virtual scrolling for large datasets, and full keyboard navigation. The compound `Tree.DirectoryTree` variant is preconfigured with folder/file icons and click-to-expand behavior.
 
 ```tsx
-import { Tree } from 'j-ui'
+import { Tree } from 'inoui'
 ```
 
 #### Props
@@ -14596,7 +15256,7 @@ type TreeStyles       = SemanticStyles<TreeSemanticSlot>
 
 **1. Basic tree**
 ```tsx
-import { Tree } from 'j-ui'
+import { Tree } from 'inoui'
 
 const data = [
   {
@@ -14804,7 +15464,7 @@ const data = [
 
 **15. Directory tree**
 ```tsx
-import { Tree } from 'j-ui'
+import { Tree } from 'inoui'
 
 const files = [
   {
@@ -14875,7 +15535,7 @@ const [checked, setChecked] = useState<string[]>([])
 
 **Import:**
 ```tsx
-import { TreeSelect } from 'j-ui';
+import { TreeSelect } from 'inoui';
 ```
 
 #### Props
@@ -15001,7 +15661,7 @@ interface TreeSelectTagRenderProps {
 
 **Basic usage:**
 ```tsx
-import { TreeSelect } from 'j-ui';
+import { TreeSelect } from 'inoui';
 
 const treeData = [
   {
@@ -15212,7 +15872,7 @@ const dataWithDisabled = [
 
 **Import:**
 ```tsx
-import { Upload } from 'j-ui';
+import { Upload } from 'inoui';
 ```
 
 #### Props
@@ -15325,7 +15985,7 @@ interface UploadRef {
 
 **Basic usage:**
 ```tsx
-import { Upload, Button } from 'j-ui';
+import { Upload, Button } from 'inoui';
 
 <Upload
   action="/api/upload"
@@ -15578,7 +16238,7 @@ A masonry-style layout component that distributes items into columns based on av
 #### Import
 
 ```tsx
-import { Waterfall } from 'j-ui'
+import { Waterfall } from 'inoui'
 ```
 
 #### Props
@@ -15616,6 +16276,8 @@ interface WaterfallItemRenderInfo<T> extends WaterfallItem<T> {
 ```
 
 #### Breakpoints
+
+`Waterfall` uses the shared `Breakpoint` type from [Utils](#utils). See [Breakpoint Utilities](#breakpoint-utilities) for type definitions and importable constants.
 
 | Breakpoint | Min Width |
 |------------|-----------|
@@ -15773,7 +16435,7 @@ The waterfall layout uses a "shortest column first" algorithm:
 `Watermark` renders a repeating, non-interactive overlay on top of its children. The watermark tile is generated on an offscreen `<canvas>` (DPR-aware) and applied as a CSS `background-image` repeat pattern. Supports text (single or multi-line) and image sources, rotation, tile spacing, and font customisation.
 
 ```tsx
-import { Watermark } from 'j-ui'
+import { Watermark } from 'inoui'
 ```
 
 #### Props
@@ -15934,7 +16596,7 @@ A lightweight tooltip component for displaying additional information on hover o
 #### Import
 
 ```tsx
-import { Tooltip } from 'j-ui'
+import { Tooltip } from 'inoui'
 ```
 
 #### Props

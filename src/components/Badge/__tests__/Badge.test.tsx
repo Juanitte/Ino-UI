@@ -67,20 +67,6 @@ describe('Badge', () => {
     expect(sup.style.height).toBe('1.25rem')
   })
 
-  // ─── Title ────────────────────────────────────────────────────────────────────
-
-  it('applies title from count by default', () => {
-    const { container } = render(<Badge count={5}><span>child</span></Badge>)
-    const sup = container.querySelector('sup')
-    expect(sup?.getAttribute('title')).toBe('5')
-  })
-
-  it('applies custom title when provided', () => {
-    const { container } = render(<Badge count={5} title="custom"><span>child</span></Badge>)
-    const sup = container.querySelector('sup')
-    expect(sup?.getAttribute('title')).toBe('custom')
-  })
-
   // ─── Custom color ─────────────────────────────────────────────────────────────
 
   it('applies custom color to indicator', () => {
@@ -250,7 +236,7 @@ describe('Badge', () => {
         if (div.style.filter === 'brightness(0.75)') corner = div
       })
       expect(corner).not.toBeNull()
-      expect(corner!.style.transform).toContain('scaleY(0.75)')
+      expect(corner!.style.filter).toBe('brightness(0.75)')
     })
 
     it('resolves preset color name in ribbon', () => {

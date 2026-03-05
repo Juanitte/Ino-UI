@@ -203,7 +203,7 @@ function CheckboxComponent({
     }
   }
 
-  // Hover handlers — direct DOM style manipulation (J-UI pattern)
+  // Hover handlers — direct DOM style manipulation (Ino-UI pattern)
   // When custom colors are set via styles.checkbox, use filter instead of overriding colors
   const hasCustomColors = !!(styles?.checkbox && (
     'backgroundColor' in styles.checkbox ||

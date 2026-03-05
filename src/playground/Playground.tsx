@@ -65,6 +65,10 @@ import { PlaceholderSection } from './sections/PlaceholderSection'
 import { ProgressSection } from './sections/ProgressSection'
 import { ResultSection } from './sections/ResultSection'
 import { WatermarkSection } from './sections/WatermarkSection'
+import { AffixSection } from './sections/AffixSection'
+import { AppSection } from './sections/AppSection'
+import { ConfigProviderSection } from './sections/ConfigProviderSection'
+import { UtilsSection } from './sections/UtilsSection'
 import { ThemeSection } from './sections/ThemeSection'
 
 export function Playground() {
@@ -103,7 +107,7 @@ function PlaygroundContent() {
   const sidebarContent = (
     <>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <Text size="lg" weight="semibold">J-UI</Text>
+        <Text size="lg" weight="semibold">Ino-UI</Text>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <button
             onClick={toggleMode}
@@ -204,6 +208,26 @@ function PlaygroundContent() {
               label="Splitter"
               active={activeSection === 'splitter'}
               onClick={() => handleNavClick('splitter')}
+            />
+            <NavItem
+              label="App"
+              active={activeSection === 'app'}
+              onClick={() => handleNavClick('app')}
+            />
+            <NavItem
+              label="Affix"
+              active={activeSection === 'affix'}
+              onClick={() => handleNavClick('affix')}
+            />
+            <NavItem
+              label="ConfigProvider"
+              active={activeSection === 'config-provider'}
+              onClick={() => handleNavClick('config-provider')}
+            />
+            <NavItem
+              label="Utils"
+              active={activeSection === 'utils'}
+              onClick={() => handleNavClick('utils')}
             />
             <NavItem
               label="Anchor"
@@ -513,7 +537,7 @@ function PlaygroundContent() {
           >
             ☰
           </button>
-          <Text size="md" weight="semibold">J-UI</Text>
+          <Text size="md" weight="semibold">Ino-UI</Text>
         </div>
       )}
 
@@ -568,6 +592,10 @@ function PlaygroundContent() {
         {activeSection === 'layout' && <LayoutSection />}
         {activeSection === 'space' && <SpaceSection />}
         {activeSection === 'splitter' && <SplitterSection />}
+        {activeSection === 'app' && <AppSection />}
+        {activeSection === 'affix' && <AffixSection />}
+        {activeSection === 'config-provider' && <ConfigProviderSection />}
+        {activeSection === 'utils' && <UtilsSection />}
         {activeSection === 'anchor' && <AnchorSection />}
         {activeSection === 'breadcrumb' && <BreadcrumbSection />}
         {activeSection === 'dropdown' && <DropdownSection />}

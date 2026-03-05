@@ -167,7 +167,7 @@ function RadioComponent({
     }
   }
 
-  // Hover handlers — ref-based DOM manipulation (J-UI pattern)
+  // Hover handlers — ref-based DOM manipulation (Ino-UI pattern)
   const hasCustomColors = !!(styles?.radio && (
     'backgroundColor' in styles.radio ||
     'borderColor' in styles.radio ||

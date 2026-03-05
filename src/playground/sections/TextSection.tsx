@@ -88,7 +88,7 @@ export function TextSection() {
       </Section>
 
       <Section title="Code">
-        <Text>Usa el comando <Text code>npm install j-ui</Text> para instalar.</Text>
+        <Text>Usa el comando <Text code>npm install inoui</Text> para instalar.</Text>
       </Section>
 
       <Section title="Keyboard">
@@ -105,7 +105,7 @@ export function TextSection() {
         <Text copyable={{ text: 'Texto personalizado para copiar' }}>
           Copia un texto diferente al visible
         </Text>
-        <Text code copyable>npm install j-ui</Text>
+        <Text code copyable>npm install inoui</Text>
       </Section>
 
       <Section title="Combinaciones">

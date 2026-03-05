@@ -334,13 +334,14 @@ describe('NestedSelect', () => {
   it('renders outlined variant by default', () => {
     render(<NestedSelect options={options} />)
     const selector = screen.getByRole('combobox')
-    expect(selector.style.border).toContain('1px solid')
+    // Outlined has a non-transparent border (filled/borderless use transparent)
+    expect(selector.style.borderColor).not.toBe('transparent')
   })
 
   it('renders filled variant', () => {
     render(<NestedSelect options={options} variant="filled" />)
     const selector = screen.getByRole('combobox')
-    expect(selector.style.border).toBe('1px solid transparent')
+    expect(selector.style.borderColor).toBe('transparent')
   })
 
   it('renders borderless variant', () => {

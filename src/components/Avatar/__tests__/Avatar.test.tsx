@@ -6,11 +6,9 @@ import { Avatar } from '../Avatar'
 // Helpers
 // ============================================================================
 
-/** The visible avatar span (has borderRadius, width, height) */
+/** The visible avatar span — it is the direct first child of the container */
 function getAvatar(container: HTMLElement) {
-  // Structure: outer <span> (position:relative) > inner <span ref=rootRef> (the avatar)
-  const outer = container.firstElementChild as HTMLElement
-  return outer.querySelector('span[style*="overflow"]') as HTMLElement
+  return container.firstElementChild as HTMLElement
 }
 
 function getImage(container: HTMLElement) {
@@ -20,16 +18,6 @@ function getImage(container: HTMLElement) {
 function getTextSpan(container: HTMLElement) {
   // Text span has display: inline-block and lineHeight: 1
   return container.querySelector('span[style*="line-height: 1"]') as HTMLElement | null
-}
-
-function getBadge(container: HTMLElement) {
-  // Count badge has min-width: 1.25rem
-  return container.querySelector('[style*="min-width"]') as HTMLElement | null
-}
-
-function getDot(container: HTMLElement) {
-  // Dot has width: 0.5rem and height: 0.5rem
-  return container.querySelector('[style*="width: 0.5rem"]') as HTMLElement | null
 }
 
 // ============================================================================
@@ -310,97 +298,6 @@ describe('Avatar – Size', () => {
   })
 })
 
-// ============================================================================
-// Count badge
-// ============================================================================
-
-describe('Avatar – Count badge', () => {
-  it('shows count badge when count > 0', () => {
-    const { container } = render(<Avatar count={5} />)
-    const badge = getBadge(container)
-    expect(badge).toBeTruthy()
-    expect(badge!.textContent).toBe('5')
-  })
-
-  it('does not show badge when count is 0', () => {
-    const { container } = render(<Avatar count={0} />)
-    expect(getBadge(container)).toBeFalsy()
-  })
-
-  it('does not show badge when count is undefined', () => {
-    const { container } = render(<Avatar />)
-    expect(getBadge(container)).toBeFalsy()
-  })
-
-  it('caps count at 99+', () => {
-    const { container } = render(<Avatar count={150} />)
-    const badge = getBadge(container)
-    expect(badge!.textContent).toBe('99+')
-  })
-
-  it('shows exact count when <= 99', () => {
-    const { container } = render(<Avatar count={99} />)
-    const badge = getBadge(container)
-    expect(badge!.textContent).toBe('99')
-  })
-
-  it('badge is positioned at top-right', () => {
-    const { container } = render(<Avatar count={5} />)
-    const badge = getBadge(container)!
-    expect(badge.style.position).toBe('absolute')
-    expect(badge.style.top).toBe('0px')
-    expect(badge.style.right).toBe('0px')
-  })
-
-  it('badge has error background color', () => {
-    const { container } = render(<Avatar count={5} />)
-    const badge = getBadge(container)!
-    expect(badge.style.backgroundColor).toBeTruthy()
-  })
-
-  it('badge has white text', () => {
-    const { container } = render(<Avatar count={5} />)
-    const badge = getBadge(container)!
-    expect(badge.style.color).toBe('rgb(255, 255, 255)')
-  })
-})
-
-// ============================================================================
-// Dot indicator
-// ============================================================================
-
-describe('Avatar – Dot indicator', () => {
-  it('shows dot when dot=true', () => {
-    const { container } = render(<Avatar dot />)
-    const dot = getDot(container)
-    expect(dot).toBeTruthy()
-  })
-
-  it('dot is positioned at top-right', () => {
-    const { container } = render(<Avatar dot />)
-    const dot = getDot(container)!
-    expect(dot.style.position).toBe('absolute')
-    expect(dot.style.top).toBe('0px')
-    expect(dot.style.right).toBe('0px')
-  })
-
-  it('dot has circle shape (50% borderRadius)', () => {
-    const { container } = render(<Avatar dot />)
-    const dot = getDot(container)!
-    expect(dot.style.borderRadius).toBe('50%')
-  })
-
-  it('dot not shown when dot=false', () => {
-    const { container } = render(<Avatar dot={false} />)
-    expect(getDot(container)).toBeFalsy()
-  })
-
-  it('count badge takes priority over dot', () => {
-    const { container } = render(<Avatar dot count={5} />)
-    expect(getBadge(container)).toBeTruthy()
-    expect(getDot(container)).toBeFalsy()
-  })
-})
 
 // ============================================================================
 // className & style

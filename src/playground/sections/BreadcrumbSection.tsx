@@ -123,7 +123,7 @@ export function BreadcrumbSection() {
       <Section title="Con itemRender personalizado">
         <Breadcrumb
           items={[
-            { title: 'J-UI', path: '' },
+            { title: 'Ino-UI', path: '' },
             { title: 'Componentes', path: 'components' },
             { title: 'Navegación', path: 'navigation' },
             { title: 'Breadcrumb', path: 'breadcrumb' },

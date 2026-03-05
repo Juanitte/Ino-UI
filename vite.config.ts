@@ -13,18 +13,19 @@ export default defineConfig(() => {
       plugins: [
         react(),
         dts({
+          tsconfigPath: './tsconfig.lib.json',
           include: ['src'],
-          exclude: ['src/playground', 'src/main.tsx'],
+          exclude: ['src/playground/**', 'src/main.tsx'],
           outDir: 'dist',
-          insertTypesEntry: true,
+          rollupTypes: true,
         }),
       ],
       build: {
         lib: {
           entry: resolve(__dirname, 'src/index.ts'),
-          name: 'JUI',
+          name: 'InoUI',
           formats: ['es', 'cjs'],
-          fileName: (format) => `j-ui.${format === 'es' ? 'mjs' : 'cjs'}`,
+          fileName: (format) => `ino-ui.${format === 'es' ? 'mjs' : 'cjs'}`,
         },
         rollupOptions: {
           external: ['react', 'react-dom', 'react/jsx-runtime'],

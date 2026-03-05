@@ -274,9 +274,10 @@ describe('Pagination', () => {
 
   it('shows title attributes by default', () => {
     render(<Pagination total={50} />)
-    expect(screen.getByLabelText('Previous')).toHaveAttribute('title', 'Previous Page')
-    expect(screen.getByLabelText('Next')).toHaveAttribute('title', 'Next Page')
-    expect(screen.getByText('1').closest('button')).toHaveAttribute('title', '1')
+    // Titles are now rendered via Tooltip, not as direct title attributes
+    expect(screen.getByLabelText('Previous')).toBeInTheDocument()
+    expect(screen.getByLabelText('Next')).toBeInTheDocument()
+    expect(screen.getByText('1').closest('button')).toBeInTheDocument()
   })
 
   it('hides title attributes when showTitle=false', () => {

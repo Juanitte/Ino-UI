@@ -22,23 +22,31 @@ function getInput(container: HTMLElement): HTMLInputElement {
 }
 
 function getItems(container: HTMLElement): HTMLElement[] {
-  // Items have title attribute matching the file name (text/picture layouts)
-  // For card layouts, items are divs with a specific size
-  return Array.from(container.querySelectorAll('[title="Remove"]')).map(
+  // Each item contains a remove button (CloseIcon: path with d="M18 6 6 18")
+  return getRemoveButtons(container).map(
     (btn) => btn.closest('div') as HTMLElement,
   )
 }
 
 function getRemoveButtons(container: HTMLElement): HTMLElement[] {
-  return Array.from(container.querySelectorAll('[title="Remove"]')) as HTMLElement[]
+  // Remove button wraps CloseIcon which has path d="M18 6 6 18"
+  return Array.from(container.querySelectorAll('button[type="button"]')).filter(
+    (btn) => btn.querySelector('path[d="M18 6 6 18"]') !== null,
+  ) as HTMLElement[]
 }
 
 function getPreviewButtons(container: HTMLElement): HTMLElement[] {
-  return Array.from(container.querySelectorAll('[title="Preview"]')) as HTMLElement[]
+  // Preview button wraps EyeIcon which has a <circle> element
+  return Array.from(container.querySelectorAll('button[type="button"]')).filter(
+    (btn) => btn.querySelector('circle') !== null,
+  ) as HTMLElement[]
 }
 
 function getDownloadButtons(container: HTMLElement): HTMLElement[] {
-  return Array.from(container.querySelectorAll('[title="Download"]')) as HTMLElement[]
+  // Download button wraps DownloadIcon which has a <polyline> element
+  return Array.from(container.querySelectorAll('button[type="button"]')).filter(
+    (btn) => btn.querySelector('polyline') !== null,
+  ) as HTMLElement[]
 }
 
 const doneFile: UploadFile = { uid: '1', name: 'file1.txt', status: 'done' }
@@ -275,15 +283,14 @@ describe('Upload – Controlled fileList', () => {
 
     expect(onChange).toHaveBeenCalled()
     // Since controlled, fileList stays the same until parent updates it
-    const listAfter = container.querySelectorAll('[title="Remove"]')
-    expect(listAfter.length).toBe(1) // Still only doneFile
+    expect(getRemoveButtons(container).length).toBe(1) // Still only doneFile
 
     // Parent updates fileList with onChange data
     const newList = onChange.mock.calls[0][0].fileList
     rerender(
       <Upload fileList={newList} onChange={onChange} customRequest={customRequest}>Upload</Upload>,
     )
-    expect(container.querySelectorAll('[title="Remove"]').length).toBe(2)
+    expect(getRemoveButtons(container).length).toBe(2)
   })
 })
 
@@ -988,7 +995,7 @@ describe('Upload – onPreview & onDownload', () => {
       <Upload defaultFileList={[doneFile]} onPreview={onPreview}>Upload</Upload>,
     )
     // In text mode, clicking the name span triggers preview
-    const nameSpan = container.querySelector('[title="file1.txt"]') as HTMLElement
+    const nameSpan = screen.getByText('file1.txt') as HTMLElement
     expect(nameSpan).toBeTruthy()
 
     await act(async () => {

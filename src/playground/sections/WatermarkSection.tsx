@@ -26,7 +26,7 @@ function Card({ children, height = 300 }: { children?: React.ReactNode; height?:
 function BasicDemo() {
   return (
     <div style={{ width: '100%', maxWidth: 500 }}>
-      <Watermark content="J-UI">
+      <Watermark content="Ino-UI">
         <Card>
           <div>
             <Text weight="bold" style={{ display: 'block', marginBottom: '0.5rem' }}>Basic Text Watermark</Text>
@@ -72,7 +72,7 @@ function CustomFontDemo() {
       <div style={{ flex: '1 1 220px' }}>
         <Text type="secondary" size="sm" style={{ display: 'block', marginBottom: '0.5rem' }}>Italic + Blue</Text>
         <Watermark
-          content="J-UI Library"
+          content="Ino-UI Library"
           font={{ fontStyle: 'italic', color: 'rgba(99,102,241,0.4)', fontSize: 14 }}
         >
           <Card height={300} />
@@ -99,7 +99,7 @@ function RotationDemo() {
       {([-45, -22, 0, 22] as const).map((deg) => (
         <div key={deg} style={{ flex: '1 1 140px' }}>
           <Text type="secondary" size="sm" style={{ display: 'block', marginBottom: '0.5rem' }}>{deg}°</Text>
-          <Watermark content="J-UI" rotate={deg}>
+          <Watermark content="Ino-UI" rotate={deg}>
             <Card height={300} />
           </Watermark>
         </div>
@@ -115,19 +115,19 @@ function GapDemo() {
     <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
       <div style={{ flex: '1 1 220px' }}>
         <Text type="secondary" size="sm" style={{ display: 'block', marginBottom: '0.5rem' }}>Tight gap [40, 40]</Text>
-        <Watermark content="J-UI" gap={[40, 40]}>
+        <Watermark content="Ino-UI" gap={[40, 40]}>
           <Card height={300} />
         </Watermark>
       </div>
       <div style={{ flex: '1 1 220px' }}>
         <Text type="secondary" size="sm" style={{ display: 'block', marginBottom: '0.5rem' }}>Default gap [100, 100]</Text>
-        <Watermark content="J-UI">
+        <Watermark content="Ino-UI">
           <Card height={300} />
         </Watermark>
       </div>
       <div style={{ flex: '1 1 220px' }}>
         <Text type="secondary" size="sm" style={{ display: 'block', marginBottom: '0.5rem' }}>Wide gap [200, 160]</Text>
-        <Watermark content="J-UI" gap={[200, 160]}>
+        <Watermark content="Ino-UI" gap={[200, 160]}>
           <Card height={300} />
         </Watermark>
       </div>

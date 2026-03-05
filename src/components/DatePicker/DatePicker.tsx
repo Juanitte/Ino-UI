@@ -7,6 +7,8 @@ import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom
 import { mergeSemanticClassName, mergeSemanticStyle } from '../../utils/semanticDom'
 import type { DateAdapter } from './adapters/types'
 import { NativeDateAdapter } from './adapters/native'
+import { useConfig } from '../ConfigProvider'
+import type { DatePickerLocale } from '../ConfigProvider'
 
 // ============================================================================
 // Types
@@ -284,13 +286,13 @@ function getDefaultFormat(picker: DatePickerMode, showTime?: boolean | TimePicke
   return 'YYYY-MM-DD'
 }
 
-function getDefaultPlaceholder(picker: DatePickerMode, showTime?: boolean | TimePickerConfig): string {
-  if (picker === 'year') return 'Select year'
-  if (picker === 'quarter') return 'Select quarter'
-  if (picker === 'month') return 'Select month'
-  if (picker === 'week') return 'Select week'
-  if (showTime) return 'Select date and time'
-  return 'Select date'
+function getDefaultPlaceholder(picker: DatePickerMode, showTime?: boolean | TimePickerConfig, locale?: Partial<DatePickerLocale>): string {
+  if (picker === 'year') return locale?.yearPlaceholder ?? 'Select year'
+  if (picker === 'quarter') return locale?.quarterPlaceholder ?? 'Select quarter'
+  if (picker === 'month') return locale?.monthPlaceholder ?? 'Select month'
+  if (picker === 'week') return locale?.weekPlaceholder ?? 'Select week'
+  if (showTime) return locale?.dateTimePlaceholder ?? 'Select date and time'
+  return locale?.placeholder ?? 'Select date'
 }
 
 function generateMonthGrid<TDate>(adapter: DateAdapter<TDate>, year: number, month: number, weekStartsOn = 1): TDate[][] {
@@ -1139,7 +1141,7 @@ function TimePanel<TDate>({ adapter, value, onChange, config, disabledTime }: {
 // Internal: PanelFooter
 // ============================================================================
 
-function PanelFooter<TDate>({ showToday, showNow, showOk, presets, renderExtraFooter, onToday, onNow, onOk, onPresetSelect, styles: panelStyles, classNames: panelClassNames }: {
+function PanelFooter<TDate>({ showToday, showNow, showOk, presets, renderExtraFooter, onToday, onNow, onOk, onPresetSelect, styles: panelStyles, classNames: panelClassNames, todayText, nowText, okText }: {
   showToday?: boolean
   showNow?: boolean
   showOk?: boolean
@@ -1151,6 +1153,9 @@ function PanelFooter<TDate>({ showToday, showNow, showOk, presets, renderExtraFo
   onPresetSelect?: (value: TDate) => void
   styles?: DatePickerStyles
   classNames?: DatePickerClassNames
+  todayText?: string
+  nowText?: string
+  okText?: string
 }) {
   const hasPresets = presets && presets.length > 0
   const hasActions = showToday || showNow || showOk
@@ -1205,8 +1210,8 @@ function PanelFooter<TDate>({ showToday, showNow, showOk, presets, renderExtraFo
       {hasActions && (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
-            {showToday && <button type="button" style={linkStyle} onClick={onToday}>Today</button>}
-            {showNow && <button type="button" style={linkStyle} onClick={onNow}>Now</button>}
+            {showToday && <button type="button" style={linkStyle} onClick={onToday}>{todayText ?? 'Today'}</button>}
+            {showNow && <button type="button" style={linkStyle} onClick={onNow}>{nowText ?? 'Now'}</button>}
           </div>
           {showOk && (
             <button
@@ -1221,7 +1226,7 @@ function PanelFooter<TDate>({ showToday, showNow, showOk, presets, renderExtraFo
               onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.filter = 'brightness(1.1)' }}
               onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.filter = 'none' }}
             >
-              OK
+              {okText ?? 'OK'}
             </button>
           )}
         </div>
@@ -1241,11 +1246,11 @@ function DatePickerComponent<TDate = any>({
   picker: pickerProp = 'date',
   format: formatProp,
   placeholder: placeholderProp,
-  size = 'md',
+  size: sizeProp,
   variant = 'outlined',
   status,
   placement = 'bottomLeft',
-  disabled = false,
+  disabled: disabledProp,
   inputReadOnly = false,
   allowClear = true,
   prefix,
@@ -1274,6 +1279,11 @@ function DatePickerComponent<TDate = any>({
   classNames,
   styles,
 }: DatePickerProps<TDate>) {
+  const { componentSize, componentDisabled, locale } = useConfig()
+  const dpLocale = locale.DatePicker
+  const size: DatePickerSize = sizeProp ?? (componentSize === 'small' ? 'sm' : componentSize === 'large' ? 'lg' : componentSize === 'middle' ? 'md' : undefined) ?? 'md'
+  const disabled = disabledProp ?? componentDisabled ?? false
+
   const adapter = useDateAdapter(adapterProp)
   const resolvedNeedConfirm = needConfirmProp ?? !!showTime
 
@@ -1326,7 +1336,7 @@ function DatePickerComponent<TDate = any>({
     return adapter.format(date, resolvedFormat)
   }, [adapter, formatProp, resolvedFormat])
 
-  const resolvedPlaceholder = placeholderProp ?? getDefaultPlaceholder(pickerProp, showTime)
+  const resolvedPlaceholder = placeholderProp ?? getDefaultPlaceholder(pickerProp, showTime, dpLocale)
 
   // ---- Sync viewDate when value changes ----
   useEffect(() => {
@@ -1640,6 +1650,9 @@ function DatePickerComponent<TDate = any>({
         onPresetSelect={handlePresetSelect}
         styles={styles}
         classNames={classNames}
+        todayText={dpLocale?.today}
+        nowText={dpLocale?.now}
+        okText={dpLocale?.ok}
       />
     </div>
   )
@@ -1812,8 +1825,8 @@ function RangePickerComponent<TDate = any>({
   placeholder: placeholderProp,
   separator,
   allowEmpty,
-  disabled: disabledProp = false,
-  size = 'md',
+  disabled: disabledProp,
+  size: sizeProp,
   variant = 'outlined',
   status,
   placement = 'bottomLeft',
@@ -1842,11 +1855,16 @@ function RangePickerComponent<TDate = any>({
   classNames,
   styles,
 }: RangePickerProps<TDate>) {
+  const { componentSize, componentDisabled, locale } = useConfig()
+  const dpLocale = locale.DatePicker
+  const size: DatePickerSize = sizeProp ?? (componentSize === 'small' ? 'sm' : componentSize === 'large' ? 'lg' : componentSize === 'middle' ? 'md' : undefined) ?? 'md'
+  const effectiveDisabled = disabledProp ?? componentDisabled ?? false
+
   const adapter = useDateAdapter(adapterProp)
 
   // ---- Disabled ----
-  const disabledStart = typeof disabledProp === 'boolean' ? disabledProp : disabledProp[0]
-  const disabledEnd = typeof disabledProp === 'boolean' ? disabledProp : disabledProp[1]
+  const disabledStart = typeof effectiveDisabled === 'boolean' ? effectiveDisabled : effectiveDisabled[0]
+  const disabledEnd = typeof effectiveDisabled === 'boolean' ? effectiveDisabled : effectiveDisabled[1]
   const anyDisabled = disabledStart && disabledEnd
 
   // ---- Value ----
@@ -1909,8 +1927,8 @@ function RangePickerComponent<TDate = any>({
   }, [adapter, formatProp, resolvedFormat])
 
   const defaultPlaceholders = placeholderProp ?? [
-    showTime ? 'Start date time' : 'Start date',
-    showTime ? 'End date time' : 'End date',
+    showTime ? (dpLocale?.rangeStartTimePlaceholder ?? 'Start date time') : (dpLocale?.rangeStartPlaceholder ?? 'Start date'),
+    showTime ? (dpLocale?.rangeEndTimePlaceholder ?? 'End date time') : (dpLocale?.rangeEndPlaceholder ?? 'End date'),
   ]
 
   // ---- Open animation ----

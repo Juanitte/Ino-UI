@@ -18,7 +18,7 @@ describe('ThemeProvider', () => {
   beforeEach(() => {
     localStorage.clear()
     // Clean up any injected styles
-    const style = document.getElementById('j-ui-theme-vars')
+    const style = document.getElementById('ino-ui-theme-vars')
     if (style) style.remove()
   })
 
@@ -89,11 +89,11 @@ describe('ThemeProvider', () => {
     act(() => {
       screen.getByText('Toggle').click()
     })
-    expect(localStorage.getItem('j-ui-theme')).toBe('dark')
+    expect(localStorage.getItem('ino-ui-theme')).toBe('dark')
   })
 
   it('reads theme from localStorage', () => {
-    localStorage.setItem('j-ui-theme', 'dark')
+    localStorage.setItem('ino-ui-theme', 'dark')
     render(
       <ThemeProvider>
         <ThemeConsumer />
@@ -108,7 +108,7 @@ describe('ThemeProvider', () => {
         <div>Child</div>
       </ThemeProvider>
     )
-    const styleEl = document.getElementById('j-ui-theme-vars')
+    const styleEl = document.getElementById('ino-ui-theme-vars')
     expect(styleEl).toBeInTheDocument()
     expect(styleEl?.textContent).toContain('--j-primary')
   })
