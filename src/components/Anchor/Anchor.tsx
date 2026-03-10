@@ -8,7 +8,7 @@ import {
 } from 'react'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
 import { classNames as cx } from '../../utils/classNames'
-import { Tooltip } from '../Tooltip'
+
 
 // ============================================================================
 // Types
@@ -296,11 +296,7 @@ function AnchorRoot({
 
       return (
         <div key={item.key} className={isVertical ? undefined : 'ino-anchor__link-wrapper--horizontal'}>
-          {typeof item.title === 'string' ? (
-            <Tooltip content={item.title} delay={600}>
-              {anchorLink}
-            </Tooltip>
-          ) : anchorLink}
+          {anchorLink}
           {isVertical && item.children && item.children.length > 0 && (
             <div>{renderItems(item.children, depth + 1)}</div>
           )}
