@@ -215,8 +215,10 @@ function AnchorRoot({
     }
     indicatorRef.current.style.opacity = '1'
 
-    if (!isVertical) {
-      activeLinkEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
+    if (!isVertical && wrapperRef.current) {
+      const wrapper = wrapperRef.current
+      const scrollLeft = activeLinkEl.offsetLeft - wrapper.offsetWidth / 2 + activeLinkEl.offsetWidth / 2
+      wrapper.scrollTo({ left: scrollLeft, behavior: 'smooth' })
     }
   }, [activeLink, isVertical])
 
