@@ -121,6 +121,7 @@ function AnchorRoot({
   const wrapperRef = useRef<HTMLDivElement>(null)
   const linkRefs = useRef<Map<string, HTMLElement>>(new Map())
   const isScrollingRef = useRef(false)
+  const scrollEndTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined)
   const activeLinkRef = useRef(activeLink)
   activeLinkRef.current = activeLink
 
@@ -182,6 +183,15 @@ function AnchorRoot({
     const container = getContainer()
 
     const handleScroll = () => {
+      if (isScrollingRef.current) {
+        // Mientras hay scroll programático, reiniciar el timer de detección de fin
+        clearTimeout(scrollEndTimerRef.current)
+        scrollEndTimerRef.current = setTimeout(() => {
+          isScrollingRef.current = false
+          calculateActiveLink()
+        }, 100)
+        return
+      }
       calculateActiveLink()
     }
 
@@ -190,6 +200,7 @@ function AnchorRoot({
 
     return () => {
       container.removeEventListener('scroll', handleScroll)
+      clearTimeout(scrollEndTimerRef.current)
     }
   }, [calculateActiveLink, getContainer])
 
@@ -203,15 +214,12 @@ function AnchorRoot({
       return
     }
 
-    const wrapperRect = wrapperRef.current.getBoundingClientRect()
-    const linkRect = activeLinkEl.getBoundingClientRect()
-
     if (isVertical) {
-      indicatorRef.current.style.top = `${linkRect.top - wrapperRect.top}px`
-      indicatorRef.current.style.height = `${linkRect.height}px`
+      indicatorRef.current.style.top = `${activeLinkEl.offsetTop}px`
+      indicatorRef.current.style.height = `${activeLinkEl.offsetHeight}px`
     } else {
-      indicatorRef.current.style.left = `${linkRect.left - wrapperRect.left}px`
-      indicatorRef.current.style.width = `${linkRect.width}px`
+      indicatorRef.current.style.left = `${activeLinkEl.offsetLeft}px`
+      indicatorRef.current.style.width = `${activeLinkEl.offsetWidth}px`
     }
     indicatorRef.current.style.opacity = '1'
 
@@ -258,10 +266,6 @@ function AnchorRoot({
     } else {
       window.history.pushState(null, '', href)
     }
-
-    setTimeout(() => {
-      isScrollingRef.current = false
-    }, 500)
   }, [getContainer, onClick, onChange, replace, resolvedTargetOffset])
 
   const orient = isVertical ? 'vertical' : 'horizontal'
